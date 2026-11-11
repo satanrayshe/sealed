@@ -33,7 +33,7 @@ MAX_COUNT = 9_999_999  # seven digits
 
 _ALPHABET = re.compile(r"[a-z0-9 ]*")
 _SEPARATOR = re.compile(r"(?<=[a-z0-9])[-_](?=[a-z0-9])")  # "-" or "_" between two letters/digits
-_NUMBER_WORDS: dict[str, int] = dict(_DATA["number_words"])
+NUMBER_WORDS: dict[str, int] = dict(_DATA["number_words"])
 _FILLER = frozenset(_DATA["filler_words"])
 
 
@@ -68,7 +68,7 @@ def _words(text: str) -> list[str] | None:
 def _count(word: str) -> int | None:
     if word.isdigit() and len(word) <= 7:
         return int(word)
-    return _NUMBER_WORDS.get(word)
+    return NUMBER_WORDS.get(word)
 
 
 def _load_signals() -> dict[str, SignalType]:

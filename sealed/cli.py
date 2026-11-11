@@ -1,4 +1,4 @@
-"""Command line: python -m sealed explain <alerts.json> | demo
+"""Command line: python -m sealed explain <alerts.json> | demo | generate
 
 Exit codes: 0 every alert explained (or a replay duplicate), 1 input rejected
 or unreadable, 2 usage error, 3 at least one alert rejected.
@@ -7,6 +7,7 @@ or unreadable, 2 usage error, 3 at least one alert rejected.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -14,6 +15,7 @@ from typing import TextIO
 
 from .contract import MAX_INPUT_BYTES
 from .explain import explain
+from .generate import write_data
 from .narrate import OllamaNarrator, TemplateNarrator
 from .quarantine import escape
 from .render import render
@@ -120,7 +122,18 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser("demo", help="run on the bundled sample alerts (offline, template narrator)")
     p.set_defaults(handler=cmd_demo)
+
+    p = sub.add_parser("generate", help="rewrite the seeded synthetic data files")
+    p.add_argument("--out", default="data", help="output directory (default: data)")
+    p.set_defaults(handler=cmd_generate)
     return parser
+
+
+def cmd_generate(args: argparse.Namespace, out: TextIO) -> int:
+    for name, path in write_data(args.out).items():
+        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        out.write(f"{digest}  {path.as_posix()}\n")
+    return 0
 
 
 def main(argv: list[str] | None = None, out: TextIO | None = None) -> int:
