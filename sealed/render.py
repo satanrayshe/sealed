@@ -65,6 +65,9 @@ def _explained(r: dict) -> list[str]:
     else:
         out += _rows("injection", [f"none found ({evidence['detector']}, threshold {evidence['threshold']:.2f})"])
 
+    if not r["quarantine"]:
+        out += _rows("quarantine", ["none (no free text besides the id, which is shown escaped above)"])
+        return out
     out += _rows("quarantine", ["free text, shown escaped, never given to any model:"])
     for q in r["quarantine"]:
         more = f" ... (+{q['chars'] - DISPLAY_CHARS} more chars)" if q["truncated"] else ""

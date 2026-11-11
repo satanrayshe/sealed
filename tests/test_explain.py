@@ -37,7 +37,7 @@ class TrackExample(unittest.TestCase):
             "The sign-in came from a device not seen before [S2].",
         ])
         self.assertEqual(r["model_input"]["sha256"], TRACK_SHA256)
-        self.assertEqual([q["field"] for q in r["quarantine"]], ["id"])
+        self.assertEqual(r["quarantine"], [])
 
     def test_attacked_twin_keeps_the_hash(self):
         attacked = dict(TRACK, username=ATTACKS[4].text)
@@ -53,6 +53,13 @@ class TrackExample(unittest.TestCase):
         self.assertEqual(r["recommendation"]["policy_action"], "monitor")
         self.assertEqual(r["recommendation"]["action"], "step-up")
         self.assertIs(r["recommendation"]["escalated_by_injection_evidence"], True)
+
+    def test_descriptive_ids_and_nested_metadata_are_not_flagged(self):
+        alerts = [dict(TRACK, id=i) for i in ["false-positive-3", "no-action-expected", "ignore-previous-run"]]
+        alerts.append(dict(TRACK, id="meta", related=[{"id": "alert-000", "action": "monitor"}]))
+        for r in run(*alerts)["results"]:
+            self.assertEqual(r["injection_evidence"]["flagged_fields"], [], r["alert_id"])
+            self.assertEqual(r["recommendation"]["action"], "step-up")
 
 
 class NothingReachesTheModel(unittest.TestCase):
@@ -74,7 +81,7 @@ class NothingReachesTheModel(unittest.TestCase):
         self.assertEqual(r["explanation"]["sentences"], ["7 failed sign-in attempts happened [S1]."])
         self.assertEqual(r["explanation"]["dropped"], [{"position": 0, "reason": "unsupported-number"}])
         # The canary is still shown to the analyst, escaped, in the quarantine.
-        self.assertEqual(sum(CANARY in q["text"] for q in r["quarantine"]), 10)
+        self.assertEqual(sum(CANARY in q["text"] for q in r["quarantine"]), 9)
 
     def test_hostile_narrator_output_is_filtered(self):
         transport = FakeTransport(reply([

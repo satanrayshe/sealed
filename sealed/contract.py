@@ -19,9 +19,9 @@ Three outcomes, applied in this order:
   The policy turns these into uncertainty.
 
 Error messages name the place and the problem, never the offending value.
-Every string that does not become a structured value is kept as FreeText,
-which is quarantined: shown escaped, scanned for injection, never given to
-a model.
+Every other string that does not become a structured value is kept as
+FreeText, which is quarantined: shown escaped, scanned for injection, never
+given to a model. The id is shown escaped and never given to a model too.
 """
 
 from __future__ import annotations
@@ -150,13 +150,30 @@ def _load_json(data: bytes | str) -> tuple[object, Issue | None]:
 
 
 def _as_text(value: object) -> str:
-    """Text form of a value that sits where free text can appear."""
+    """Every key and leaf of a JSON value in document order, one per line.
+
+    Only text that someone actually wrote is collected (keys, strings, and
+    numbers as written), never JSON punctuation we would add ourselves, so a
+    nested {"id": ...} in an extra field is not mistaken for injected JSON.
+    Iterative, so deep nesting cannot overflow the stack.
+    """
     if isinstance(value, str):
         return value
-    try:
-        return json.dumps(value, ensure_ascii=False, sort_keys=True)
-    except (RecursionError, ValueError, TypeError):
-        return "<value could not be shown>"
+    parts: list[str] = []
+    stack: list[object] = [value]
+    while stack:
+        item = stack.pop()
+        if isinstance(item, dict):
+            for key, child in reversed(list(item.items())):
+                stack.append(child)
+                stack.append(key)
+        elif isinstance(item, list):
+            stack.extend(reversed(item))
+        elif isinstance(item, str):
+            parts.append(item)
+        else:
+            parts.append(json.dumps(item))
+    return "\n".join(parts)
 
 
 def _canonical(raw: object) -> str | None:
@@ -202,7 +219,10 @@ def _parse_alert(index: int, raw: object) -> Alert | Rejected:
         return Rejected(index, valid_id, tuple(issues))
     assert valid_id is not None
 
-    free: list[FreeText] = [FreeText("id", valid_id)]
+    # The id is echoed (escaped) as the alert's name and never given to a model. It is not
+    # scanned for injection: ids come from the alerting pipeline, and descriptive test ids
+    # such as "false-positive-3" would raise false flags.
+    free: list[FreeText] = []
     severity = parse_severity(raw.get("severity"))
     if severity == "unknown" and raw.get("severity") is not None:
         free.append(FreeText("severity", _as_text(raw["severity"])))
@@ -225,7 +245,7 @@ def _parse_alert(index: int, raw: object) -> Alert | Rejected:
             free.append(FreeText(name, raw[name]))
     extras = [key for key in raw if key not in CONTRACT_FIELDS]
     for number, key in enumerate(extras, 1):
-        free.append(FreeText(f"extra field {number}", _as_text({key: raw[key]})))
+        free.append(FreeText(f"extra field {number}", _as_text({key: raw[key]})))  # name, then contents
 
     return Alert(index, valid_id, severity, tuple(facts), unrecognised, not signals,
                  action, tuple(free), len(extras))
