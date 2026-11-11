@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sealed-input/1",
+  "title": "Sealed input: the Track 4 contract plus optional entity fields",
+  "description": "Structure only. The parser in sealed/contract.py applies further rules: blank or repeated ids, repeated keys, non-finite numbers, more than 5,000,000 bytes or nesting too deep are rejected; unknown values are degraded, not rejected.",
+  "type": "object",
+  "required": ["alerts"],
+  "properties": {
+    "alerts": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": {
+            "type": "string", "minLength": 1, "maxLength": 256,
+            "description": "Required and unique. Identical repeats are replays; differing repeats are all rejected. Shown escaped; never given to a model."
+          },
+          "severity": {
+            "description": "One of info, low, review, medium, high, critical (case-insensitive). Anything else, including a missing value or another type, is read as unknown and raises uncertainty. Never given to a model."
+          },
+          "signals": {
+            "type": ["array", "null"],
+            "maxItems": 100,
+            "description": "Each item should match the signal grammar: [count] phrase, for example \"five failed synthetic attempts\". Items that do not match, of any type, are counted as unrecognised; only the count reaches the model. Missing, null or empty means missing signals."
+          },
+          "action": {
+            "description": "The alert's own suggested action, for example \"mock step-up\". Compared with the policy's decision; it never decides. Unrecognised or missing raises uncertainty."
+          },
+          "username": {"type": ["string", "null"], "description": "Attacker-controllable free text. Quarantined, scanned for instructions, never given to a model."},
+          "user_agent": {"type": ["string", "null"], "description": "As username."},
+          "url": {"type": ["string", "null"], "description": "As username."},
+          "host": {"type": ["string", "null"], "description": "As username."}
+        },
+        "additionalProperties": {
+          "description": "Other fields are ignored for the decision, counted, quarantined and never given to a model."
+        }
+      }
+    }
+  },
+  "additionalProperties": {"description": "Other top-level fields are counted and ignored."}
+}

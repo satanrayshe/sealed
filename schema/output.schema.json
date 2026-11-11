@@ -1,0 +1,193 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sealed-output/1",
+  "title": "Sealed report, as printed by python -m sealed explain --format json",
+  "type": "object",
+  "required": ["schema", "tool", "policy", "vocabulary", "narrator", "detector", "input", "results", "executed_controls"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {"const": "sealed-output/1"},
+    "tool": {
+      "type": "object", "required": ["name", "version"], "additionalProperties": false,
+      "properties": {"name": {"const": "sealed"}, "version": {"type": "string"}}
+    },
+    "policy": {
+      "type": "object", "required": ["version", "sha256"], "additionalProperties": false,
+      "properties": {"version": {"type": "string"}, "sha256": {"$ref": "#/$defs/sha256"}}
+    },
+    "vocabulary": {"type": "string"},
+    "narrator": {"type": "string", "description": "template, or ollama:<model>"},
+    "detector": {"type": "string"},
+    "input": {
+      "type": "object", "required": ["status", "issues", "alerts", "ignored_top_level_fields"], "additionalProperties": false,
+      "properties": {
+        "status": {"enum": ["ok", "rejected"]},
+        "issues": {"type": "array", "items": {"$ref": "#/$defs/issue"}},
+        "alerts": {"type": "integer"},
+        "ignored_top_level_fields": {"type": "integer"}
+      }
+    },
+    "results": {
+      "type": "array",
+      "description": "One entry per input alert, in input order.",
+      "items": {"oneOf": [{"$ref": "#/$defs/explained"}, {"$ref": "#/$defs/rejected"}, {"$ref": "#/$defs/duplicate"}]}
+    },
+    "executed_controls": {"$ref": "#/$defs/no_controls"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "action": {"enum": ["allow", "monitor", "step-up", "contain"]},
+    "no_controls": {"type": "array", "maxItems": 0, "description": "Always empty: every action is a mock recommendation and nothing is executed."},
+    "issue": {
+      "type": "object", "required": ["code", "where", "message"], "additionalProperties": false,
+      "properties": {
+        "code": {"type": "string"},
+        "where": {"type": "string", "description": "JSON path built from field names and indices only"},
+        "message": {"type": "string", "description": "Never repeats the offending value"}
+      }
+    },
+    "rejected": {
+      "type": "object", "required": ["index", "alert_id", "status", "errors", "executed_controls"], "additionalProperties": false,
+      "properties": {
+        "index": {"type": "integer"},
+        "alert_id": {"type": ["string", "null"]},
+        "status": {"const": "rejected"},
+        "errors": {"type": "array", "items": {"$ref": "#/$defs/issue"}},
+        "executed_controls": {"$ref": "#/$defs/no_controls"}
+      }
+    },
+    "duplicate": {
+      "type": "object", "required": ["index", "alert_id", "status", "duplicate_of", "executed_controls"], "additionalProperties": false,
+      "properties": {
+        "index": {"type": "integer"},
+        "alert_id": {"type": "string"},
+        "status": {"const": "duplicate"},
+        "duplicate_of": {"type": "integer", "description": "Index of the identical alert that was explained"},
+        "executed_controls": {"$ref": "#/$defs/no_controls"}
+      }
+    },
+    "explained": {
+      "type": "object",
+      "required": ["index", "alert_id", "status", "severity", "observed_signals", "unrecognised_signals", "recommendation",
+                   "input_action", "uncertainty", "explanation", "model_input", "injection_evidence", "quarantine",
+                   "executed_controls"],
+      "additionalProperties": false,
+      "properties": {
+        "index": {"type": "integer"},
+        "alert_id": {"type": "string"},
+        "status": {"const": "explained"},
+        "severity": {
+          "type": "object", "required": ["value", "known"], "additionalProperties": false,
+          "properties": {
+            "value": {"enum": ["info", "low", "review", "medium", "high", "critical", "unknown"]},
+            "known": {"type": "boolean"}
+          }
+        },
+        "observed_signals": {
+          "type": "array",
+          "description": "The sealed view's evidence items, citable as [S1], [S2], ...",
+          "items": {
+            "type": "object", "required": ["evidence_id", "signal", "count", "meaning"], "additionalProperties": false,
+            "properties": {
+              "evidence_id": {"type": "string", "pattern": "^S[0-9]+$"},
+              "signal": {"type": "string", "description": "A vocabulary code, or unrecognised"},
+              "count": {"type": ["integer", "null"]},
+              "meaning": {"type": "string"}
+            }
+          }
+        },
+        "unrecognised_signals": {"type": "array", "items": {"type": "string", "pattern": "^unrecognised signal [0-9]+$"}},
+        "recommendation": {
+          "type": "object",
+          "required": ["action", "mock", "executed", "policy_action", "escalated_by_injection_evidence", "rules"],
+          "additionalProperties": false,
+          "properties": {
+            "action": {"$ref": "#/$defs/action"},
+            "mock": {"const": true},
+            "executed": {"const": false},
+            "policy_action": {"$ref": "#/$defs/action"},
+            "escalated_by_injection_evidence": {"type": "boolean"},
+            "rules": {
+              "type": "array",
+              "items": {
+                "type": "object", "required": ["id", "action", "text"], "additionalProperties": false,
+                "properties": {"id": {"type": "string"}, "action": {"$ref": "#/$defs/action"}, "text": {"type": "string"}}
+              }
+            }
+          }
+        },
+        "input_action": {
+          "type": "object", "required": ["value", "agrees_with_policy"], "additionalProperties": false,
+          "properties": {
+            "value": {"enum": ["allow", "monitor", "step-up", "contain", "unrecognised", "absent"]},
+            "agrees_with_policy": {"type": ["boolean", "null"]}
+          }
+        },
+        "uncertainty": {
+          "type": "object", "required": ["level", "reasons"], "additionalProperties": false,
+          "properties": {
+            "level": {"enum": ["low", "medium", "high"]},
+            "reasons": {
+              "type": "array",
+              "items": {
+                "type": "object", "required": ["rule", "add", "text"], "additionalProperties": false,
+                "properties": {"rule": {"type": "string"}, "add": {"type": "integer"}, "text": {"type": "string"}}
+              }
+            }
+          }
+        },
+        "explanation": {
+          "type": "object", "required": ["narrator", "fallback", "sentences", "dropped"], "additionalProperties": false,
+          "properties": {
+            "narrator": {"type": "string"},
+            "fallback": {"type": ["string", "null"]},
+            "sentences": {"type": "array", "items": {"type": "string"}, "description": "Verified sentences, each citing [S#]"},
+            "dropped": {
+              "type": "array",
+              "items": {
+                "type": "object", "required": ["position", "reason"], "additionalProperties": false,
+                "properties": {"position": {"type": "integer"}, "reason": {"type": "string"}}
+              }
+            }
+          }
+        },
+        "model_input": {
+          "type": "object", "required": ["sha256", "bytes", "prompt_version", "view"], "additionalProperties": false,
+          "properties": {
+            "sha256": {"$ref": "#/$defs/sha256"},
+            "bytes": {"type": "integer"},
+            "prompt_version": {"type": "string"},
+            "view": {"type": "string", "description": "Canonical JSON of the sealed view; the model input is the fixed prompt, this, and a newline"}
+          }
+        },
+        "injection_evidence": {
+          "type": "object", "required": ["detector", "threshold", "flagged_fields", "max_score"], "additionalProperties": false,
+          "properties": {
+            "detector": {"type": "string"},
+            "threshold": {"type": "number"},
+            "flagged_fields": {"type": "array", "items": {"type": "string"}},
+            "max_score": {"type": "number"}
+          }
+        },
+        "quarantine": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["field", "text", "chars", "truncated", "score", "flagged", "detector_error"],
+            "additionalProperties": false,
+            "properties": {
+              "field": {"type": "string"},
+              "text": {"type": "string", "description": "Escaped and quoted, first 160 characters"},
+              "chars": {"type": "integer"},
+              "truncated": {"type": "boolean"},
+              "score": {"type": "number"},
+              "flagged": {"type": "boolean"},
+              "detector_error": {"type": "boolean"}
+            }
+          }
+        },
+        "executed_controls": {"$ref": "#/$defs/no_controls"}
+      }
+    }
+  }
+}
