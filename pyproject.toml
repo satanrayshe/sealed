@@ -1,0 +1,13 @@
+[project]
+name = "sealed"
+version = "0.1.0"
+description = "A security-alert explainer whose language model never reads attacker-written text."
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Shrey Sati" }]
+requires-python = ">=3.12"
+# Standard library only. Nothing to install.
+dependencies = []
+
+[project.scripts]
+sealed = "sealed.cli:main"

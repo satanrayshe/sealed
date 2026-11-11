@@ -1,0 +1,2 @@
+# LF everywhere, so data files and hashes are byte-identical on every OS.
+* text=auto eol=lf
