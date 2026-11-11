@@ -2,7 +2,7 @@ import json
 import unittest
 
 from sealed.contract import (
-    MAX_ALERTS, MAX_ID_CHARS, MAX_INPUT_BYTES, MAX_SIGNALS, Alert, Duplicate, Rejected, parse_document,
+    MAX_ALERTS, MAX_ID_CHARS, MAX_INPUT_BYTES, MAX_QUARANTINED, Alert, Duplicate, Rejected, parse_document,
 )
 from sealed.vocabulary import Fact
 
@@ -49,7 +49,7 @@ class Normal(unittest.TestCase):
         self.assertEqual(item.free_text, ())
 
     def test_bytes_and_bom(self):
-        for data in [TRACK_EXAMPLE.encode(), b"\xef\xbb\xbf" + TRACK_EXAMPLE.encode(), "﻿" + TRACK_EXAMPLE]:
+        for data in [TRACK_EXAMPLE.encode(), b"\xef\xbb\xbf" + TRACK_EXAMPLE.encode(), "\ufeff" + TRACK_EXAMPLE]:
             self.assertTrue(parse_document(data).ok)
 
     def test_entity_fields_are_free_text(self):
@@ -63,6 +63,15 @@ class Normal(unittest.TestCase):
 
 
 class Edge(unittest.TestCase):
+    def test_any_number_of_signals_is_read_and_quarantine_is_capped(self):
+        signals = ["8 failed attempts", "success after failures"] + [f"junk {i}!" for i in range(500)] + ["new device"] * 3
+        item = parse_document(doc(alert(signals=signals, **{f"x{i}": i for i in range(30)}))).items[0]
+        self.assertIsInstance(item, Alert)
+        self.assertEqual(item.facts, (Fact("failed_attempts", 8), Fact("success_after_failures"), Fact("new_device")))
+        self.assertEqual(item.unrecognised, 500)
+        self.assertEqual(len(item.free_text), MAX_QUARANTINED * 2)
+        self.assertEqual(item.quarantine_omitted, (500 - MAX_QUARANTINED) + (30 - MAX_QUARANTINED))
+
     def test_empty_alert_list(self):
         document = parse_document('{"alerts": []}')
         self.assertTrue(document.ok)
@@ -127,21 +136,33 @@ class Edge(unittest.TestCase):
         document = parse_document(doc(alert(), reordered))
         self.assertIsInstance(document.items[1], Duplicate)
 
-    def test_conflicting_duplicates_are_all_rejected(self):
-        document = parse_document(doc(alert(), alert(signals=["5 failed attempts"]), alert(id="a-2")))
-        first, second, third = document.items
-        for item in (first, second):
-            self.assertIsInstance(item, Rejected)
-            self.assertIn("conflicting-duplicate-id", item_codes(item))
-        self.assertIsInstance(third, Alert)
+    def test_conflicting_versions_are_all_explained_and_flagged(self):
+        document = parse_document(doc(alert(), alert(signals=["5 failed attempts"]), alert(), alert(id="a-2")))
+        first, second, third, fourth = document.items
+        self.assertEqual((first.id_conflicts, second.id_conflicts), (1, 1))
+        self.assertEqual(third, Duplicate(2, "a-1", 0))
+        self.assertEqual(fourth.id_conflicts, 0)
+
+    def test_many_versions_of_one_id_stay_linear(self):
+        document = parse_document(doc(*[alert(severity=str(i)) for i in range(MAX_ALERTS)]))
+        self.assertTrue(all(item.id_conflicts == MAX_ALERTS - 1 for item in document.items))
+
+    def test_a_rejected_alert_never_masks_or_is_masked_by_a_valid_one(self):
+        repeated = '{"id": "x", "signals": ["5 failed attempts", "success after failures"], "signals": ["new device"]}'
+        valid = '{"id": "x", "signals": ["new device"]}'
+        for order in ([repeated, valid], [valid, repeated]):
+            items = parse_document('{"alerts": [' + ", ".join(order) + "]}").items
+            kinds = [type(item).__name__ for item in items]
+            self.assertEqual(sorted(kinds), ["Alert", "Rejected"], order)
+            self.assertEqual([i.id_conflicts for i in items if isinstance(i, Alert)], [0])
 
     def test_id_is_kept_exactly(self):
         # Look-alike ids are different ids; the display escapes the difference.
-        document = parse_document(doc(alert(id="a-1"), alert(id="a-1​")))
+        document = parse_document(doc(alert(id="a-1"), alert(id="a-1\u200b")))
         self.assertTrue(all(isinstance(item, Alert) for item in document.items))
 
     def test_limits_at_the_edge_are_accepted(self):
-        item = parse_document(doc(alert(id="x" * MAX_ID_CHARS, signals=["new device"] * MAX_SIGNALS))).items[0]
+        item = parse_document(doc(alert(id="x" * MAX_ID_CHARS))).items[0]
         self.assertIsInstance(item, Alert)
         self.assertTrue(parse_document(doc(*[alert(id=f"a-{i}") for i in range(MAX_ALERTS)])).ok)
 
@@ -221,9 +242,6 @@ class InvalidAlert(unittest.TestCase):
             with self.subTest(value=value):
                 self.assertEqual(self.rejected(alert(signals=value)), ["wrong-type"])
 
-    def test_too_many_signals(self):
-        self.assertEqual(self.rejected(alert(signals=["new device"] * (MAX_SIGNALS + 1))), ["too-many-signals"])
-
     def test_entity_wrong_type(self):
         for name in ["username", "user_agent", "url", "host"]:
             for value in [1, ["x"], {"$ne": None}, True]:
@@ -250,7 +268,7 @@ class ErrorsNeverEchoValues(unittest.TestCase):
         hostile = [
             "{" + CANARY,
             json.dumps({"alerts": [{"id": 1, CANARY: CANARY, "signals": CANARY, "username": [CANARY]}]}),
-            json.dumps({"alerts": [{"id": CANARY, "signals": []}, {"id": CANARY, "signals": [CANARY]}]}),
+            json.dumps({"alerts": [{"id": CANARY, "signals": CANARY}, {"id": CANARY, "host": [CANARY]}]}),
             json.dumps({"alerts": [{"id": "x" * 300 + CANARY}]}),
             json.dumps({CANARY: 1}),
             '{"alerts": [], "' + CANARY + '": NaN}',

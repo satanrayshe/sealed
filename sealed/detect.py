@@ -20,6 +20,7 @@ from dataclasses import dataclass
 from typing import Iterable, Protocol
 
 from .contract import FreeText
+from .quarantine import INVISIBLE
 
 
 class Detector(Protocol):
@@ -30,13 +31,8 @@ class Detector(Protocol):
         ...
 
 
-# Characters that render as nothing (zero-width, joiners, bidi controls, tag characters).
-_INVISIBLE = re.compile(
-    "[­͏؜ᅟᅠ឴឵᠋-᠏​-‏‪-‮"
-    "⁠-⁯ㅤ︀-️﻿ﾠ\U000e0000-\U000e007f\U000e0100-\U000e01ef]"
-)
 # Anything that is not a letter, digit or Indic/combining mark separates words.
-_NON_WORD = re.compile(r"[^\ẁ-ͯऀ-෿]+|_+")
+_NON_WORD = re.compile(r"[^\w\u0300-\u036f\u0900-\u0dff]+|_+")
 
 # Phrases, matched as whole words after normalisation. Written for the
 # baseline from common injection wording; not tuned on the evaluation set.
@@ -81,12 +77,25 @@ PATTERNS: tuple[tuple[str, re.Pattern], ...] = (
 )
 
 _MIN_SQUASHED = 12  # spaced-out letters ("i g n o r e ...") are matched only for long phrases
+MAX_SCAN_CHARS = 100_000  # longer text is scanned only this far; it still never reaches a model
+_PIECE = 256  # NFKC runs piece by piece: a piece costs at most O(256^2), so the whole stays linear
+
+
+def _fold(text: str) -> str:
+    """Invisible characters removed, NFKC folded (in 256-character pieces), casefolded."""
+    text = INVISIBLE.sub("", text[:MAX_SCAN_CHARS])
+    if not text.isascii():
+        text = "".join(unicodedata.normalize("NFKC", text[i:i + _PIECE]) for i in range(0, len(text), _PIECE))
+    return text.casefold()
+
+
+def _words(folded: str) -> str:
+    return " ".join(_NON_WORD.sub(" ", folded).split())
 
 
 def normalise(text: str) -> str:
     """Lowercase words separated by single spaces, invisible characters removed, NFKC folded."""
-    folded = unicodedata.normalize("NFKC", _INVISIBLE.sub("", text)).casefold()
-    return " ".join(_NON_WORD.sub(" ", folded).split())
+    return _words(_fold(text))
 
 
 class KeywordDetector:
@@ -100,8 +109,8 @@ class KeywordDetector:
 
     def matches(self, text: str) -> list[str]:
         """Names of the phrases and patterns found in the text (for tests and reports)."""
-        folded = unicodedata.normalize("NFKC", _INVISIBLE.sub("", text)).casefold()
-        words = f" {normalise(text)} "
+        folded = _fold(text)
+        words = f" {_words(folded)} "
         squashed = words.replace(" ", "")
         found = [p for p in self._phrases if f" {p} " in words]
         found += [p for p, s in self._squashed if p not in found and s in squashed]

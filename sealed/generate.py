@@ -14,9 +14,11 @@ from __future__ import annotations
 
 import json
 import random
+import unicodedata
 from pathlib import Path
 
 from .corpus import ATTACKS, DEVANAGARI_NAMES, IGNORE_SYSTEM_USERNAMES, LATIN_INDIAN_NAMES, benign_oddities
+from .quarantine import INVISIBLE
 from .vocabulary import NUMBER_WORDS
 
 SEED = 2026
@@ -149,8 +151,15 @@ def synthetic_alerts(seed: int = SEED, per_family: int = PER_FAMILY) -> list[dic
     return alerts
 
 
+def _visible_json(item: dict) -> str:
+    """JSON that keeps letters of every script readable but writes invisible characters as escapes."""
+    text = json.dumps(item, ensure_ascii=False)
+    hidden = lambda ch: INVISIBLE.match(ch) or unicodedata.category(ch)[0] == "C" or unicodedata.category(ch) in ("Zl", "Zp")
+    return "".join(json.dumps(ch)[1:-1] if hidden(ch) else ch for ch in text)
+
+
 def _lines(items: list[dict], key: str) -> str:
-    body = ",\n".join(json.dumps(item, ensure_ascii=False) for item in items)
+    body = ",\n".join(_visible_json(item) for item in items)
     return f'{{"{key}": [\n{body}\n]}}\n'
 
 

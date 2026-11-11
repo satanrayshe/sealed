@@ -26,10 +26,14 @@ OUTPUT_SCHEMA = "sealed-output/1"
 
 
 def _narrate(narrator, view) -> tuple[list, str, str | None]:
+    """Narration is optional: any narrator failure falls back to the template and is reported."""
     try:
         return narrator.narrate(view), narrator.name, None
     except NarratorError as err:
-        return TemplateNarrator().narrate(view), TemplateNarrator.name, f"{narrator.name} failed: {err}"
+        reason = str(err)
+    except Exception as err:  # a narrator must never be able to crash the explainer
+        reason = f"unexpected {type(err).__name__}"
+    return TemplateNarrator().narrate(view), TemplateNarrator.name, f"{narrator.name} failed: {reason}"
 
 
 def _explain_alert(alert: Alert, narrator, detector: Detector, policy: Policy) -> dict:
@@ -38,6 +42,7 @@ def _explain_alert(alert: Alert, narrator, detector: Detector, policy: Policy) -
     decision = decide(
         alert.facts, unrecognised=alert.unrecognised, signals_missing=alert.signals_missing,
         severity=alert.severity, input_action=alert.input_action, injection_flagged=bool(flagged),
+        id_conflict=alert.id_conflicts > 0,
         policy=policy,
     )
     view = seal(alert.facts, alert.unrecognised)
@@ -94,6 +99,7 @@ def _explain_alert(alert: Alert, narrator, detector: Detector, policy: Policy) -
             "max_score": round(max((s.score for s in scores), default=0.0), 4),
         },
         "quarantine": quarantine,
+        "quarantine_omitted": alert.quarantine_omitted,
         "executed_controls": [],
     }
 

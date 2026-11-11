@@ -2,16 +2,18 @@
 
 from __future__ import annotations
 
-from .quarantine import DISPLAY_CHARS, escape
+from .quarantine import DISPLAY_CHARS, escape, wrap
 
 PAD = " " * 15
 
 
-def _show_id(alert_id: str | None) -> str:
+def short_id(alert_id: str | None, width: int = 60) -> str:
+    """The id, escaped and cut to one short line, so it cannot wrap onto a line of its own."""
     if alert_id is None:
         return "(no valid id)"
-    shown, truncated = escape(alert_id, 60)
-    return shown + (" ..." if truncated else "")
+    shown, truncated = escape(alert_id, width)
+    pieces = wrap(shown, width)
+    return pieces[0] + (" ..." if truncated or len(pieces) > 1 else "")
 
 
 def _rows(label: str, values: list[str]) -> list[str]:
@@ -70,9 +72,14 @@ def _explained(r: dict) -> list[str]:
         return out
     out += _rows("quarantine", ["free text, shown escaped, never given to any model:"])
     for q in r["quarantine"]:
-        more = f" ... (+{q['chars'] - DISPLAY_CHARS} more chars)" if q["truncated"] else ""
-        flag = "   <- instruction-like" if q["flagged"] else ""
-        out.append(f"{PAD}| {q['field']:<36} {q['text']}{more}{flag}")
+        # Field label on its own line, then the escaped text in short lines inside the box,
+        # so attacker text can never start a line of the report or reach the terminal edge.
+        out.append(f"{PAD}| {q['field']}" + ("   <- instruction-like" if q["flagged"] else ""))
+        out += [f"{PAD}|     {piece}" for piece in wrap(q["text"])]
+        if q["truncated"]:
+            out.append(f"{PAD}|     ... (+{q['chars'] - DISPLAY_CHARS} more characters not shown)")
+    if r["quarantine_omitted"]:
+        out.append(f"{PAD}| ... {r['quarantine_omitted']} more item(s) not shown or scanned; never given to any model")
     return out
 
 
@@ -88,7 +95,7 @@ def render(report: dict) -> str:
     lines.append(f"Input: {source['alerts']} alert(s){note}")
     for r in report["results"]:
         lines.append("")
-        head = f"[{r['index'] + 1}/{source['alerts']}] alert {_show_id(r['alert_id'])}"
+        head = f"[{r['index'] + 1}/{source['alerts']}] alert {short_id(r['alert_id'])}"
         if r["status"] == "rejected":
             lines.append(head + "  REJECTED")
             lines += [f"  {e['where']}: {e['message']} [{e['code']}]" for e in r["errors"]]

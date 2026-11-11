@@ -20,8 +20,7 @@ import json
 from dataclasses import dataclass
 from typing import Iterable
 
-from .contract import MAX_SIGNALS
-from .vocabulary import ORDER, SIGNALS, UNRECOGNISED, Fact
+from .vocabulary import MAX_COUNT, ORDER, SIGNALS, UNRECOGNISED, Fact
 
 VIEW_SCHEMA = "sealed-view/1"
 PROMPT_VERSION = "sealed-narrator-prompt/1"
@@ -42,7 +41,8 @@ NARRATOR_PROMPT = (
     "Rules:\n"
     "1. Write one short sentence per evidence item, in the order given.\n"
     "2. End each sentence with the id of the item it describes in square brackets, for example [S1].\n"
-    "3. Use only the signals and counts in FACTS. Add no names, places, times, numbers, causes or guesses.\n"
+    "3. Use only the signals and counts in FACTS, in the GLOSSARY's own words. "
+    "Add no names, places, times, numbers, causes or guesses.\n"
     "4. Do not judge the alert and do not suggest any action; other components do that.\n"
     '5. Reply with JSON only, in the form {"sentences": ["..."]}.\n'
     "GLOSSARY:\n" + _glossary() + "\n"
@@ -81,8 +81,8 @@ class SealedView:
 
 def seal(facts: Iterable[Fact], unrecognised: int) -> SealedView:
     """Build the sealed view from structured facts only."""
-    if type(unrecognised) is not int or not 0 <= unrecognised <= MAX_SIGNALS:
-        raise ValueError("unrecognised must be an integer from 0 to MAX_SIGNALS")
+    if type(unrecognised) is not int or not 0 <= unrecognised <= MAX_COUNT:
+        raise ValueError("unrecognised must be an integer from 0 to MAX_COUNT")
     highest: dict[str, int | None] = {}
     for fact in facts:
         if type(fact) is not Fact:

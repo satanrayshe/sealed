@@ -17,8 +17,7 @@ from .contract import MAX_INPUT_BYTES
 from .explain import explain
 from .generate import write_data
 from .narrate import OllamaNarrator, TemplateNarrator
-from .quarantine import escape
-from .render import render
+from .render import render, short_id
 
 SAMPLES = Path(__file__).with_name("samples")
 
@@ -96,7 +95,7 @@ def cmd_demo(args: argparse.Namespace, out: TextIO) -> int:
     out.write("\n=== 3. Edge cases (detail: python -m sealed explain sealed/samples/edge_cases.json) ===\n")
     out.write(f"{'#':>3}  {'id':<28} {'status':<10} {'action':<9} {'uncertainty':<12} why\n")
     for r in edge["results"]:
-        shown = escape(r["alert_id"], 26)[0] if r["alert_id"] is not None else "(no valid id)"
+        shown = short_id(r["alert_id"], 26)
         action = r["recommendation"]["action"] if r["status"] == "explained" else "-"
         level = r["uncertainty"]["level"] if r["status"] == "explained" else "-"
         out.write(f"{r['index'] + 1:>3}  {shown:<28} {r['status']:<10} {action:<9} {level:<12} {_why(r)}\n")

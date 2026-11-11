@@ -80,7 +80,7 @@ def parse_reply(raw: bytes) -> list[str]:
         outer = json.loads(raw.decode("utf-8"))
         inner = json.loads(outer["message"]["content"])
         sentences = inner["sentences"]
-    except (UnicodeDecodeError, ValueError, KeyError, TypeError) as err:
+    except (UnicodeDecodeError, ValueError, KeyError, TypeError, RecursionError) as err:
         raise NarratorError("reply is not the expected JSON") from err
     if not isinstance(sentences, list) or not all(isinstance(s, str) for s in sentences):
         raise NarratorError("sentences must be a list of strings")
@@ -157,7 +157,7 @@ class OllamaNarrator:
             if data["request_sha256"] != hashlib.sha256(body).hexdigest():
                 return None  # same input, different model or settings
             sentences = data["sentences"]
-        except (OSError, ValueError, KeyError, TypeError):
+        except (OSError, ValueError, KeyError, TypeError, RecursionError):
             return None
         if not isinstance(sentences, list) or not all(isinstance(s, str) for s in sentences):
             return None

@@ -10,22 +10,24 @@ Three outcomes, applied in this order:
   top-level key, no "alerts" list, or too many alerts.
 * Reject one alert when it cannot be identified or its structure is wrong:
   not an object, a repeated key, id missing / not a string / blank / too
-  long, signals not a list, too many signals, an entity field that is not a
-  string. Alerts sharing an id are replays if their content is identical
-  (the first is explained, the rest are marked duplicates) and are all
-  rejected if their content differs.
+  long, signals not a list, an entity field that is not a string.
 * Degrade, never reject, when a value is merely unknown: unknown severity,
-  unrecognised or absent action, unrecognised signals, missing signals.
-  The policy turns these into uncertainty.
+  unrecognised or absent action, unrecognised signals, missing signals, and
+  an id shared with a valid alert whose content differs. The policy turns
+  these into uncertainty. Valid alerts with an id and identical content are
+  replays: the first is explained and the copies are marked duplicates.
 
 Error messages name the place and the problem, never the offending value.
 Every other string that does not become a structured value is kept as
 FreeText, which is quarantined: shown escaped, scanned for injection, never
 given to a model. The id is shown escaped and never given to a model too.
+At most 20 unrecognised signals and 20 extra fields per alert are kept as
+FreeText; the rest are only counted.
 """
 
 from __future__ import annotations
 
+import dataclasses
 import json
 import math
 from dataclasses import dataclass
@@ -34,8 +36,8 @@ from .vocabulary import Fact, parse_action, parse_severity, parse_signal
 
 MAX_INPUT_BYTES = 5_000_000
 MAX_ALERTS = 1000
-MAX_SIGNALS = 100
 MAX_ID_CHARS = 256
+MAX_QUARANTINED = 20  # per alert, for unrecognised signals and for extra fields separately
 ENTITY_FIELDS = ("username", "user_agent", "url", "host")
 CONTRACT_FIELDS = ("id", "severity", "signals", "action") + ENTITY_FIELDS
 
@@ -67,6 +69,8 @@ class Alert:
     input_action: str                # a declared action, "unrecognised" or "absent"
     free_text: tuple[FreeText, ...]  # everything that did not become a structured value
     ignored_fields: int              # fields outside the contract
+    quarantine_omitted: int = 0      # free-text items beyond the per-alert cap: counted, not kept
+    id_conflicts: int = 0            # other versions of this id with different content
 
 
 @dataclass(frozen=True)
@@ -131,7 +135,7 @@ def _load_json(data: bytes | str) -> tuple[object, Issue | None]:
     elif isinstance(data, str):
         if len(data) > MAX_INPUT_BYTES:
             return None, Issue("too-large", "$", f"input is longer than {MAX_INPUT_BYTES} characters")
-        text = data[1:] if data.startswith("﻿") else data
+        text = data[1:] if data.startswith("\ufeff") else data
     else:
         return None, Issue("not-text", "$", "input must be bytes or text")
     if not text.strip():
@@ -207,8 +211,6 @@ def _parse_alert(index: int, raw: object) -> Alert | Rejected:
     signals = raw.get("signals")
     if signals is not None and not isinstance(signals, list):
         issues.append(Issue("wrong-type", f"{where}.signals", "signals must be a list"))
-    elif signals is not None and len(signals) > MAX_SIGNALS:
-        issues.append(Issue("too-many-signals", f"{where}.signals", f"more than {MAX_SIGNALS} signals"))
 
     for name in ENTITY_FIELDS:
         value = raw.get(name)
@@ -231,46 +233,56 @@ def _parse_alert(index: int, raw: object) -> Alert | Rejected:
         free.append(FreeText("action", _as_text(raw["action"])))
 
     facts: list[Fact] = []
-    unrecognised = 0
+    seen: set[Fact] = set()
+    unrecognised = omitted = 0
     for position, value in enumerate(signals or []):
         fact = parse_signal(value)
         if fact is None:
             unrecognised += 1
-            free.append(FreeText(f"signals[{position}] (unrecognised signal {unrecognised})", _as_text(value)))
-        else:
+            if unrecognised <= MAX_QUARANTINED:
+                free.append(FreeText(f"signals[{position}] (unrecognised signal {unrecognised})", _as_text(value)))
+            else:
+                omitted += 1
+        elif fact not in seen:  # a repeated fact adds nothing
+            seen.add(fact)
             facts.append(fact)
 
     for name in ENTITY_FIELDS:
         if isinstance(raw.get(name), str):
             free.append(FreeText(name, raw[name]))
     extras = [key for key in raw if key not in CONTRACT_FIELDS]
-    for number, key in enumerate(extras, 1):
+    for number, key in enumerate(extras[:MAX_QUARANTINED], 1):
         free.append(FreeText(f"extra field {number}", _as_text({key: raw[key]})))  # name, then contents
+    omitted += max(0, len(extras) - MAX_QUARANTINED)
 
     return Alert(index, valid_id, severity, tuple(facts), unrecognised, not signals,
-                 action, tuple(free), len(extras))
+                 action, tuple(free), len(extras), quarantine_omitted=omitted)
 
 
 def _resolve_duplicate_ids(items: list[Alert | Rejected], raw_alerts: list) -> list:
+    """Replays become duplicates; differing versions of an id are all explained, flagged as conflicts.
+
+    Only valid alerts take part. A rejected alert stays rejected and never masks,
+    or is masked by, a valid alert with the same id.
+    """
     groups: dict[str, list[int]] = {}
     for item in items:
-        if item.id is not None:
+        if isinstance(item, Alert):
             groups.setdefault(item.id, []).append(item.index)
     resolved: list[Alert | Rejected | Duplicate] = list(items)
     for alert_id, indices in groups.items():
         if len(indices) < 2:
             continue
-        forms = {_canonical(raw_alerts[i]) for i in indices}
-        if len(forms) == 1 and None not in forms:
-            for i in indices[1:]:
-                resolved[i] = Duplicate(i, alert_id, indices[0])
-            continue
+        first_of_form: dict[str | None, int] = {}
         for i in indices:
-            others = ", ".join(f"alerts[{j}]" for j in indices if j != i)
-            issue = Issue("conflicting-duplicate-id", f"$.alerts[{i}].id",
-                          f"id is shared with {others} and their content differs")
-            earlier = items[i].issues if isinstance(items[i], Rejected) else ()
-            resolved[i] = Rejected(i, alert_id, earlier + (issue,))
+            form = _canonical(raw_alerts[i])
+            if form is not None and form in first_of_form:
+                resolved[i] = Duplicate(i, alert_id, first_of_form[form])
+            else:
+                first_of_form[form if form is not None else f"unreadable-{i}"] = i
+        if len(first_of_form) > 1:
+            for i in first_of_form.values():
+                resolved[i] = dataclasses.replace(items[i], id_conflicts=len(first_of_form) - 1)
     return resolved
 
 

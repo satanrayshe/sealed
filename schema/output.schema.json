@@ -70,7 +70,7 @@
       "type": "object",
       "required": ["index", "alert_id", "status", "severity", "observed_signals", "unrecognised_signals", "recommendation",
                    "input_action", "uncertainty", "explanation", "model_input", "injection_evidence", "quarantine",
-                   "executed_controls"],
+                   "quarantine_omitted", "executed_controls"],
       "additionalProperties": false,
       "properties": {
         "index": {"type": "integer"},
@@ -186,6 +186,7 @@
             }
           }
         },
+        "quarantine_omitted": {"type": "integer", "description": "Unrecognised signals or extra fields past the per-alert cap of 20 each: counted, not shown, not scanned, never given to a model"},
         "executed_controls": {"$ref": "#/$defs/no_controls"}
       }
     }

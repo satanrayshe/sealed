@@ -28,7 +28,7 @@ HARD_MAX_RAISE = 1
 HARD_CEILING = "step-up"
 PREDICATES = (
     "signals_missing", "no_signal_recognised", "some_signals_unrecognised", "unknown_severity",
-    "input_action_unrecognised", "input_action_disagrees", "injection_evidence", "contradiction",
+    "input_action_unrecognised", "input_action_disagrees", "injection_evidence", "contradiction", "id_conflict",
 )
 
 
@@ -209,6 +209,7 @@ def decide(
     severity: str,
     input_action: str,
     injection_flagged: bool,
+    id_conflict: bool = False,
     policy: Policy = POLICY,
 ) -> Decision:
     values: dict[str, list[int | None]] = {}
@@ -228,6 +229,7 @@ def decide(
         "input_action_unrecognised": input_action not in ACTIONS,
         "input_action_disagrees": input_action in ACTIONS and input_action != policy_action,
         "injection_evidence": injection_flagged,
+        "id_conflict": id_conflict,
     }
     reasons: list[Reason] = []
     for rule in policy.uncertainty_rules:

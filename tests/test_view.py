@@ -4,15 +4,14 @@ import json
 import re
 import unittest
 
-from sealed.contract import MAX_SIGNALS
 from sealed.view import NARRATOR_PROMPT, VIEW_SCHEMA, seal
-from sealed.vocabulary import SIGNALS, Fact
+from sealed.vocabulary import MAX_COUNT, SIGNALS, Fact
 
 TRACK_FACTS = [Fact("new_device"), Fact("failed_attempts", 5)]
 TRACK_CANONICAL = ('{"evidence":[{"count":5,"id":"S1","signal":"failed_attempts"},'
                    '{"id":"S2","signal":"new_device"}],"view":"sealed-view/1"}')
 # Pinned on purpose: if the prompt, vocabulary order or serialisation changes, this must be updated by hand.
-TRACK_SHA256 = "277c315780e0cdd76712c40bb054dc68a5187082762683fce0096bf0151e6c49"
+TRACK_SHA256 = "214129dd444cf5f9beae61134c328461297aaeb98b99a8b0f2b05f4f9be79e59"
 
 
 class Golden(unittest.TestCase):
@@ -58,7 +57,7 @@ class Canonical(unittest.TestCase):
 
     def test_shape_is_closed(self):
         facts = [Fact(code, 3 if sig.kind == "count" else None) for code, sig in SIGNALS.items()]
-        view = seal(facts, MAX_SIGNALS)
+        view = seal(facts, MAX_COUNT)
         data = json.loads(view.canonical_json)
         self.assertEqual(set(data), {"view", "evidence"})
         self.assertEqual(data["view"], VIEW_SCHEMA)
@@ -90,7 +89,7 @@ class Refusals(unittest.TestCase):
             seal([fact], 0)
 
     def test_unrecognised_must_be_a_small_integer(self):
-        for bad in [-1, MAX_SIGNALS + 1, True, 1.0, "1", None]:
+        for bad in [-1, MAX_COUNT + 1, True, 1.0, "1", None]:
             with self.subTest(bad=bad):
                 with self.assertRaises(ValueError):
                     seal([], bad)

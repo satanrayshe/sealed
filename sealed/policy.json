@@ -75,7 +75,9 @@
     {"id": "R54", "family": "bulk-download", "action": "step-up", "text": "sensitive files copied to USB",
      "all": [{"signal": "usb_copy"}, {"signal": "sensitive_files"}]},
     {"id": "R55", "family": "bulk-download", "action": "contain", "text": "100 or more files, some sensitive, shared outside the organisation",
-     "all": [{"signal": "sensitive_files"}, {"signal": "external_share"}, {"signal": "files_downloaded", "min": 100}]}
+     "all": [{"signal": "sensitive_files"}, {"signal": "external_share"}, {"signal": "files_downloaded", "min": 100}]},
+    {"id": "R56", "family": "bulk-download", "action": "monitor", "text": "files copied to USB",
+     "all": [{"signal": "usb_copy"}]}
   ],
   "contradiction_rules": [
     {"id": "C01", "text": "The device is reported as both new and known.",
@@ -108,7 +110,8 @@
       {"id": "U5", "when": "input_action_unrecognised", "add": 1, "text": "The alert's own suggested action is missing or not recognised."},
       {"id": "U6", "when": "input_action_disagrees", "add": 1, "text": "The alert's own suggested action differs from the policy's."},
       {"id": "U7", "when": "injection_evidence", "add": 1, "text": "A free-text field holds instruction-like text."},
-      {"id": "U8", "when": "contradiction", "add": 1, "text": "Each contradiction rule that fires adds one level."}
+      {"id": "U8", "when": "contradiction", "add": 1, "text": "Each contradiction rule that fires adds one level."},
+      {"id": "U9", "when": "id_conflict", "add": 1, "text": "Another alert has the same id but different content."}
     ]
   },
   "injection_escalation": {"threshold": 0.5, "max_raise": 1, "ceiling": "step-up"}
