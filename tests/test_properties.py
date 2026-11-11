@@ -234,7 +234,7 @@ class NeverCrashes(unittest.TestCase):
     def test_mangled_documents(self):
         rng = random.Random(5)
         seed_text = json.dumps({"alerts": [BASE, dict(BASE, id="b")]})
-        alphabet = '{}[]",:\\ 0123456789aeflnrstu-.\x00\ud800‮'
+        alphabet = '{}[]",:\\ 0123456789aeflnrstu-.\x00\ud800\u202e'
         for case in range(2_000):
             chars = list(seed_text)
             for _ in range(rng.randint(1, 8)):

@@ -52,9 +52,9 @@ class Grammar(unittest.TestCase):
             "5 failed attempts.",          # punctuation
             "5\tfailed attempts",          # tab
             "new device\n",                # newline
-            "nеw device",                  # Cyrillic e
-            "new​device",             # zero-width space
-            "-5 failed attempts".replace("-", "−"),  # unicode minus
+            "n\u0435w device",                  # Cyrillic e
+            "new\u200bdevice",             # zero-width space
+            "-5 failed attempts".replace("-", "\u2212"),  # unicode minus
             "5.0 failed attempts",
             "+5 failed attempts",
         ]:
@@ -143,7 +143,7 @@ class SeverityAndAction(unittest.TestCase):
             self.assertEqual(parse_severity(sev.upper() + " "), sev)
 
     def test_unknown_severity(self):
-        for value in ["urgent", "unknown", "", "reviеw", None, 3, ["high"], {"level": "high"}]:
+        for value in ["urgent", "unknown", "", "revi\u0435w", None, 3, ["high"], {"level": "high"}]:
             with self.subTest(value=value):
                 self.assertEqual(parse_severity(value), "unknown")
 
