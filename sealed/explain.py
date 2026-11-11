@@ -23,6 +23,7 @@ from .vocabulary import SIGNALS, UNRECOGNISED
 from .vocabulary import VERSION as VOCABULARY_VERSION
 
 OUTPUT_SCHEMA = "sealed-output/1"
+NOT_SHOWN = "(undocumented field: scanned, never printed, never given to a model)"
 
 
 def _narrate(narrator, view) -> tuple[list, str, str | None]:
@@ -52,10 +53,11 @@ def _explain_alert(alert: Alert, narrator, detector: Detector, policy: Policy) -
 
     quarantine = []
     for item, score in zip(alert.free_text, scores):
-        shown, truncated = escape(item.text)
+        text, truncated = escape(item.text) if item.shown else (NOT_SHOWN, False)
         quarantine.append({
-            "field": item.field, "text": shown, "chars": len(item.text), "truncated": truncated,
-            "score": round(score.score, 4), "flagged": score.flagged, "detector_error": score.error,
+            "field": item.field, "shown": item.shown, "text": text, "chars": len(item.text),
+            "truncated": truncated, "score": round(score.score, 4), "flagged": score.flagged,
+            "detector_error": score.error,
         })
 
     return {

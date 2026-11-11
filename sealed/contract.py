@@ -8,21 +8,28 @@ Three outcomes, applied in this order:
 * Reject the whole input when it cannot be read: not UTF-8, empty, too big,
   not JSON, nested too deep, a non-finite or oversized number, a repeated
   top-level key, no "alerts" list, or too many alerts.
-* Reject one alert when it cannot be identified or its structure is wrong:
-  not an object, a repeated key, id missing / not a string / blank / too
-  long, signals not a list, an entity field that is not a string.
-* Degrade, never reject, when a value is merely unknown: unknown severity,
-  unrecognised or absent action, unrecognised signals, missing signals, and
-  an id shared with a valid alert whose content differs. The policy turns
-  these into uncertainty. Valid alerts with an id and identical content are
+* Reject one alert when it cannot be identified, its structure or a type is
+  wrong, or it holds a negative number: not an object, a repeated key, id
+  missing / not a string / blank / too long, signals not a list or a signal
+  that is not a string, severity, action or an entity field present but not
+  a string, or any negative number anywhere in the alert (every number in an
+  alert is read as a counter or timestamp, which the track requires to be
+  finite and nonnegative).
+* Degrade, never reject, when a string value is merely unknown: unknown or
+  missing severity, unrecognised or missing action, unrecognised signals,
+  missing signals, and an id shared with a valid alert whose content
+  differs. The policy turns these into uncertainty. JSON null means the
+  field is absent. Valid alerts with an id and identical content are
   replays: the first is explained and the copies are marked duplicates.
 
-Error messages name the place and the problem, never the offending value.
+Error messages name the place and the problem, never the offending value;
+paths use our own field names, indices and positions, never input keys.
 Every other string that does not become a structured value is kept as
-FreeText, which is quarantined: shown escaped, scanned for injection, never
-given to a model. The id is shown escaped and never given to a model too.
-At most 20 unrecognised signals and 20 extra fields per alert are kept as
-FreeText; the rest are only counted.
+FreeText, which is quarantined: scanned for injection, never given to a
+model, and shown escaped, except undocumented extra fields, which are never
+shown. The id is shown escaped and never given to a model too. At most 20
+unrecognised signals and 20 extra fields per alert are kept as FreeText;
+the rest are only counted.
 """
 
 from __future__ import annotations
@@ -56,6 +63,7 @@ class Issue:
 class FreeText:
     field: str  # our own label, e.g. "username" or "signals[2] (unrecognised signal 1)"
     text: str   # raw text: quarantined, never shown unescaped, never given to a model
+    shown: bool = True  # False for undocumented extra fields: scanned and counted, never printed
 
 
 @dataclass(frozen=True)
@@ -180,6 +188,39 @@ def _as_text(value: object) -> str:
     return "\n".join(parts)
 
 
+def _negative_number_path(alert: dict) -> str | None:
+    """Path of the first negative number anywhere in the alert, or None.
+
+    The path is built from our own field names, indices and positions
+    ("<extra field 2>", "<key 1>"), never from input keys, so it cannot carry
+    a secret. Iterative and depth-first in document order.
+    """
+    extra_numbers: dict[str, int] = {}
+    for key in alert:
+        if key not in CONTRACT_FIELDS:
+            extra_numbers[key] = len(extra_numbers) + 1
+
+    def label(key: str) -> str:
+        return f".{key}" if key in CONTRACT_FIELDS else f".<extra field {extra_numbers[key]}>"
+
+    stack = [(((label(k), v) for k, v in alert.items()), "")]
+    while stack:
+        step = next(stack[-1][0], None)
+        if step is None:
+            stack.pop()
+            continue
+        part, value = step
+        if isinstance(value, dict):
+            children = ((f".<key {n}>", v) for n, v in enumerate(value.values(), 1))
+            stack.append((children, stack[-1][1] + part))
+        elif isinstance(value, list):
+            children = ((f"[{n}]", v) for n, v in enumerate(value))
+            stack.append((children, stack[-1][1] + part))
+        elif type(value) in (int, float) and value < 0:
+            return stack[-1][1] + part
+    return None
+
+
 def _canonical(raw: object) -> str | None:
     try:
         return json.dumps(raw, ensure_ascii=True, sort_keys=True, separators=(",", ":"))
@@ -211,11 +252,20 @@ def _parse_alert(index: int, raw: object) -> Alert | Rejected:
     signals = raw.get("signals")
     if signals is not None and not isinstance(signals, list):
         issues.append(Issue("wrong-type", f"{where}.signals", "signals must be a list"))
+    elif signals:
+        position = next((p for p, s in enumerate(signals) if not isinstance(s, str)), None)
+        if position is not None:  # the first one is enough; the message never repeats a value
+            issues.append(Issue("wrong-type", f"{where}.signals[{position}]", "each signal must be a string"))
 
-    for name in ENTITY_FIELDS:
+    for name in ("severity", "action") + ENTITY_FIELDS:  # null means the field is absent
         value = raw.get(name)
         if value is not None and not isinstance(value, str):
             issues.append(Issue("wrong-type", f"{where}.{name}", f"{name} must be a string"))
+
+    negative = _negative_number_path(raw)
+    if negative is not None:
+        issues.append(Issue("negative-number", where + negative,
+                            "numbers must be finite and nonnegative (every number in an alert is a counter or timestamp)"))
 
     if issues:
         return Rejected(index, valid_id, tuple(issues))
@@ -227,10 +277,10 @@ def _parse_alert(index: int, raw: object) -> Alert | Rejected:
     free: list[FreeText] = []
     severity = parse_severity(raw.get("severity"))
     if severity == "unknown" and raw.get("severity") is not None:
-        free.append(FreeText("severity", _as_text(raw["severity"])))
+        free.append(FreeText("severity", raw["severity"]))
     action = parse_action(raw.get("action"))
     if action == "unrecognised":
-        free.append(FreeText("action", _as_text(raw["action"])))
+        free.append(FreeText("action", raw["action"]))
 
     facts: list[Fact] = []
     seen: set[Fact] = set()
@@ -240,7 +290,7 @@ def _parse_alert(index: int, raw: object) -> Alert | Rejected:
         if fact is None:
             unrecognised += 1
             if unrecognised <= MAX_QUARANTINED:
-                free.append(FreeText(f"signals[{position}] (unrecognised signal {unrecognised})", _as_text(value)))
+                free.append(FreeText(f"signals[{position}] (unrecognised signal {unrecognised})", value))
             else:
                 omitted += 1
         elif fact not in seen:  # a repeated fact adds nothing
@@ -252,7 +302,8 @@ def _parse_alert(index: int, raw: object) -> Alert | Rejected:
             free.append(FreeText(name, raw[name]))
     extras = [key for key in raw if key not in CONTRACT_FIELDS]
     for number, key in enumerate(extras[:MAX_QUARANTINED], 1):
-        free.append(FreeText(f"extra field {number}", _as_text({key: raw[key]})))  # name, then contents
+        # Undocumented fields are scanned (name, then contents) but never printed: they may hold anything.
+        free.append(FreeText(f"extra field {number}", _as_text({key: raw[key]}), shown=False))
     omitted += max(0, len(extras) - MAX_QUARANTINED)
 
     return Alert(index, valid_id, severity, tuple(facts), unrecognised, not signals,

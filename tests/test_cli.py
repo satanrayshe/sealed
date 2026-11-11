@@ -93,6 +93,29 @@ class Explain(unittest.TestCase):
         self.assertEqual(explanation["narrator"], "template")
         self.assertIn("no cached narration", explanation["fallback"])
 
+    def test_an_internal_error_never_prints_a_traceback(self):
+        def explode(*args, **kwargs):
+            raise ValueError("password=hunter2-SECRET")
+
+        with mock.patch("sealed.cli.explain", explode):
+            code, out, err = cli("explain", str(SAMPLES / "track_example.json"))
+        self.assertEqual(code, 4)
+        self.assertEqual(out, "")
+        self.assertEqual(err, "internal error (ValueError); no input content is shown\n")
+
+    def test_rejections_print_paths_and_codes_only(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "a.json"
+            path.write_text(json.dumps({"alerts": [
+                {"id": "a", "severity": {"api_key": "sk-test-SECRET-123"}, "signals": ["new device"]},
+                {"id": "b", "signals": ["new device"], "SECRET-KEY-NAME": -1},
+            ]}), encoding="utf-8")
+            code, out, _ = cli("explain", str(path))
+        self.assertEqual(code, 3)
+        self.assertNotIn("SECRET", out)
+        self.assertIn("$.alerts[0].severity: severity must be a string [wrong-type]", out)
+        self.assertIn("$.alerts[1].<extra field 1>: numbers must be finite and nonnegative", out)
+
 
 class Demo(unittest.TestCase):
     def test_demo(self):

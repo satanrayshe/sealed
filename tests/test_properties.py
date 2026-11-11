@@ -158,7 +158,7 @@ def mutate(alert: dict, kind: str, value: object, rng: random.Random) -> dict:
     elif kind == "unknown_severity":
         alert["severity"] = value if str(value).strip().lower() not in SEVERITIES else f"~{value}"
     elif kind == "unrecognised_action":
-        alert["action"] = value if parse_action(value) == "unrecognised" else f"~{value}"
+        alert["action"] = value if value is None or parse_action(value) == "unrecognised" else f"~{value}"
     elif kind == "free_text":
         alert[rng.choice(["username", "user_agent", "url", "host"])] = value
     elif kind == "extra_field":
@@ -167,6 +167,17 @@ def mutate(alert: dict, kind: str, value: object, rng: random.Random) -> dict:
 
 
 MUTATIONS = ("unrecognised_signal", "unknown_severity", "unrecognised_action", "free_text", "extra_field")
+
+
+def fit(kind: str, value: object) -> object:
+    """The values a mutation may carry without breaking the contract's types.
+
+    Signals and entity fields hold strings; severity and action hold a string or null
+    (absent); an extra field may hold any JSON value that is not a negative number.
+    """
+    if kind == "extra_field" or (kind in ("unknown_severity", "unrecognised_action") and value is None):
+        return value
+    return value if isinstance(value, str) else str(value)
 
 
 def check_monotone(base: dict, kinds: list[str], values: list, seed: int) -> None:
@@ -199,13 +210,11 @@ class Monotonicity(unittest.TestCase):
         rng = random.Random(4)
         bases = self.bases()
         values = [v for _, v in fuzz_strings(seed=31, n=MONOTONICITY_CASES * 2)]
-        values += [None, 7, 1.5, True, [], {"a": 1}]  # wrong types are unknown values too
+        values += [None, 7, 1.5, True, [], {"a": 1}, {"b": [0, 2.5, None]}]  # odd but valid, never negative
         for case in range(MONOTONICITY_CASES):
             base = bases[case % len(bases)]
             kinds = [rng.choice(MUTATIONS) for _ in range(1 if case % 3 else rng.randint(2, 3))]
-            picked = [rng.choice(values) for _ in kinds]
-            picked = [v if k in ("unrecognised_signal", "unknown_severity", "unrecognised_action")
-                      or isinstance(v, str) else str(v) for k, v in zip(kinds, picked)]
+            picked = [fit(k, rng.choice(values)) for k in kinds]
             try:
                 check_monotone(base, kinds, picked, seed=case)
             except AssertionError as err:

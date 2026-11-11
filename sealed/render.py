@@ -70,11 +70,14 @@ def _explained(r: dict) -> list[str]:
     if not r["quarantine"]:
         out += _rows("quarantine", ["none (no free text besides the id, which is shown escaped above)"])
         return out
-    out += _rows("quarantine", ["free text, shown escaped, never given to any model:"])
+    out += _rows("quarantine", ["free text, shown escaped (undocumented fields not shown), never given to any model:"])
     for q in r["quarantine"]:
         # Field label on its own line, then the escaped text in short lines inside the box,
         # so attacker text can never start a line of the report or reach the terminal edge.
         out.append(f"{PAD}| {q['field']}" + ("   <- instruction-like" if q["flagged"] else ""))
+        if not q["shown"]:
+            out.append(f"{PAD}|     {q['text']}")
+            continue
         out += [f"{PAD}|     {piece}" for piece in wrap(q["text"])]
         if q["truncated"]:
             out.append(f"{PAD}|     ... (+{q['chars'] - DISPLAY_CHARS} more characters not shown)")

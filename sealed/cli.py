@@ -1,7 +1,8 @@
 """Command line: python -m sealed explain <alerts.json> | demo | generate
 
 Exit codes: 0 every alert explained (or a replay duplicate), 1 input rejected
-or unreadable, 2 usage error, 3 at least one alert rejected.
+or unreadable, 2 usage error, 3 at least one alert rejected, 4 internal error
+(reported by type only, never with a traceback that could quote input).
 """
 
 from __future__ import annotations
@@ -142,4 +143,8 @@ def main(argv: list[str] | None = None, out: TextIO | None = None) -> int:
         except (AttributeError, ValueError):
             pass
     args = build_parser().parse_args(argv)
-    return args.handler(args, out or sys.stdout)
+    try:
+        return args.handler(args, out or sys.stdout)
+    except Exception as err:  # no traceback: it could quote input values
+        sys.stderr.write(f"internal error ({type(err).__name__}); no input content is shown\n")
+        return 4

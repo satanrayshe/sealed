@@ -4,6 +4,7 @@ import unittest
 from sealed.corpus import ATTACKS
 from sealed.explain import explain
 from sealed.narrate import NarratorError, OllamaNarrator
+from sealed.render import render
 from tests.test_narrate import FakeTransport, reply
 from tests.test_view import TRACK_SHA256
 
@@ -66,7 +67,7 @@ class NothingReachesTheModel(unittest.TestCase):
     def hostile_alert(self):
         return {
             "id": f"{CANARY}-id", "severity": f"{CANARY}-severity", "action": f"{CANARY}-action",
-            "signals": ["new device", "7 failed attempts", f"{CANARY}-signal", {"x": CANARY}],
+            "signals": ["new device", "7 failed attempts", f"{CANARY}-signal", f'{{"x": "{CANARY}"}}'],
             "username": f"{CANARY}-username", "user_agent": f"{CANARY}-ua", "url": f"{CANARY}-url",
             "host": f"{CANARY}-host", f"{CANARY}-extra": f"{CANARY}-extra-value",
         }
@@ -80,8 +81,10 @@ class NothingReachesTheModel(unittest.TestCase):
         self.assertNotIn(CANARY, r["model_input"]["view"])
         self.assertEqual(r["explanation"]["sentences"], ["7 failed sign-in attempts happened [S1]."])
         self.assertEqual(r["explanation"]["dropped"], [{"position": 0, "reason": "unsupported-number"}])
-        # The canary is still shown to the analyst, escaped, in the quarantine.
-        self.assertEqual(sum(CANARY in q["text"] for q in r["quarantine"]), 9)
+        # Documented fields are still shown to the analyst, escaped; the undocumented one is not.
+        self.assertEqual(sum(CANARY in q["text"] for q in r["quarantine"]), 8)  # severity, action, 2 signals, 4 entities
+        extra = [q for q in r["quarantine"] if q["field"] == "extra field 1"]
+        self.assertEqual([(q["shown"], CANARY in q["text"]) for q in extra], [(False, False)])
 
     def test_hostile_narrator_output_is_filtered(self):
         transport = FakeTransport(reply([
@@ -133,6 +136,32 @@ class Robustness(unittest.TestCase):
         for r in run(*alerts)["results"]:
             self.assertEqual(r["executed_controls"], [])
             self.assertIs(r["recommendation"]["executed"], False)
+
+
+class NoSecretIsEverPrinted(unittest.TestCase):
+    """Malformed input is rejected by path and code only; undocumented fields are never printed."""
+
+    SECRETS = ["hunter2-SECRET", "sk-test-SECRET-123", "tok-SECRET-9", "SECRET-KEY-NAME"]
+
+    def test_reports_never_contain_the_secrets(self):
+        alerts = [
+            {"id": "neg-signal", "severity": "review", "signals": ["-5 failed attempts"], "action": "mock step-up"},
+            {"id": "neg-counter", "signals": ["new device"], "failed_attempts": -5},
+            {"id": "neg-nested", "signals": ["new device"], "context": {"SECRET-KEY-NAME": -3}},
+            {"id": "wrong-signals", "signals": "password=hunter2-SECRET"},
+            {"id": "wrong-severity", "severity": {"api_key": "sk-test-SECRET-123"}, "signals": ["new device"]},
+            {"id": "wrong-action", "action": ["sk-test-SECRET-123"], "signals": ["new device"]},
+            {"id": "wrong-signal-item", "signals": ["new device", {"token": "tok-SECRET-9"}]},
+            {"id": "extra-field", "signals": ["new device"], "session": "tok-SECRET-9", "SECRET-KEY-NAME": "x"},
+            {"id": "", "signals": ["new device"]},
+        ]
+        report = run(*alerts)
+        statuses = [r["status"] for r in report["results"]]
+        self.assertEqual(statuses, ["explained", "rejected", "rejected", "rejected", "rejected", "rejected",
+                                    "rejected", "explained", "rejected"])
+        everything = json.dumps(report, ensure_ascii=False) + render(report)
+        for secret in self.SECRETS:
+            self.assertNotIn(secret, everything)
 
 
 class NarratorErrorType(unittest.TestCase):

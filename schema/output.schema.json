@@ -173,11 +173,12 @@
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["field", "text", "chars", "truncated", "score", "flagged", "detector_error"],
+            "required": ["field", "shown", "text", "chars", "truncated", "score", "flagged", "detector_error"],
             "additionalProperties": false,
             "properties": {
               "field": {"type": "string"},
-              "text": {"type": "string", "description": "Escaped and quoted, first 160 characters"},
+              "shown": {"type": "boolean", "description": "False for undocumented extra fields, which are scanned but never printed"},
+              "text": {"type": "string", "description": "Escaped and quoted, first 160 characters; a fixed note when shown is false"},
               "chars": {"type": "integer"},
               "truncated": {"type": "boolean"},
               "score": {"type": "number"},
