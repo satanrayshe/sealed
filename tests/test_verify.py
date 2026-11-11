@@ -60,6 +60,9 @@ class HandwrittenBad(unittest.TestCase):
         "": "empty",
         "   ": "empty",
         "x " * 300 + "[S1]": "too-long",
+        "5 failed attempts [S1].\x1b[2J": "control-character",
+        "5 failed attempts\n[S1].": "control-character",
+        "5 failed\rattempts [S1].": "control-character",
     }
 
     def test_unsupported_sentences_are_dropped_with_a_reason(self):

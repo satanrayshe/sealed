@@ -1,7 +1,7 @@
 """The verifier: a narrator sentence is shown only if the sealed view supports it.
 
 A sentence is dropped when it
-  * is not a string, is empty or is longer than 400 characters;
+  * is not a string, is empty, is longer than 400 characters or holds a control character;
   * cites nothing, cites an id that is not in the view, or has a malformed citation;
   * contains a number (digits or a number word) that is not the count of an item it cites;
   * contains an entity: an IP or e-mail address, a URL, a domain or file name, a path, a quoted
@@ -72,6 +72,8 @@ def check(view: SealedView, sentence: object) -> str | None:
         return "empty"
     if len(text) > MAX_SENTENCE_CHARS:
         return "too-long"
+    if any(ord(ch) < 32 or ord(ch) == 127 for ch in text):
+        return "control-character"  # e.g. terminal escape codes from a misbehaving model or cache
     cited = CITATION.findall(text)
     if not cited:
         return "no-citation"

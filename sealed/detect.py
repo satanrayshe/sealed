@@ -66,15 +66,16 @@ PHRASES: tuple[str, ...] = (
     "निर्देशों को अनदेखा", "निर्देश अनदेखा", "पिछले निर्देश", "पिछले सभी निर्देश",
 )
 
-# Raw patterns, matched on the casefolded text before word splitting.
+# Raw patterns, matched on the casefolded text before word splitting. Each one is
+# written so it cannot backtrack quadratically on long runs of the same character.
 PATTERNS: tuple[tuple[str, re.Pattern], ...] = (
     ("chat-token", re.compile(r"<\|[a-z_]{2,24}\|>")),
     ("inst-token", re.compile(r"\[/?inst\]")),
     ("sys-token", re.compile(r"<</?sys>>")),
     # "SYSTEM: ..." as a speaker label; "system:admin" (a Kubernetes-style user name) is not one.
-    ("role-label", re.compile(r"(?:^|[\s.;,!?(\[])(?:system|assistant|developer)\s*:(?=\s|$)"
-                              r"|(?:^|\n)\s*user\s*:(?=\s|$)")),
-    ("markdown-header", re.compile(r"#{2,}\s*(?:system|instructions?|response)\b")),
+    ("role-label", re.compile(r"(?:^|[\s.;,!?(\[])(?:system|assistant|developer)[ \t]*:(?=\s|$)"
+                              r"|(?:^|\n)[ \t]*user[ \t]*:(?=\s|$)")),
+    ("markdown-header", re.compile(r"(?<!#)#{2,}[ \t]*(?:system|instructions?|response)\b")),
     ("delimiter-tag", re.compile(r"</?\s*(?:alert_data|system|instructions?)\s*>")),
     ("json-key", re.compile(r"\"\s*(?:action|severity|signals|id)\s*\"\s*:")),
 )
