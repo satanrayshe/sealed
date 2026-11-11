@@ -1,0 +1,1 @@
+{"alerts": [{"id": "alert-001", "severity": "review", "signals": ["new synthetic device", "five failed synthetic attempts"], "action": "mock step-up"}]}

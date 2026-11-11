@@ -71,7 +71,9 @@ PATTERNS: tuple[tuple[str, re.Pattern], ...] = (
     ("chat-token", re.compile(r"<\|[a-z_]{2,24}\|>")),
     ("inst-token", re.compile(r"\[/?inst\]")),
     ("sys-token", re.compile(r"<</?sys>>")),
-    ("role-line", re.compile(r"(?:^|\n)\s*(?:system|assistant|user|developer)\s*:")),
+    # "SYSTEM: ..." as a speaker label; "system:admin" (a Kubernetes-style user name) is not one.
+    ("role-label", re.compile(r"(?:^|[\s.;,!?(\[])(?:system|assistant|developer)\s*:(?=\s|$)"
+                              r"|(?:^|\n)\s*user\s*:(?=\s|$)")),
     ("markdown-header", re.compile(r"#{2,}\s*(?:system|instructions?|response)\b")),
     ("delimiter-tag", re.compile(r"</?\s*(?:alert_data|system|instructions?)\s*>")),
     ("json-key", re.compile(r"\"\s*(?:action|severity|signals|id)\s*\"\s*:")),

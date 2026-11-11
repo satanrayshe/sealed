@@ -70,7 +70,7 @@ IGNORE_SYSTEM_USERNAMES = (
     "ignore", "system", "ignored.user", "ignorance.k", "sys.ignore.list", "system.admin", "systemadmin",
     "system32", "systemd-resolve", "system_backup", "ignore_me", "rahul.ignore", "ignite.system",
     "noreply-system", "SYSTEM", "Ignore", "ignore-list-sync", "system.reports", "systems.team",
-    "ignazio.systemi",
+    "ignazio.systemi", "system:admin", "system:serviceaccount:kube-system:default", "NT AUTHORITY\\SYSTEM",
 )
 
 _UA_BASES = (
