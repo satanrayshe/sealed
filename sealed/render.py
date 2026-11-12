@@ -61,11 +61,17 @@ def _explained(r: dict) -> list[str]:
                                  f"{model_input['bytes']} bytes: fixed prompt + {model_input['view']}"])
 
     evidence = r["injection_evidence"]
+    failed = [q["field"] for q in r["quarantine"] if q["detector_error"]]
+    found = []
+    if failed:  # never "none found" when the detector could not score a field
+        found.append(f"detector error: {evidence['detector']} could not score {', '.join(failed)}; "
+                     "those fields count as not flagged")
     if evidence["flagged_fields"]:
-        out += _rows("injection", [f"instruction-like text in {', '.join(evidence['flagged_fields'])} "
-                                   f"(score {evidence['max_score']:.2f} >= {evidence['threshold']:.2f}, {evidence['detector']})"])
-    else:
-        out += _rows("injection", [f"none found ({evidence['detector']}, threshold {evidence['threshold']:.2f})"])
+        found.append(f"instruction-like text in {', '.join(evidence['flagged_fields'])} "
+                     f"(score {evidence['max_score']:.2f} >= {evidence['threshold']:.2f}, {evidence['detector']})")
+    elif not failed:
+        found.append(f"none found ({evidence['detector']}, threshold {evidence['threshold']:.2f})")
+    out += _rows("injection", found)
 
     if not r["quarantine"]:
         out += _rows("quarantine", ["none (no free text besides the id, which is shown escaped above)"])

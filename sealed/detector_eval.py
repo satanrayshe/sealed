@@ -8,14 +8,20 @@
    held-out test halves of the project's own attack and benign sets (and, for
    reference, the dev halves). Nothing is tuned on those sets.
 
-`python -m sealed evaluate --arm detectors --corpora <dir>` writes
-results/detectors.json and results/detectors.md. The corpora live outside the
-repository (tools/fetch_corpora.py); the second part needs only the weights.
+`python -m sealed evaluate --arm detectors --corpora DIR` (DIR made by
+tools/fetch_corpora.py, outside the repository) writes detectors.json,
+detectors.md and the trained weights (learned_weights.bin and .json) to
+--out, by default results/. The shipped weights in sealed/ change only with
+--install-weights, and then the values pinned in sealed/learned.py must be
+changed too, or the detector refuses to load them. The second part needs only
+the weights.
 """
 
 from __future__ import annotations
 
+import hashlib
 import json
+import shutil
 from collections import defaultdict
 from pathlib import Path
 
@@ -23,14 +29,20 @@ from .attackset import attack_set, benign_set
 from .detect import KeywordDetector
 from .evaluate import wilson
 from .learned import (
-    BUCKETS, EPOCHS, MAX_CHARS, SEED, LearnedDetector, Model, average_precision, load, read_corpus, save, train,
+    BUCKETS, EPOCHS, MAX_CHARS, META, SEED, WEIGHTS, LearnedDetector, Model, average_precision, load, read_corpus,
+    save, train,
 )
 from .policy import POLICY
 from .template_eval import ascii_preview, texts_of
 
 CORPORA = ("deepset-prompt-injections", "lakera-gandalf-ignore-instructions", "spml-chatbot-prompt-injection")
-ATTRIBUTION = ("Trained on deepset/prompt-injections (Apache-2.0), Lakera/gandalf_ignore_instructions (MIT) and "
-               "reshabhs/SPML_Chatbot_Prompt_Injection (MIT).")
+ATTRIBUTION = (
+    "Trained on deepset/prompt-injections (its dataset card states both Apache-2.0 and CC-BY-4.0), "
+    "Lakera/gandalf_ignore_instructions (MIT; Pfister et al., \"Gandalf the Red: Adaptive Security for LLMs\", "
+    "arXiv:2501.07927) and reshabhs/SPML_Chatbot_Prompt_Injection (MIT; Sharma, Gupta and Grossman, \"SPML: A DSL "
+    "for Defending Language Models Against Prompt Attacks\", arXiv:2402.11755). The weights are derived from the "
+    "records (logistic-regression weights over hashed n-grams); no record text is stored or redistributed.")
+GENERATED_BY = "python -m sealed evaluate --arm detectors --corpora DIR (DIR made by tools/fetch_corpora.py)"
 
 
 def _p(k: int, n: int) -> dict:
@@ -89,19 +101,36 @@ def on_our_sets(detector, threshold: float) -> dict:
     return result
 
 
-def run(corpora_dir: Path, weights_path: Path | None = None, meta_path: Path | None = None) -> dict:
+def _sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def run(corpora_dir: Path, out_dir: Path) -> dict:
+    """Train, save the weights to out_dir (never into the package), and evaluate exactly what was saved."""
     threshold = POLICY.threshold
-    corpora = {name: read_corpus(corpora_dir / name / "records.jsonl") for name in CORPORA}
+    paths = {name: corpora_dir / name / "records.jsonl" for name in CORPORA}
+    corpora = {name: read_corpus(path) for name, path in paths.items()}
     loco = leave_one_corpus_out(corpora, threshold)
     final = train([r for name in CORPORA for r in corpora[name]])
     meta = {"name": LearnedDetector.name, "attribution": ATTRIBUTION, "epochs": EPOCHS, "seed": SEED,
-            "max_chars": MAX_CHARS, "features": "char 3-5-grams and word unigrams, CRC-32 hashed",
+            "max_chars": MAX_CHARS,
+            "features": "char 3-5-grams and word unigrams of the folded window, CRC-32 hashed",
             "training_records": {name: len(corpora[name]) for name in CORPORA}}
-    kwargs = {k: v for k, v in (("weights_path", weights_path), ("meta_path", meta_path)) if v is not None}
-    save(final, meta, **kwargs)
-    saved = load(**kwargs)  # evaluate exactly what was written (float32), not the in-memory model
-    return {"generated_by": "python -m sealed evaluate --arm detectors", "threshold": threshold,
-            "buckets": BUCKETS, "leave_one_corpus_out": loco, "ours": ours(saved)}
+    out_dir.mkdir(parents=True, exist_ok=True)
+    weights_path, meta_path = out_dir / WEIGHTS.name, out_dir / META.name
+    save(final, meta, weights_path, meta_path)
+    saved = load(weights_path, meta_path, pinned=None)  # float32 as written, not the in-memory model
+    return {"generated_by": GENERATED_BY, "threshold": threshold, "buckets": BUCKETS,
+            "corpora": {name: {"records": len(corpora[name]), "records_sha256": _sha256(path)}
+                        for name, path in paths.items()},
+            "weights": {"sha256": _sha256(weights_path), "bias": saved.bias},
+            "leave_one_corpus_out": loco, "ours": ours(saved)}
+
+
+def install_weights(out_dir: Path) -> None:
+    """Copy freshly trained weights into the package. sealed/learned.py's pins must then be updated."""
+    shutil.copyfile(out_dir / WEIGHTS.name, WEIGHTS)
+    shutil.copyfile(out_dir / META.name, META)
 
 
 def ours(model: Model | None = None) -> dict:
@@ -121,10 +150,14 @@ def _cell(p: dict | None) -> str:
 def render_markdown(r: dict) -> str:
     lines = ["# Detector evaluation", "",
              f"Generated by `{r['generated_by']}`. Do not edit by hand. Threshold {r['threshold']} (the policy's). "
-             "Intervals are Wilson 95%.", "", ATTRIBUTION, "",
-             "## Leave one corpus out", "",
-             "| Held-out corpus | Detector | Average precision | Recall on injections | 95% | False positives on benign | 95% |",
-             "|---|---|---|---|---|---|---|"]
+             "Intervals are Wilson 95%. Average precision is computed over distinct score thresholds, so records "
+             "with tied scores count as one step and the order of a corpus file does not matter.", "", ATTRIBUTION,
+             "", f"Weights evaluated: SHA-256 `{r['weights']['sha256']}`. Corpus records (from the pinned files):", ""]
+    lines += [f"- {name}: {c['records']} records, SHA-256 `{c['records_sha256']}`" for name, c in r["corpora"].items()]
+    lines += ["", "## Leave one corpus out", "",
+              "| Held-out corpus | Detector | Average precision | Recall on injections | 95% | False positives on benign "
+              "| 95% |",
+              "|---|---|---|---|---|---|---|"]
     for corpus, rows in r["leave_one_corpus_out"].items():
         for name in ("learned", "keyword"):
             row = rows[name]

@@ -6,9 +6,11 @@ threshold raises the action by at most one level (never to contain) and
 adds one level of uncertainty. A detector never sees, and never changes,
 the narrator's input.
 
-KeywordDetector is the baseline. A learned classifier (character n-gram
-TF-IDF with logistic regression) is planned; it only has to provide
-`name` and `score(text)` to plug in here.
+KeywordDetector is the baseline and the default. sealed/learned.py holds an
+optional learned detector (hashed character n-grams, logistic regression);
+it provides `name` and `score(text)` and plugs in here. On the project's own
+held-out attack strings it finds fewer than the keyword baseline does
+(results/detectors.md).
 """
 
 from __future__ import annotations

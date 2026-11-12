@@ -1,8 +1,10 @@
 """Command line: python -m sealed explain <alerts.json> | demo | app | evaluate | generate
 
 Exit codes: 0 every alert explained (or a replay duplicate), 1 input rejected
-or unreadable, 2 usage error, 3 at least one alert rejected, 4 internal error
-(reported by type only, never with a traceback that could quote input).
+or unreadable (for `evaluate --arm models`: replies missing, nothing written),
+2 usage error, 3 at least one alert rejected, 4 internal error (reported by
+type only, never with a traceback that could quote input), including a
+learned detector that was asked for and could not score.
 """
 
 from __future__ import annotations
@@ -66,6 +68,11 @@ def cmd_explain(args: argparse.Namespace, out: TextIO) -> int:
         detector = LearnedDetector()
     report = explain(data, narrator=narrator, detector=detector)
     _print_report(report, args.format, out)
+    failed = sum(q["detector_error"] for r in report["results"] for q in r.get("quarantine", []))
+    if args.detector == "learned" and failed:  # asked for explicitly, so its failure is an error
+        sys.stderr.write(f"error: the learned detector could not score {failed} field(s); "
+                         "see 'detector error' in the report" + chr(10))
+        return 4
     return _status(report)
 
 
@@ -139,7 +146,10 @@ def build_parser() -> argparse.ArgumentParser:
                    help="template: offline, no model; models: the three model arms for one local model; "
                         "detectors: train and compare the learned detector (needs --corpora)")
     p.add_argument("--corpora", default=None, help="directory made by tools/fetch_corpora.py (for --arm detectors)")
-    p.add_argument("--out", default="results", help="output directory for the template arm (default: results)")
+    p.add_argument("--install-weights", action="store_true",
+                   help="--arm detectors: also copy the trained weights into sealed/ (the pins in learned.py must "
+                        "then be updated)")
+    p.add_argument("--out", default="results", help="output directory (default: results)")
     p.add_argument("--model", default=None,
                    help="--arm models: one model tag (prints its summary); default: all three, written to --out")
     p.add_argument("--limit", type=int, default=None,
@@ -210,9 +220,14 @@ def cmd_detectors(args: argparse.Namespace, out: TextIO) -> int:
     if not args.corpora or not Path(args.corpora).is_dir():
         sys.stderr.write("error: --corpora must name the directory made by tools/fetch_corpora.py" + chr(10))
         return 2
-    paths = detector_eval.write_results(detector_eval.run(Path(args.corpora)), Path(args.out))
+    result = detector_eval.run(Path(args.corpora), Path(args.out))  # weights go to --out, not into the package
+    paths = detector_eval.write_results(result, Path(args.out))
     for path in paths.values():
         out.write(f"wrote {path.as_posix()}" + chr(10))
+    out.write(f"trained weights: SHA-256 {result['weights']['sha256']}, bias {result['weights']['bias']!r}" + chr(10))
+    if args.install_weights:
+        detector_eval.install_weights(Path(args.out))
+        out.write("copied the weights into sealed/; set PINNED in sealed/learned.py to the values above" + chr(10))
     return 0
 
 

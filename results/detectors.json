@@ -1,30 +1,48 @@
 {
-  "generated_by": "python -m sealed evaluate --arm detectors",
+  "generated_by": "python -m sealed evaluate --arm detectors --corpora DIR (DIR made by tools/fetch_corpora.py)",
   "threshold": 0.5,
   "buckets": 262144,
+  "corpora": {
+    "deepset-prompt-injections": {
+      "records": 662,
+      "records_sha256": "07ee853fe2381e4607a102cfae64e33f27dffedd14bf8b9f7e487908c545eb99"
+    },
+    "lakera-gandalf-ignore-instructions": {
+      "records": 1000,
+      "records_sha256": "bb011d7e6234ab944289027cfa994f6539c99c97a94df77824c910c4ec420274"
+    },
+    "spml-chatbot-prompt-injection": {
+      "records": 16012,
+      "records_sha256": "7b932ebda520a99f5d9822ae2a210e49f40850f05feb4edd0b5b78a401b7586c"
+    }
+  },
+  "weights": {
+    "sha256": "0d627790592d8f48cb71e5a9e8dd6befedd0e8ffd50bbcf77df27b4ce1c79ef1",
+    "bias": -4.864243763064946
+  },
   "leave_one_corpus_out": {
     "deepset-prompt-injections": {
       "learned": {
         "records": 662,
         "injections": 263,
         "benign": 399,
-        "average_precision": 0.8076,
+        "average_precision": 0.8116,
         "recall": {
-          "k": 90,
+          "k": 83,
           "n": 263,
-          "rate": 0.3422,
+          "rate": 0.3156,
           "wilson95": [
-            0.2875,
-            0.4014
+            0.2624,
+            0.3741
           ]
         },
         "false_positive_rate": {
-          "k": 7,
+          "k": 5,
           "n": 399,
-          "rate": 0.0175,
+          "rate": 0.0125,
           "wilson95": [
-            0.0085,
-            0.0358
+            0.0054,
+            0.029
           ]
         }
       },
@@ -32,7 +50,7 @@
         "records": 662,
         "injections": 263,
         "benign": 399,
-        "average_precision": 0.3292,
+        "average_precision": 0.4248,
         "recall": {
           "k": 12,
           "n": 263,
@@ -64,12 +82,12 @@
         "benign": 0,
         "average_precision": null,
         "recall": {
-          "k": 903,
+          "k": 879,
           "n": 1000,
-          "rate": 0.903,
+          "rate": 0.879,
           "wilson95": [
-            0.8831,
-            0.9198
+            0.8573,
+            0.8978
           ]
         },
         "false_positive_rate": {
@@ -110,23 +128,23 @@
         "records": 16012,
         "injections": 12542,
         "benign": 3470,
-        "average_precision": 0.9904,
+        "average_precision": 0.9909,
         "recall": {
-          "k": 12089,
+          "k": 12079,
           "n": 12542,
-          "rate": 0.9639,
+          "rate": 0.9631,
           "wilson95": [
-            0.9605,
-            0.967
+            0.9596,
+            0.9662
           ]
         },
         "false_positive_rate": {
-          "k": 945,
+          "k": 890,
           "n": 3470,
-          "rate": 0.2723,
+          "rate": 0.2565,
           "wilson95": [
-            0.2578,
-            0.2874
+            0.2422,
+            0.2713
           ]
         }
       },
@@ -134,7 +152,7 @@
         "records": 16012,
         "injections": 12542,
         "benign": 3470,
-        "average_precision": 0.8635,
+        "average_precision": 0.824,
         "recall": {
           "k": 2359,
           "n": 12542,
@@ -164,12 +182,12 @@
     "learned": {
       "test": {
         "recall": {
-          "k": 9,
+          "k": 7,
           "n": 92,
-          "rate": 0.0978,
+          "rate": 0.0761,
           "wilson95": [
-            0.0523,
-            0.1756
+            0.0373,
+            0.1488
           ]
         },
         "recall_by_class": {
@@ -183,12 +201,12 @@
             ]
           },
           "direct-override": {
-            "k": 6,
+            "k": 4,
             "n": 20,
-            "rate": 0.3,
+            "rate": 0.2,
             "wilson95": [
-              0.1455,
-              0.519
+              0.0807,
+              0.416
             ]
           },
           "obfuscated": {
@@ -284,12 +302,12 @@
             ]
           },
           "plain": {
-            "k": 5,
+            "k": 3,
             "n": 36,
-            "rate": 0.1389,
+            "rate": 0.0833,
             "wilson95": [
-              0.0608,
-              0.2866
+              0.0287,
+              0.2183
             ]
           },
           "rot13": {
@@ -340,12 +358,12 @@
         },
         "recall_by_language": {
           "en": {
-            "k": 8,
+            "k": 6,
             "n": 81,
-            "rate": 0.0988,
+            "rate": 0.0741,
             "wilson95": [
-              0.0509,
-              0.183
+              0.0344,
+              0.1523
             ]
           },
           "hi": {
@@ -379,7 +397,9 @@
         "missed": [
           "EN06",
           "EN08",
+          "EN13",
           "EN14",
+          "EN16",
           "EN17",
           "EN19",
           "EN21",
@@ -467,12 +487,12 @@
       },
       "dev": {
         "recall": {
-          "k": 21,
+          "k": 20,
           "n": 108,
-          "rate": 0.1944,
+          "rate": 0.1852,
           "wilson95": [
-            0.1308,
-            0.279
+            0.1232,
+            0.2688
           ]
         },
         "recall_by_class": {
@@ -504,12 +524,12 @@
             ]
           },
           "persona-hijack": {
-            "k": 2,
+            "k": 1,
             "n": 21,
-            "rate": 0.0952,
+            "rate": 0.0476,
             "wilson95": [
-              0.0265,
-              0.2891
+              0.0085,
+              0.2267
             ]
           }
         },
@@ -605,12 +625,12 @@
             ]
           },
           "plain": {
-            "k": 14,
+            "k": 13,
             "n": 57,
-            "rate": 0.2456,
+            "rate": 0.2281,
             "wilson95": [
-              0.1523,
-              0.371
+              0.1384,
+              0.3521
             ]
           },
           "rot13": {
@@ -661,12 +681,12 @@
         },
         "recall_by_language": {
           "en": {
-            "k": 21,
+            "k": 20,
             "n": 94,
-            "rate": 0.2234,
+            "rate": 0.2128,
             "wilson95": [
-              0.151,
-              0.3175
+              0.1422,
+              0.3059
             ]
           },
           "hi": {
@@ -721,6 +741,7 @@
           "EN31",
           "EN32",
           "EN33",
+          "EN36",
           "EN37",
           "EN40",
           "EN42",

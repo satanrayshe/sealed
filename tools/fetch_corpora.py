@@ -9,9 +9,13 @@ pyarrow, run isolated (-I -B) from a neutral directory with the file paths as
 arguments; nothing in the downloaded files is executed.
 
 Corpora (pinned revisions, licences from the dataset cards):
-    deepset/prompt-injections                 Apache-2.0
-    Lakera/gandalf_ignore_instructions        MIT   (all rows are injection attempts)
-    reshabhs/SPML_Chatbot_Prompt_Injection    MIT   (user prompts, labelled)
+    deepset/prompt-injections                 Apache-2.0 and CC-BY-4.0 (the card states both)
+    Lakera/gandalf_ignore_instructions        MIT   (all rows are injection attempts; cite arXiv:2501.07927)
+    reshabhs/SPML_Chatbot_Prompt_Injection    MIT   (user prompts, labelled; cite arXiv:2402.11755)
+
+Every file's size is pinned as well as its hash: a download whose
+Content-Length differs is refused before anything is written, and a stream
+that runs past the pinned size is cut off.
 
     python tools/fetch_corpora.py --dest "../external-data" --parquet-python C:/path/to/python-with-pyarrow.exe
 """
@@ -32,13 +36,15 @@ CORPORA = {
     "deepset-prompt-injections": {
         "repo": "deepset/prompt-injections",
         "revision": "4f61ecb038e9c3fb77e21034b22511b523772cdd",
-        "licence": "Apache-2.0", "records": 662,
+        "licence": "Apache-2.0 / CC-BY-4.0", "records": 662,
         "files": {
             "data/train-00000-of-00001-9564e8b05b4757ab.parquet":
                 "2e10bc7ab30f542c97e4e83e2a5683000b5057d25ec10908784c631d44124c04",
             "data/test-00000-of-00001-701d16158af87368.parquet":
                 "39ac797cabc157eeed58435a08593b2952bb6cb16fc394a2d383f447cc7b246e",
         },
+        "sizes": {"data/train-00000-of-00001-9564e8b05b4757ab.parquet": 40323,
+                  "data/test-00000-of-00001-701d16158af87368.parquet": 10892},
     },
     "lakera-gandalf-ignore-instructions": {
         "repo": "Lakera/gandalf_ignore_instructions",
@@ -52,6 +58,9 @@ CORPORA = {
             "data/test-00000-of-00001-bc92128b9288a6d1.parquet":
                 "56b646d133335ebc535266bd55dbe1b5bee7caa4b95bf49d040684b9b5dd9972",
         },
+        "sizes": {"data/train-00000-of-00001-ded53be747ff55cd.parquet": 36715,
+                  "data/validation-00000-of-00001-94481a2a09ff2fff.parquet": 7464,
+                  "data/test-00000-of-00001-bc92128b9288a6d1.parquet": 7336},
     },
     "spml-chatbot-prompt-injection": {
         "repo": "reshabhs/SPML_Chatbot_Prompt_Injection",
@@ -59,6 +68,7 @@ CORPORA = {
         "licence": "MIT", "records": 16012,
         "files": {"spml_prompt_injection.csv":
                 "4ca6590cd8ec10832fcebee5e243acb32be5c3e79b7a260f8638eed738c784f8"},
+        "sizes": {"spml_prompt_injection.csv": 29051327},
     },
 }
 MAX_TOTAL_BYTES = 300_000_000
@@ -91,16 +101,31 @@ def sha256_of(path: Path) -> str:
     return digest.hexdigest()
 
 
-def download(repo: str, revision: str, name: str, target: Path) -> None:
+def download(repo: str, revision: str, name: str, target: Path, size: int | None) -> None:
+    """Fetch one file. With a pinned size, a different Content-Length is refused before anything is written,
+    and the stream is never read past the pinned size (without one, past MAX_TOTAL_BYTES)."""
     url = f"https://huggingface.co/datasets/{repo}/resolve/{revision}/{name}"
     request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+    limit = size if size else MAX_TOTAL_BYTES
     target.parent.mkdir(parents=True, exist_ok=True)
-    with urllib.request.urlopen(request, timeout=120) as response, open(target, "wb") as out:
-        while True:
-            block = response.read(1 << 20)
-            if not block:
-                break
-            out.write(block)
+    with urllib.request.urlopen(request, timeout=120) as response:
+        declared = response.headers.get("Content-Length", "")
+        if size and declared and declared != str(size):
+            raise SystemExit(f"{repo}/{name}: the server announces {declared!r} bytes, the pin is {size}")
+        if declared.isascii() and declared.isdigit() and int(declared) > limit:
+            raise SystemExit(f"{repo}/{name}: {declared} bytes is over the limit")
+        received = 0
+        with open(target, "wb") as out:
+            while True:
+                block = response.read(1 << 20)
+                if not block:
+                    break
+                received += len(block)
+                if received > limit:
+                    out.close()
+                    target.unlink()
+                    raise SystemExit(f"{repo}/{name}: more than {limit} bytes; download stopped")
+                out.write(block)
 
 
 def spml_to_jsonl(csv_path: Path, out_path: Path) -> None:
@@ -123,7 +148,8 @@ def fetch(dest: Path, parquet_python: str, record: bool = False) -> dict:
         for name, expected in corpus["files"].items():
             target = raw / name
             if not (target.is_file() and expected and sha256_of(target) == expected):
-                download(corpus["repo"], corpus["revision"], name, target)
+                download(corpus["repo"], corpus["revision"], name, target,
+                         None if record else corpus.get("sizes", {}).get(name))
             digest = sha256_of(target)
             if expected and digest != expected and not record:
                 raise SystemExit(f"SHA-256 mismatch for {key}/{name}: got {digest}")
@@ -152,7 +178,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--record", action="store_true", help="print hashes instead of enforcing them")
     args = parser.parse_args(argv)
     dest = Path(args.dest).resolve()
-    if Path(__file__).resolve().parent.parent in dest.parents:
+    repo = Path(__file__).resolve().parent.parent
+    if dest == repo or repo in dest.parents:
         raise SystemExit("--dest must be outside the repository")
     results = fetch(dest, args.parquet_python, record=args.record)
     print(json.dumps(results, indent=1))

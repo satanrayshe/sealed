@@ -139,3 +139,19 @@ Each entry: date and time (IST), what changed, why, and which results were re-ru
     - Cache records written from now on also store the server file's SHA-256, the snapshot revision, the precision, `max_new_tokens`, sampling off and the seed. Records written before stay readable. They all come from the same server file, unchanged since commit b278363, before the smoke test.
   - **Why:** the server does not enforce the schema, and a fenced reply still states a decision that a user of that explainer would act on. A model that reports the injected claim, or calls the clean alert benign too, has not been steered by the attacker. A count that the verifier fixes at zero measures the verifier, not the narrator.
   - **Results affected:** none had been written. Only the summary changed; no reply is asked again.
+- **2026-11-12 10:22, the learned detector: its settings on record, one change, one re-run.**
+  - **Settings, recorded here for the first time.** They were written into `sealed/learned.py` at 09:19, before the first training run at 09:29, and were not changed after any result was seen. The code, the weights and the results were committed together at 09:31 (commit 816f215), so the repository history alone cannot show that order. The settings:
+    - character 3- to 5-grams and word unigrams, CRC-32 hashed into 2^18 buckets, binary and L2-normalised;
+    - logistic regression by stochastic gradient descent, 4 epochs, learning rate 0.5 / sqrt(1 + t / 1000), balanced class weights, examples shuffled with seed 2026;
+    - a 2,000-character window and the policy's threshold of 0.5;
+    - trained on all three corpora, evaluated by leave-one-corpus-out and once on each half of the project's sets.
+  - **What changed: the window.** It is now taken after folding (invisible characters removed, NFKC, casefolded) and after runs of whitespace become one space; before, it was cut from the raw text. **Why:** a review showed that 2,000 zero-width, bidi or space characters in front of an injection pushed it out of the window, which dropped the injection's score from 0.99 to 0.01. The change answers that finding, not the dev or test results. 2,000 visible characters in front of an injection still push it out; that limit stays and is documented.
+  - **What changed: average precision.** Records with the same score now form one step of the precision-recall curve, the usual definition. The rank-by-rank sum used before depended on the order of the corpus files wherever scores tie, which is most records for the keyword detector: its deepset figure was published as 0.329 and is 0.425 under this rule; its SPML figure was 0.864 and is 0.824.
+  - **Re-run:** the detector was retrained once on the same records with the same settings. Leave-one-corpus-out and both halves of the project's sets were re-run once. Before and after the change, for the learned detector:
+    - held-out test half: recall 9 / 92 before, 7 / 92 after; false flags 1 / 37 both times;
+    - dev half: recall 21 / 108 before, 20 / 108 after; false flags 4 / 134 both times;
+    - held-out deepset: average precision 0.808 before, 0.812 after; recall 90 / 263 before, 83 / 263 after; false positives 7 / 399 before, 5 / 399 after;
+    - held-out Lakera: recall 903 / 1,000 before, 879 / 1,000 after;
+    - held-out SPML: average precision 0.990 before, 0.991 after; recall 12,089 / 12,542 before, 12,079 / 12,542 after; false positives 945 / 3,470 before, 890 / 3,470 after.
+
+    The keyword detector's results are unchanged apart from average precision. The new weights (SHA-256 `0d627790592d8f48cb71e5a9e8dd6befedd0e8ffd50bbcf77df27b4ce1c79ef1`) are pinned in `sealed/learned.py`.

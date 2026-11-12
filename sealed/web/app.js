@@ -213,9 +213,16 @@
 
     const quarantine = block("Quarantine: free text, never given to any model");
     const flagged = r.injection_evidence.flagged_fields;
-    quarantine.append(el("p", flagged.length ? "seal-bad" : "muted", flagged.length
-      ? "Instruction-like text in " + flagged.join(", ") + "."
-      : "No instruction-like text found (" + r.injection_evidence.detector + ")."));
+    const failed = r.quarantine.filter((item) => item.detector_error).map((item) => item.field);
+    if (failed.length) {
+      quarantine.append(el("p", "seal-bad", "Detector error: " + r.injection_evidence.detector +
+        " could not score " + failed.join(", ") + "; those fields count as not flagged."));
+    }
+    if (flagged.length || !failed.length) {
+      quarantine.append(el("p", flagged.length ? "seal-bad" : "muted", flagged.length
+        ? "Instruction-like text in " + flagged.join(", ") + "."
+        : "No instruction-like text found (" + r.injection_evidence.detector + ")."));
+    }
     if (r.quarantine.length === 0) quarantine.append(el("p", "muted", "No free text besides the id."));
     for (const item of r.quarantine) {
       const box = el("div", "quarantine-item");
