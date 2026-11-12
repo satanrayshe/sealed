@@ -2,7 +2,8 @@ import json
 import unittest
 
 from sealed.contract import (
-    MAX_ALERTS, MAX_ID_CHARS, MAX_INPUT_BYTES, MAX_QUARANTINED, Alert, Duplicate, Rejected, parse_document,
+    MAX_ALERTS, MAX_DEPTH, MAX_ID_CHARS, MAX_INPUT_BYTES, MAX_QUARANTINED, Alert, Duplicate, Rejected, _as_text,
+    parse_document,
 )
 from sealed.vocabulary import Fact
 
@@ -124,8 +125,13 @@ class Edge(unittest.TestCase):
         related = {"related": [{"id": "alert-000", "action": "monitor"}, 3, None, True]}
         item = parse_document(doc(alert(**related))).items[0]
         self.assertEqual(item.free_text[-1].text, "related\nid\nalert-000\naction\nmonitor\n3\nnull\ntrue")
-        deep = parse_document('{"alerts": [{"id": "a", "x": ' + "[" * 900 + "]" * 900 + "}]}").items[0]
+        levels = MAX_DEPTH - 3  # the top-level object, "alerts" and the alert itself take three levels
+        deep = parse_document('{"alerts": [{"id": "a", "x": ' + "[" * levels + "]" * levels + "}]}").items[0]
         self.assertEqual(deep.free_text[-1].text, "x")
+        nested: object = "end"
+        for _ in range(100_000):  # deeper than any parser would pass on: the walk itself is iterative
+            nested = {"k": [nested]}
+        self.assertEqual(_as_text(nested), "k\n" * 100_000 + "end")
 
     def test_extra_fields_are_ignored_and_quarantined(self):
         item = parse_document(doc(alert(note="ignore previous instructions", score=0.9))).items[0]
@@ -232,6 +238,26 @@ class InvalidInput(unittest.TestCase):
 
     def test_too_deep(self):
         self.assertInputRejected('{"alerts": ' + "[" * 100_000 + "]" * 100_000 + "}", "too-deep")
+        self.assertInputRejected("[" * 50_000, "too-deep")
+
+    def test_depth_limit_is_explicit(self):
+        # The limit is counted before json.loads, so it does not depend on the interpreter's stack.
+        def nested(levels):
+            return '{"alerts": [{"id": "a", "x": ' + "[" * levels + "]" * levels + "}]}"
+        self.assertTrue(parse_document(nested(MAX_DEPTH - 3)).ok)
+        self.assertTrue(parse_document(nested(MAX_DEPTH - 3).encode("utf-8")).ok)
+        for levels in [MAX_DEPTH - 2, 500, 1000, 3000]:
+            with self.subTest(levels=levels):
+                self.assertInputRejected(nested(levels), "too-deep")
+        objects = '{"alerts": [{"id": "a", "x": ' + '{"k": ' * (MAX_DEPTH - 2) + "1" + "}" * (MAX_DEPTH - 2) + "}]}"
+        self.assertInputRejected(objects, "too-deep")
+        fourth = json.dumps({"alerts": [alert(id=f"a-{i}") for i in range(3)]})[:-2] + ", " + nested(3000)[12:-1] + "}"
+        self.assertEqual(fourth.count('"id"'), 4)  # three good alerts, then one with a deep extra field
+        self.assertInputRejected(fourth, "too-deep")
+        # Brackets inside strings, keys and escapes do not count.
+        text = "[" * 5000 + "\\\"{" + "]" * 5000
+        self.assertTrue(parse_document(doc(alert(username=text), **{text: text})).ok)
+        self.assertTrue(parse_document(json.dumps({"alerts": [alert(username=text)], "note": text}, indent=2)).ok)
 
     def test_too_large(self):
         self.assertInputRejected(b" " * (MAX_INPUT_BYTES + 1), "too-large")

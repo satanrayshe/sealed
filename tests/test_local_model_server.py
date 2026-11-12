@@ -55,7 +55,7 @@ class Module(unittest.TestCase):
         for path in (ROOT / "sealed").glob("*.py"):
             for line in path.read_text(encoding="utf-8").splitlines():
                 if line.strip().startswith(("import ", "from ")):
-                    self.assertNotIn("tools", line, path.name)
+                    self.assertNotRegex(line, r"\btools\b", path.name)  # the tools/ folder; itertools is fine
                     self.assertNotIn("local_model_server", line, path.name)
                     self.assertNotIn("torch", line, path.name)
 

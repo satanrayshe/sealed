@@ -6,9 +6,12 @@ plus the optional entity fields "username", "user_agent", "url" and "host".
 Three outcomes, applied in this order:
 
 * Reject the whole input when it cannot be read: not UTF-8, empty, too big,
-  not JSON, nested too deep, a non-finite or oversized number, a repeated
-  top-level key, no "alerts" list, too many alerts, or a negative number in
-  a top-level field other than "alerts".
+  nested more than MAX_DEPTH levels deep, not JSON, a non-finite or
+  oversized number, a repeated top-level key, no "alerts" list, too many
+  alerts, or a negative number in a top-level field other than "alerts".
+  The depth is counted before json.loads runs, so the limit is the same in
+  every interpreter, whatever its stack size, and nothing later recurses
+  deeper than it.
 * Reject one alert when it cannot be identified, its structure or a type is
   wrong, or it holds a negative number: not an object, a repeated key, id
   missing / not a string / blank / too long, signals not a list or a signal
@@ -38,11 +41,14 @@ from __future__ import annotations
 import dataclasses
 import json
 import math
+import re
 from dataclasses import dataclass
+from itertools import accumulate
 
 from .vocabulary import Fact, parse_action, parse_severity, parse_signal
 
 MAX_INPUT_BYTES = 5_000_000
+MAX_DEPTH = 100  # nested objects and arrays; the top-level object is level 1, an alert is level 3
 MAX_ALERTS = 1000
 MAX_ID_CHARS = 256
 MAX_QUARANTINED = 20  # per alert, for unrecognised signals and for extra fields separately
@@ -133,6 +139,27 @@ def _finite_float(text: str) -> float:
     return value
 
 
+# A JSON string, or an unterminated one running to the end of the text. Every match succeeds on its first
+# attempt (an escape takes the character after the backslash, and the end of the text closes the string), so
+# removing all strings is linear in the length of the text.
+_STRING = re.compile(r'"[^"\\]*(?:\\.[^"\\]*)*(?:"|\\?\Z)', re.DOTALL)
+_NOT_BRACKET = re.compile(r"[^\[\]{}]+")
+_STEP = {"[": 1, "{": 1, "]": -1, "}": -1}
+
+
+def _too_deep(text: str) -> bool:
+    """True when objects and arrays nest more than MAX_DEPTH levels deep, found without parsing.
+
+    Brackets inside strings do not count. Iterative and linear. For text that is
+    not JSON the count is an upper bound on the depth json.loads reaches before
+    it stops, so json.loads never recurses past MAX_DEPTH after this returns False.
+    """
+    if text.count("[") + text.count("{") <= MAX_DEPTH:
+        return False
+    brackets = _NOT_BRACKET.sub("", _STRING.sub("", text))
+    return max(accumulate(map(_STEP.__getitem__, brackets)), default=0) > MAX_DEPTH
+
+
 def _load_json(data: bytes | str) -> tuple[object, Issue | None]:
     if isinstance(data, (bytes, bytearray)):
         if len(data) > MAX_INPUT_BYTES:
@@ -149,11 +176,14 @@ def _load_json(data: bytes | str) -> tuple[object, Issue | None]:
         return None, Issue("not-text", "$", "input must be bytes or text")
     if not text.strip():
         return None, Issue("empty-input", "$", "input is empty")
+    too_deep = Issue("too-deep", "$", f"input nests objects and arrays more than {MAX_DEPTH} levels deep")
+    if _too_deep(text):
+        return None, too_deep
     try:
         obj = json.loads(text, object_pairs_hook=_object,
                          parse_constant=_no_constants, parse_float=_finite_float)
-    except RecursionError:
-        return None, Issue("too-deep", "$", "input is nested too deeply")
+    except RecursionError:  # not reached after the depth check unless the interpreter's stack is tiny
+        return None, too_deep
     except json.JSONDecodeError as err:
         return None, Issue("not-json", "$",
                            f"input is not valid JSON (line {err.lineno}, column {err.colno}: {err.msg})")

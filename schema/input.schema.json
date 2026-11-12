@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "sealed-input/1",
   "title": "Sealed input: the Track 4 contract plus optional entity fields",
-  "description": "Structure only. The parser in sealed/contract.py applies further rules: blank or repeated ids, repeated keys, non-finite numbers, more than 5,000,000 bytes or nesting too deep are rejected; unknown values are degraded, not rejected.",
+  "description": "Structure only. The parser in sealed/contract.py applies further rules: blank or repeated ids, repeated keys, non-finite numbers, more than 5,000,000 bytes or objects and arrays nested more than 100 levels deep are rejected; unknown values are degraded, not rejected.",
   "type": "object",
   "required": ["alerts"],
   "properties": {
