@@ -10,13 +10,13 @@ Spoken at 150 words a minute the lines take about 1:35 of the 1:53 the video run
 
 1. **0:00.0** This is Sealed, the alert explainer I built for Track 4.
 2. **0:04.3** The username is attacker-controlled, so I'm pasting an instruction in.
-3. **0:08.7** A normal AI explainer reads it, and lowers its decision.
+3. **0:08.7** A normal AI explainer reads it and picks a weaker action.
 4. **0:13.0** Sealed keeps the same action, and its model input doesn't change.
-5. **0:18.5** Here's the count across the whole test run.
+5. **0:18.5** This counter covers every attack in the test run.
 
 ### Shot 2. How it works
 
-6. **0:22.5** How it works: a strict parser keeps only signals from a fixed vocabulary.
+6. **0:22.5** First, a strict parser keeps only signals from a fixed vocabulary.
 7. **0:29.0** A fixed policy decides the action, and the model only explains those facts, citing each one.
 8. **0:36.3** Usernames and URLs go around the model into quarantine, and instruction-like text raises the alert instead.
 
@@ -25,13 +25,13 @@ Spoken at 150 words a minute the lines take about 1:35 of the 1:53 the video run
 9. **0:44.5** I tested this with three local models on synthetic alerts.
 10. **0:50.2** Each one ran a raw prompt, a hardened prompt, and Sealed.
 11. **0:54.7** These columns show how often the decision changed under attack.
-12. **1:00.2** For Sealed, the model input stayed identical, and the action can only go up, never down.
-13. **1:07.8** One honest miss: the detector didn't flag this base64 string, but the model still never saw it.
+12. **1:00.2** For Sealed, the model input stayed identical, and the action can only go up.
+13. **1:07.8** The detector missed this base64 string, but the model still never saw it.
 
 ### Shot 4. Run it
 
 14. **1:16.0** Everything runs offline, with one command and no API keys.
-15. **1:20.5** The demo ends with the seal check: both alerts, same hash.
+15. **1:20.5** The demo ends with the seal check: one hash for both alerts.
 16. **1:26.0** The tests push thousands of random values through every free-text field.
 
 ### Shot 5. Try to break it
@@ -41,6 +41,6 @@ Spoken at 150 words a minute the lines take about 1:35 of the 1:53 the video run
 
 ### Shot 6. Limits
 
-19. **1:42.5** Limitations: the alerts are synthetic, and the explanations haven't been tested with real analysts yet. Thanks for watching.
+19. **1:42.5** Two limits: the alerts are synthetic, and no real analyst has tested the explanations yet. Thanks for watching.
 
 The video ends at **1:53.0**, after 10.5 seconds on the end card.
