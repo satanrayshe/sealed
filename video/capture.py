@@ -942,9 +942,7 @@ END_CSS = """
 .claim { font-size: 36px; margin: 0 0 18px; max-width: 1500px; }
 .track { font-size: 26px; color: var(--muted); margin: 0 0 40px; }
 .url { font-family: var(--mono); font-size: 36px; color: var(--accent); margin: 0 0 50px; }
-.limits { border-left: 6px solid var(--warn); padding: 10px 24px; font-size: 27px; line-height: 1.5; max-width: 1500px;
-  background: var(--panel); }
-.limits b { color: var(--warn); }
+.cta { font-size: 30px; line-height: 1.5; max-width: 1500px; }
 """
 
 
@@ -953,8 +951,7 @@ def end_html(url: str | None) -> str:
     return page_html('<div class="stage"><p class="name">Sealed</p>'
                      '<p class="claim">A security-alert explainer whose language model never reads a byte the attacker wrote.</p>'
                      '<p class="track">Aegython 2026, Track 4: Explain My Security Alert</p>'
-                     f'{link}<div class="limits"><b>Limits.</b> Synthetic alerts only. The explanations have not been '
-                     "tested with users. The model arms used three small local models (1.7B to 4B parameters).</div>"
+                     f'{link}<p class="cta">Runs offline with one command. Try to break it.</p>'
                      "</div>", END_CSS)
 
 
@@ -1066,7 +1063,7 @@ def main() -> int:
                 frames["failure-card"] = failure_html(failure)
                 for step in ("terminal-demo", "terminal-seal", "terminal-tests"):
                     frames[step] = terminal_html(step, outputs, args.mode)
-                frames["limits"] = end_html(url)
+                frames["end-card"] = end_html(url)
                 capture_generated(browser, work, shots, frames)
             finally:
                 browser.close()

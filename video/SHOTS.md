@@ -39,7 +39,7 @@ Two kinds of text appear on screen:
 | 4 | `terminal-tests` | 16 | 86.0 to 91.0 (5.0) | The evaluation replay (`evaluate --arm models` in final mode, `--arm template` in the dry run, written to a scratch folder) and the end of `python -m unittest`. | | same |
 | 5 | `try-type` | 17 | 91.0 to 96.5 (5.5) | The local app with the organiser's example; a held-out Hinglish string is typed into a new `user_agent` field. | "attacker-controlled" | `sealed/samples/track_example.json`, `data/attack_set.json` |
 | 5 | `try-result` | 18 | 96.5 to 102.5 (6.0) | After Explain: the action and uncertainty outlined, and the model-input block outlined with the hash from before the edit. | the action before and after; the earlier hash | read from the app's page |
-| 6 | `limits` | 19 | 102.5 to 113.0 (10.5) | End card: name, one-line claim, track, repository link when known, and the limits. | "Synthetic alerts only. The explanations have not been tested with users. The model arms used three small local models (1.7B to 4B parameters)." | none |
+| 6 | `end-card` | 19 | 102.5 to 113.0 (10.5) | End card: name, one-line claim, track, repository link when known, and an invitation to try it. | "Runs offline with one command. Try to break it." | none |
 
 Crossfades: 12 frames into a new shot, 6 to 10 frames between beats of the jaw-drop, the diagram and the results; hard cuts inside the terminal and the app shots.
 

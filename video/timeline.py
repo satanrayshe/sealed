@@ -61,7 +61,7 @@ BEATS = (
     Beat("terminal-tests", 4, 16, 0),
     Beat("try-type", 5, 17, 12),
     Beat("try-result", 5, 18, 0),
-    Beat("limits", 6, 19, 12),
+    Beat("end-card", 6, 19, 12),
 )
 
 

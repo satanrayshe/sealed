@@ -39,8 +39,8 @@ Spoken at 150 words a minute the lines take about 1:35 of the 1:53 the video run
 17. **1:31.0** You can try it yourself. Here I'm typing a Hinglish attack.
 18. **1:36.5** The action doesn't go down, and the model input hash is unchanged.
 
-### Shot 6. Limits
+### Shot 6. Close
 
-19. **1:42.5** Two limits: the alerts are synthetic, and no real analyst has tested the explanations yet. Thanks for watching.
+19. **1:42.5** The code, the tests and the results are all in the repository. Try to break it at the link on screen. Thanks for watching.
 
 The video ends at **1:53.0**, after 10.5 seconds on the end card.
