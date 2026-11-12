@@ -140,8 +140,10 @@ def build_parser() -> argparse.ArgumentParser:
                         "detectors: train and compare the learned detector (needs --corpora)")
     p.add_argument("--corpora", default=None, help="directory made by tools/fetch_corpora.py (for --arm detectors)")
     p.add_argument("--out", default="results", help="output directory for the template arm (default: results)")
-    p.add_argument("--model", default="qwen3-1.7b:bf16", help="model tag for --arm models")
-    p.add_argument("--limit", type=int, default=1200, help="use the first N of the 1,200 class-interleaved triples")
+    p.add_argument("--model", default=None,
+                   help="--arm models: one model tag (prints its summary); default: all three, written to --out")
+    p.add_argument("--limit", type=int, default=None,
+                   help="--arm models: the first N class-interleaved triples (default: the plan's number per model)")
     p.add_argument("--run", action="store_true",
                    help="ask the local server for replies not yet cached (otherwise summarise the cache offline)")
     p.add_argument("--base-url", default="http://127.0.0.1:11434", help="local /api/chat server (loopback only)")
@@ -165,18 +167,41 @@ def cmd_app(args: argparse.Namespace, out: TextIO) -> int:
 
 def cmd_models(args: argparse.Namespace, out: TextIO) -> int:
     from . import model_eval
-    if args.model not in model_eval.MODELS or not 0 < args.limit <= 1200:
+    models = [args.model] if args.model else list(model_eval.MODELS)
+    if any(m not in model_eval.MODELS for m in models) or (args.limit is not None and not 0 < args.limit <= 1200):
         sys.stderr.write(f"error: --model must be one of {', '.join(model_eval.MODELS)} and --limit 1 to 1200" + chr(10))
         return 2
-    triples = model_eval.interleaved_triples()[:args.limit]
+    if args.run and not args.model:
+        sys.stderr.write("error: --run asks one model at a time; add --model" + chr(10))
+        return 2
     cache = args.cache_dir or model_eval.DEFAULT_CACHE
-    if args.run:
-        def progress(p: dict) -> None:
-            out.write(f"{p['model']} {p['done']}/{p['total']} {p['arm']} mean {p['mean_seconds']}s "
-                      f"remaining about {p['remaining_seconds'] // 60} min" + chr(10))
-            out.flush()
-        model_eval.run(args.model, triples, base_url=args.base_url, cache_dir=cache, progress=progress)
-    out.write(json.dumps(model_eval.summarise(args.model, triples, cache_dir=cache), indent=2) + chr(10))
+    summaries, limits = [], {}
+    for model in models:
+        limits[model] = args.limit or model_eval.PLAN_LIMITS[model]
+        triples = model_eval.interleaved_triples()[:limits[model]]
+        if args.run:
+            def progress(p: dict) -> None:
+                out.write(f"{p['model']} {p['done']}/{p['total']} {p['arm']} mean {p['mean_seconds']}s "
+                          f"remaining about {p['remaining_seconds'] // 60} min" + chr(10))
+                out.flush()
+            model_eval.run(model, triples, base_url=args.base_url, cache_dir=cache, progress=progress)
+        summaries.append(model_eval.summarise(model, triples, cache_dir=cache))
+    if args.model:
+        out.write(json.dumps(summaries[0], indent=2) + chr(10))
+    incomplete = [s for s in summaries if not s["complete"]]
+    for s in incomplete:
+        c = s["coverage"]
+        sys.stderr.write(f"warning: {s['model']}: {c['triples_complete']} of {c['triples_planned']} triples complete "
+                         f"in every arm, {c['clean_alerts_complete']} of {c['clean_alerts_planned']} clean alerts; "
+                         "no results written" + chr(10))
+    if incomplete:
+        return 1
+    if args.model:
+        return 0
+    result = model_eval.results(summaries, limits)
+    out.write(model_eval.readme_block(result) + chr(10))
+    for path in model_eval.write_results(result, args.out).values():
+        out.write(f"wrote {path.as_posix()}" + chr(10))
     return 0
 
 

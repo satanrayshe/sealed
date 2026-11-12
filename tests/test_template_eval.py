@@ -115,9 +115,9 @@ class Command(unittest.TestCase):
             out = io.StringIO()
             code = main(["evaluate", "--arm", "models", "--model", "granite-4.0-micro:nf4", "--limit", "4",
                          "--cache-dir", tmp], out=out)
-            self.assertEqual(code, 0)
+            self.assertEqual(code, 1)  # replies are missing: summarised, flagged, nothing written
             summary = json.loads(out.getvalue())
-            self.assertEqual(summary["arms"]["raw-prompt"]["missing"], 4)
+            self.assertEqual(summary["coverage"]["triples_missing_by_arm"]["raw-prompt"], 4)
             self.assertEqual(main(["evaluate", "--arm", "models", "--model", "nope:bf16"], out=io.StringIO()), 2)
 
 

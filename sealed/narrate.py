@@ -6,10 +6,13 @@ test oracle: its sentences are what a perfect narrator would say.
 OllamaNarrator asks a local Ollama server (http://127.0.0.1:11434 by
 default, loopback only). The single user message is exactly the sealed
 model input, so the hash shown to the analyst is the hash of what the model
-read. Temperature is 0, the seed is fixed and the reply must match a JSON
-schema. Replies are cached on disk under the model-input hash, so runs can
-be replayed offline. Tests use a fake transport; nothing here is called
-against a real server in the test suite.
+read. Temperature is 0, the seed is fixed and the request carries a JSON
+schema for the reply, which Ollama enforces; the evaluation's own server
+(tools/local_model_server.py) does not, and a reply that does not parse falls
+back to the template. Requests go straight to the loopback address: proxy
+settings and redirects are ignored. Replies are cached on disk under the
+model-input hash, so runs can be replayed offline. Tests use a fake transport
+or a loopback server with a fake model.
 
 Whatever a narrator returns goes through verify.py before anyone sees it.
 """
@@ -66,9 +69,18 @@ class TemplateNarrator:
         return sentences
 
 
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *args, **kwargs):  # a loopback server must not send the request anywhere else
+        return None
+
+
+# No proxy (HTTP_PROXY or the system proxy would otherwise carry loopback requests off the machine), no redirects.
+LOCAL_OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}), _NoRedirect())
+
+
 def urllib_transport(url: str, body: bytes, timeout: float) -> bytes:
     request = urllib.request.Request(url, data=body, method="POST", headers={"Content-Type": "application/json"})
-    with urllib.request.urlopen(request, timeout=timeout) as response:  # loopback only, checked in __init__
+    with LOCAL_OPENER.open(request, timeout=timeout) as response:  # loopback only, checked in __init__
         return response.read(MAX_REPLY_BYTES + 1)
 
 

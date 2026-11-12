@@ -136,5 +136,59 @@ class Ollama(unittest.TestCase):
         self.assertEqual(len(narrator.narrate(TRACK_VIEW)), 50)
 
 
+
+class LoopbackTransport(unittest.TestCase):
+    """The real transport against a loopback HTTP server: proxies and redirects are ignored."""
+
+    def serve(self, handler_class):
+        import http.server
+        import threading
+        server = http.server.HTTPServer(("127.0.0.1", 0), handler_class)
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+        self.addCleanup(server.server_close)
+        self.addCleanup(server.shutdown)
+        return f"http://127.0.0.1:{server.server_address[1]}/api/chat"
+
+    def test_a_configured_proxy_is_not_used_for_loopback(self):
+        import http.server
+        import os
+        from unittest import mock
+        from sealed.narrate import urllib_transport
+
+        class Answer(http.server.BaseHTTPRequestHandler):
+            def do_POST(self):  # noqa: N802
+                self.rfile.read(int(self.headers["Content-Length"]))
+                body = reply(["x [S1]."])
+                self.send_response(200)
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+
+            def log_message(self, *args):
+                pass
+
+        url = self.serve(Answer)
+        proxy = "http://127.0.0.1:9"  # nothing listens there: using it would fail
+        with mock.patch.dict(os.environ, {"HTTP_PROXY": proxy, "http_proxy": proxy, "NO_PROXY": "", "no_proxy": ""}):
+            self.assertEqual(urllib_transport(url, b"{}", 5), reply(["x [S1]."]))
+
+    def test_redirects_are_not_followed(self):
+        import http.server
+        from sealed.narrate import urllib_transport
+
+        class Redirect(http.server.BaseHTTPRequestHandler):
+            def do_POST(self):  # noqa: N802
+                self.rfile.read(int(self.headers["Content-Length"]))
+                self.send_response(302)
+                self.send_header("Location", "http://example.com/collect")
+                self.send_header("Content-Length", "0")
+                self.end_headers()
+
+            def log_message(self, *args):
+                pass
+
+        with self.assertRaises(OSError):
+            urllib_transport(self.serve(Redirect), b"{}", 5)
+
 if __name__ == "__main__":
     unittest.main()

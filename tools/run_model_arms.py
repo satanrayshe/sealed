@@ -2,9 +2,11 @@
 
 For each model in the plan it starts tools/local_model_server.py with a
 Python that has torch and transformers, waits until the model is loaded,
-asks every request that is not yet in the hash-keyed cache, and stops the
-server again. It only ever stops the server process it started itself.
-Progress goes to <log-dir>/run.log and <log-dir>/status.json.
+asks every request that is not yet in the hash-keyed cache (the triples, then
+the clean alerts), and stops the server again. Each new reply is stored with
+the server file's SHA-256, the snapshot revision and the decoding settings.
+It only ever stops the server process it started itself. Progress goes to
+<log-dir>/run.log and <log-dir>/status.json.
 
     python tools/run_model_arms.py --plan qwen3-1.7b:bf16=1200,granite-4.0-micro:nf4=400 \
         --server-python C:/path/to/venv/Scripts/python.exe
@@ -16,18 +18,22 @@ after a wait; a CUDA out-of-memory error stops the whole run.
 from __future__ import annotations
 
 import argparse
+import hashlib
+import importlib.util
 import json
 import os
 import subprocess
 import sys
 import time
-import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from sealed import model_eval  # noqa: E402  (the stdlib-only package; never imports the server)
+from sealed.narrate import LOCAL_OPENER  # noqa: E402  (no proxy, no redirects)
+
+SERVER = ROOT / "tools" / "local_model_server.py"
 
 REFUSED, OUT_OF_MEMORY = 3, 4
 
@@ -47,10 +53,25 @@ def write_status(log_dir: Path, status: dict) -> None:
 
 def server_ready(port: int) -> bool:
     try:
-        with urllib.request.urlopen(f"http://127.0.0.1:{port}/api/tags", timeout=5) as response:
+        with LOCAL_OPENER.open(f"http://127.0.0.1:{port}/api/tags", timeout=5) as response:
             return response.status == 200
     except OSError:
         return False
+
+
+def generation_meta(model: str, port: int) -> dict:
+    """What produced the replies, stored with each new cache record: the server file, the loaded snapshot
+    (as the server reports it) and the decoding settings."""
+    source = SERVER.read_bytes()
+    spec = importlib.util.spec_from_file_location("local_model_server_settings", SERVER)
+    server = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(server)  # standard library only at module level; nothing is loaded
+    with LOCAL_OPENER.open(f"http://127.0.0.1:{port}/api/tags", timeout=5) as response:
+        details = json.loads(response.read(100_000))["models"][0]
+    return {"server_sha256": hashlib.sha256(source).hexdigest(), "tag": details.get("name"),
+            **{k: details.get("details", {}).get(k) for k in ("repo", "revision", "precision")},
+            "max_new_tokens": server.MAX_NEW_TOKENS, "do_sample": False, "seed": server.SEED,
+            "template_kwargs": server.MODELS[model]["template_kwargs"]}
 
 
 def start_server(python: str, model: str, port: int, log_dir: Path) -> subprocess.Popen:
@@ -58,7 +79,7 @@ def start_server(python: str, model: str, port: int, log_dir: Path) -> subproces
     env = dict(os.environ, HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1", PYTHONUNBUFFERED="1",
                PYTHONDONTWRITEBYTECODE="1")
     handle = open(log_dir / f"server-{model.replace(':', '_')}.log", "a", encoding="utf-8")
-    return subprocess.Popen([python, str(ROOT / "tools" / "local_model_server.py"), "--model", model,
+    return subprocess.Popen([python, str(SERVER), "--model", model,
                              "--port", str(port)], stdout=handle, stderr=subprocess.STDOUT, env=env,
                             cwd=str(ROOT))
 
@@ -104,8 +125,10 @@ def run_one(args, model: str, limit: int, log_dir: Path) -> int:
                              f"remaining about {p['remaining_seconds'] // 60} min")
 
         try:
+            meta = generation_meta(model, args.port)
+            log(log_dir, f"{model}: {meta['repo']} at {meta['revision']}, {meta['precision']}")
             result = model_eval.run(model, triples, base_url=f"http://127.0.0.1:{args.port}",
-                                    cache_dir=args.cache_dir, progress=progress)
+                                    cache_dir=args.cache_dir, progress=progress, record_meta=meta)
         except Exception as error:  # the server died or the network layer failed: stop, keep what is cached
             log(log_dir, f"{model}: stopped by {type(error).__name__}: {error}")
             stop_server(process)

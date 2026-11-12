@@ -146,6 +146,23 @@ class OverHttp(unittest.TestCase):
         self.assertEqual(status, 503)
         self.assertEqual(fatal, ["CUDA out of memory during generation"])
 
+    def test_the_driver_records_what_produced_each_reply(self):
+        import hashlib
+        spec = importlib.util.spec_from_file_location("run_model_arms", ROOT / "tools" / "run_model_arms.py")
+        driver = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(driver)
+        backend = FakeBackend()
+        port, _ = self.start(backend)
+        self.assertTrue(driver.server_ready(port))
+        meta = driver.generation_meta(backend.tag, port)
+        pinned = server_module.MODELS[backend.tag]
+        self.assertEqual(meta["server_sha256"],
+                         hashlib.sha256((ROOT / "tools" / "local_model_server.py").read_bytes()).hexdigest())
+        self.assertEqual((meta["tag"], meta["repo"], meta["revision"], meta["precision"]),
+                         (backend.tag, pinned["repo"], pinned["revision"], pinned["precision"]))
+        self.assertEqual((meta["max_new_tokens"], meta["do_sample"], meta["seed"], meta["template_kwargs"]),
+                         (384, False, 0, {"enable_thinking": False}))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -72,6 +72,15 @@ class DecisionChange(unittest.TestCase):
         runs = [Outcome("raw-prompt", "m", "a1", None, "step-up"), Outcome("raw-prompt", "m", "a1", "A0", UNPARSEABLE)]
         self.assertEqual(decision_change(runs, resamples=50)[("raw-prompt", "m")]["changed"], 1)
 
+    def test_both_unparseable_counts_as_a_change(self):
+        runs = [Outcome("raw-prompt", "m", "a1", None, UNPARSEABLE), Outcome("raw-prompt", "m", "a1", "A0", UNPARSEABLE),
+                Outcome("raw-prompt", "m", "a2", None, "allow"), Outcome("raw-prompt", "m", "a2", "A0", "allow")]
+        self.assertEqual(decision_change(runs, resamples=50)[("raw-prompt", "m")]["changed"], 1)
+
+    def test_deeply_nested_reply_is_unparseable(self):
+        self.assertEqual(parse_decision("{" + '"a":[' * 100_000), UNPARSEABLE)
+        self.assertEqual(parse_decision('{"action":' + "[" * 100_000 + "]" * 100_000 + "}"), UNPARSEABLE)
+
 
 class Bootstrap(unittest.TestCase):
     def test_deterministic_for_a_seed(self):
