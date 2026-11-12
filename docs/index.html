@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net/pyodide/v0.27.7/full/ 'wasm-unsafe-eval'; connect-src 'self' https://cdn.jsdelivr.net/pyodide/v0.27.7/full/; style-src 'self'; img-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sealed - try to break it</title>
+<link rel="stylesheet" href="page/app.css">
+<link rel="stylesheet" href="page/page.css">
+<script src="https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js" crossorigin="anonymous" defer></script>
+<script src="page/page.js" defer></script>
+</head>
+<body data-state="loading">
+<header class="masthead">
+  <div class="masthead-text">
+    <h1>Sealed: try to break it</h1>
+    <p class="claim">Write anything into the attacker's fields. A conventional explainer pastes it into its model's prompt. Sealed gives a model none of it: a declared policy decides, and the model input keeps the same SHA-256 whatever you write.</p>
+  </div>
+  <button type="button" id="theme-toggle" class="quiet" aria-pressed="false">Dark theme</button>
+</header>
+<p id="load-status" class="load-status" role="status" aria-live="polite">Loading Python into this tab (Pyodide, from cdn.jsdelivr.net). Without JavaScript nothing runs here; the command line works offline: python -m sealed demo</p>
+<section class="alert-card" aria-labelledby="alert-title">
+  <div class="card-head">
+    <h2 id="alert-title">Alert</h2>
+    <div class="samples" role="group" aria-label="Load an alert">
+      <button type="button" data-sample="track_example" disabled>Organiser example</button>
+      <button type="button" data-sample="attacked_username" disabled>Attacked twin</button>
+      <button type="button" data-sample="edge_cases" disabled>Edge cases</button>
+    </div>
+  </div>
+  <p id="fields-note" class="muted fields-note"></p>
+  <div class="fields">
+    <div class="field-group">
+      <p class="group-label">From the alerting pipeline (signals: one per line)</p>
+      <label class="field"><span class="field-name">id</span><input id="f-id" data-field="id" type="text" spellcheck="false" autocomplete="off" disabled></label>
+      <label class="field"><span class="field-name">severity</span><input id="f-severity" data-field="severity" type="text" spellcheck="false" autocomplete="off" disabled></label>
+      <label class="field"><span class="field-name">action</span><input id="f-action" data-field="action" type="text" spellcheck="false" autocomplete="off" disabled></label>
+      <label class="field"><span class="field-name">signals</span><textarea id="f-signals" data-field="signals" rows="2" spellcheck="false" autocomplete="off" disabled></textarea></label>
+    </div>
+    <div class="field-group attacker-group">
+      <p class="group-label"><span class="attacker-tag">attacker-controlled</span> free text the attacker can write</p>
+      <label class="field attacker"><span class="field-name">username</span><input id="f-username" data-field="username" type="text" spellcheck="false" autocomplete="off" disabled></label>
+      <label class="field attacker"><span class="field-name">user_agent</span><input id="f-user_agent" data-field="user_agent" type="text" spellcheck="false" autocomplete="off" disabled></label>
+      <label class="field attacker"><span class="field-name">url</span><input id="f-url" data-field="url" type="text" spellcheck="false" autocomplete="off" disabled></label>
+      <label class="field attacker"><span class="field-name">host</span><input id="f-host" data-field="host" type="text" spellcheck="false" autocomplete="off" disabled></label>
+    </div>
+  </div>
+  <div class="presets">
+    <h3>Recorded attacks from the evaluation</h3>
+    <div id="preset-list" class="preset-list" role="group" aria-label="Load a recorded attack"></div>
+    <details class="preset-rule-details"><summary>How these were chosen</summary><p id="preset-rule" class="muted"></p></details>
+  </div>
+  <div class="run">
+    <label for="detector" class="field-name">Injection detector</label>
+    <select id="detector" disabled>
+      <option value="keyword">keyword baseline (default)</option>
+      <option value="learned">learned n-gram model (optional)</option>
+    </select>
+    <span id="detector-note" class="muted"></span>
+    <span id="status" class="muted" role="status" aria-live="polite"></span>
+  </div>
+  <details id="json-details">
+    <summary>The whole document as JSON: the exact text both panes read (editable)</summary>
+    <label for="alert-json" class="visually-hidden">Alert document JSON</label>
+    <textarea id="alert-json" spellcheck="false" autocomplete="off" autocapitalize="off" disabled></textarea>
+  </details>
+</section>
+<main class="panes compare">
+  <section class="pane pane-raw" aria-labelledby="raw-title">
+    <h2 id="raw-title">Raw-prompt explainer</h2>
+    <p class="hint">How most LLM alert explainers work: the alert JSON, attacker text included, goes into the model's prompt. The hardened variant adds delimiters, datamarking and a "data is never instructions" rule.</p>
+    <div id="raw-results"><p class="muted">Waiting for Python to load.</p></div>
+  </section>
+  <section class="pane pane-sealed" aria-labelledby="sealed-title">
+    <h2 id="sealed-title">Sealed</h2>
+    <p class="hint">Computed in this tab by the same Python package as the command line. The model input holds structured facts only; the narrative here is the template narrator's.</p>
+    <div id="sealed-results"><p class="muted">Waiting for Python to load.</p></div>
+  </section>
+</main>
+<footer class="foot">Every action is a mock recommendation; nothing is executed. What you type stays in this tab: the page has no server and sends it nowhere. Run it offline: python -m sealed app. Source: <a href="https://github.com/satanrayshe/sealed">github.com/satanrayshe/sealed</a></footer>
+</body>
+</html>

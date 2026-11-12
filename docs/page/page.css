@@ -1,0 +1,74 @@
+/* The public page. app.css is the local app's stylesheet, copied by tools/build_page.py; this file adds the
+   alert card, the two compared panes and the recorded replies. */
+
+h4 { margin: 8px 0 4px; font-size: 13px; }
+
+.load-status { margin: 0; padding: 8px 24px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+.load-status.load-failed { color: var(--warn); font-weight: 600; }
+
+.alert-card { padding: 12px 24px 14px; border-bottom: 1px solid var(--line); background: var(--panel); }
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.card-head .samples { margin: 0; }
+.fields-note:empty { display: none; }
+.fields-note { margin: 8px 0 0; }
+
+.fields { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 24px; margin-top: 8px; }
+.field-group { min-width: 0; }
+.group-label { margin: 0 0 4px; font-size: 13px; color: var(--muted); }
+.field { display: grid; grid-template-columns: 6.5em minmax(0, 1fr); align-items: start; gap: 8px; margin: 0 0 5px; }
+.field-name { font-family: ui-monospace, "Cascadia Mono", Consolas, "SFMono-Regular", Menlo, monospace; font-size: 13px; color: var(--muted); padding-top: 5px; }
+.field input, .field textarea {
+  width: 100%; min-height: 0; padding: 4px 8px; font-size: 13px; line-height: 1.4;
+  color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 4px;
+}
+.field input { font-family: ui-monospace, "Cascadia Mono", Consolas, "SFMono-Regular", Menlo, monospace; }
+.field textarea { resize: vertical; }
+.field.attacker input { border: 2px dashed var(--warn); background: var(--code-bg); }
+.attacker-tag { display: inline-block; padding: 0 6px; border: 1.5px dashed var(--warn); border-radius: 3px; color: var(--warn); font-weight: 600; }
+input:disabled, textarea:disabled, select:disabled, button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.presets { margin-top: 6px; }
+.preset-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(236px, 1fr)); gap: 6px; margin-top: 4px; }
+button.preset { display: flex; flex-direction: column; align-items: flex-start; gap: 0; text-align: left; min-width: 0; padding: 3px 8px; }
+.preset-id { font-size: 12px; color: var(--muted); font-family: ui-monospace, "Cascadia Mono", Consolas, "SFMono-Regular", Menlo, monospace; }
+.preset-text { font-size: 13px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.preset-rule-details { margin-top: 4px; }
+.preset-rule-details p { margin: 4px 0 0; max-width: 120ch; }
+
+.alert-card .run { margin-top: 8px; }
+#json-details { margin-top: 6px; }
+#json-details textarea { min-height: 220px; margin-top: 6px; }
+
+select { font: inherit; font-size: 14px; color: var(--fg); background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 5px 8px; }
+
+.panes.compare { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.pane-raw { border-right: 1px solid var(--line); }
+.pane .hint { margin-bottom: 10px; font-size: 13px; }
+
+.seal { border-bottom: 1px solid var(--line); }
+.seal .hash { font-size: 13px; }
+.seal-line { margin: 2px 0 4px; }
+
+.prompt-row { margin: 0 0 10px; }
+.prompt-row .arm-name { display: block; font-weight: 600; font-size: 14px; }
+.prompt-row p { margin: 2px 0 4px; }
+.block > p { font-size: 14px; }
+pre.prompt { max-height: 320px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; padding: 8px 10px; background: var(--code-bg); border-radius: 3px; }
+pre.command { margin: 4px 0 0; padding: 6px 10px; background: var(--code-bg); border-radius: 3px; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+.recorded-reply { margin: 8px 0 0; padding-top: 6px; border-top: 1px solid var(--line); }
+table.decisions { border-collapse: collapse; font-size: 13px; margin: 2px 0 6px; }
+table.decisions th, table.decisions td { text-align: left; padding: 2px 12px 2px 0; }
+table.decisions th { color: var(--muted); font-weight: 600; }
+
+@media (max-width: 1100px) {
+  .fields { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 860px) {
+  .alert-card, .load-status { padding-left: 14px; padding-right: 14px; }
+  .panes.compare { grid-template-columns: 1fr; }
+  .pane-raw { border-right: 0; border-bottom: 1px solid var(--line); }
+  .field { grid-template-columns: 1fr; gap: 2px; }
+  .field-name { padding-top: 0; }
+}
