@@ -183,6 +183,36 @@ def render_markdown(r: dict) -> str:
     return "\n".join(lines)
 
 
+README_MARK = "<!-- detector-headline -->"
+
+
+def readme_block(r: dict) -> str:
+    """The README's detector table, generated from the result so it is never typed by hand."""
+    def cell(p: dict | None) -> str:
+        return "-" if not p or not p["n"] else f"{p['k']} / {p['n']} ({100 * p['rate']:.1f}%)"
+
+    learned, keyword = r["ours"]["learned"], r["ours"]["keyword"]
+    rows = [("Recall, held-out test attack strings", cell(learned["test"]["recall"]), cell(keyword["test"]["recall"])),
+            ("Recall, dev attack strings", cell(learned["dev"]["recall"]), cell(keyword["dev"]["recall"])),
+            ("False flags, held-out test benign values", cell(learned["test"]["false_flags"]),
+             cell(keyword["test"]["false_flags"])),
+            ("False flags, dev benign values", cell(learned["dev"]["false_flags"]), cell(keyword["dev"]["false_flags"]))]
+    for corpus in CORPORA:
+        row = r["leave_one_corpus_out"][corpus]
+        if row["learned"]["average_precision"] is not None:
+            rows.append((f"{corpus} held out: average precision", f"{row['learned']['average_precision']:.3f}",
+                         f"{row['keyword']['average_precision']:.3f}"))
+        rows.append((f"{corpus} held out: recall on injections", cell(row["learned"]["recall"]),
+                     cell(row["keyword"]["recall"])))
+        if row["learned"]["false_positive_rate"]["n"]:
+            rows.append((f"{corpus} held out: false positives on benign prompts",
+                         cell(row["learned"]["false_positive_rate"]), cell(row["keyword"]["false_positive_rate"])))
+    lines = [README_MARK, "| Measure | Learned (`ngram-logreg-1`) | Keyword (`keyword-baseline-1`) |", "|---|---|---|"]
+    lines += [f"| {label} | {left} | {right} |" for label, left, right in rows]
+    lines.append(README_MARK)
+    return chr(10).join(lines)
+
+
 def write_results(r: dict, out_dir: Path) -> dict[str, Path]:
     out_dir.mkdir(parents=True, exist_ok=True)
     paths = {"detectors.json": out_dir / "detectors.json", "detectors.md": out_dir / "detectors.md"}

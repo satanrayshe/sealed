@@ -33,7 +33,7 @@ class Backend:
 
 class Status(unittest.TestCase):
     def test_a_reader_holding_status_json_never_stops_the_run(self):
-        with tempfile.TemporaryDirectory() as tmp:
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:  # a virus scanner may hold a file
             log_dir = Path(tmp)
             driver.write_status(log_dir, {"state": "running"})
             with open(log_dir / "status.json", encoding="utf-8"):  # on Windows this blocks os.replace

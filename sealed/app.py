@@ -9,8 +9,9 @@ origin, no eval. The page builds every element with textContent.
 
 The one data endpoint returns the same report as `explain()`, plus a seal
 check per alert: the model-input SHA-256 of a clean twin, which is the
-same alert with every free-text field (entity fields and extra fields)
-removed.
+same alert without its entity fields (username, user agent, URL, host) and
+extra fields. Unrecognised signal strings stay in the twin: only their number
+reaches the model.
 """
 
 from __future__ import annotations
@@ -68,7 +69,8 @@ def _json(payload: object) -> Response:
 
 
 def clean_twin(alert: dict) -> dict:
-    """The alert with every free-text field removed: only id, severity, signals and action stay."""
+    """The alert without its entity and extra fields: only id, severity, signals and action stay. Unrecognised
+    signal strings stay too; only their number reaches the model, so the hash is still comparable."""
     return {key: alert[key] for key in TRUSTED_FIELDS if key in alert}
 
 

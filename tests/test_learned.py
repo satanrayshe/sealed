@@ -151,6 +151,13 @@ class CommittedWeights(unittest.TestCase):
         self.assertEqual(json.loads(json.dumps(ours())), committed["ours"])
         self.assertEqual((ROOT / "results" / "detectors.md").read_text(encoding="utf-8"), render_markdown(committed))
 
+    def test_readme_table_is_generated_not_typed(self):
+        from sealed.detector_eval import README_MARK, readme_block
+        committed = json.loads((ROOT / "results" / "detectors.json").read_text(encoding="utf-8"))
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        self.assertIn(readme_block(committed), readme)
+        self.assertEqual(readme.count(README_MARK), 2)
+
 
 if __name__ == "__main__":
     unittest.main()

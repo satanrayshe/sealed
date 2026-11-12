@@ -202,7 +202,7 @@
     if (check) {
       const ok = check.identical;
       seal.append(el("p", ok ? "seal-ok" : "seal-bad", ok
-        ? "Seal check: identical to the clean twin (this alert with every free-text field removed)."
+        ? "Seal check: identical to the clean twin (this alert without its entity and extra fields)."
         : "Seal check: differs from the clean twin. This would be a bug."));
     }
     const details = el("details");

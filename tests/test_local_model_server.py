@@ -144,6 +144,11 @@ class OverHttp(unittest.TestCase):
                            "messages": [{"role": "user", "content": "hi"}]}).encode()
         status, data = request("POST", "/api/chat", f"127.0.0.1:{port}", body)
         self.assertEqual(status, 503)
+        import time
+        for _ in range(100):  # the server records the stop just after it sends the reply
+            if fatal:
+                break
+            time.sleep(0.05)
         self.assertEqual(fatal, ["CUDA out of memory during generation"])
 
     def raw_request(self, port, method, path, headers, body=b""):
