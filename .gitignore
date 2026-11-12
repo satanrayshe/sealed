@@ -8,3 +8,8 @@ dist/
 *.egg-info/
 logs/
 results/learned_weights.*
+video/work/
+video/out/
+video/voice/
+video/*.mp4
+video/*.srt
