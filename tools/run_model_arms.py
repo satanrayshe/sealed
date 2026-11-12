@@ -223,7 +223,14 @@ def serve_and_run(args, model: str, triples: list[dict], log_dir: Path, process:
         except subprocess.TimeoutExpired:
             pass
         oom = process.returncode == OUT_OF_MEMORY or (isinstance(error, urllib.error.HTTPError) and error.code == 503)
-        log(log_dir, f"{model}: stopped by {type(error).__name__}: {error}" + ("; out of GPU memory" if oom else ""))
+        detail = ""
+        if isinstance(error, urllib.error.HTTPError):  # the server names the failure in the body
+            try:
+                detail = " " + error.read(300).decode("utf-8", "replace").strip()
+            except Exception:  # the body may already be consumed or the connection gone
+                detail = ""
+        log(log_dir, f"{model}: stopped by {type(error).__name__}: {error}{detail}"
+                     + ("; out of GPU memory" if oom else ""))
         return ("oom" if oom else 1), fresh[0]
     log(log_dir, f"{model}: done, {result['requests']} requests, {result['fresh']} new")
     return "done", result["fresh"]
