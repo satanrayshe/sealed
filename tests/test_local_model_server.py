@@ -146,6 +146,80 @@ class OverHttp(unittest.TestCase):
         self.assertEqual(status, 503)
         self.assertEqual(fatal, ["CUDA out of memory during generation"])
 
+    def raw_request(self, port, method, path, headers, body=b""):
+        import http.client
+        connection = http.client.HTTPConnection("127.0.0.1", port, timeout=10)
+        connection.putrequest(method, path, skip_host=True, skip_accept_encoding=True)
+        for name, value in headers.items():
+            connection.putheader(name, value)
+        connection.endheaders(body or None)
+        response = connection.getresponse()
+        data = response.read()
+        connection.close()
+        return response.status, data
+
+    def test_requests_are_checked_before_any_work(self):
+        backend = FakeBackend()
+        port, _ = self.start(backend)
+        host = f"127.0.0.1:{port}"
+        body = json.dumps({"model": backend.tag, "stream": False,
+                           "messages": [{"role": "user", "content": "hi"}]}).encode()
+        ok = {"Host": host, "Content-Type": "application/json", "Content-Length": str(len(body))}
+        self.assertEqual(self.raw_request(port, "POST", "/api/chat", ok, body)[0], 200)
+        self.assertEqual(self.raw_request(port, "POST", "/api/chat", dict(ok, Origin=f"http://{host}"), body)[0], 200)
+        cases = [
+            (dict(ok, Origin="https://evil.example"), body, 403),  # a web page posting cross-site
+            (dict(ok, **{"Content-Type": "text/plain"}), body, 415),  # a "simple" CORS request
+            (dict(ok, **{"Content-Length": "\u00b2"}), b"", 411),  # isdigit() but not a decimal number
+            (dict(ok, **{"Content-Length": "5000001"}), b"", 413),
+        ]
+        for headers, payload, status in cases:
+            with self.subTest(headers=headers):
+                self.assertEqual(self.raw_request(port, "POST", "/api/chat", headers, payload)[0], status)
+        deep = b"[" * 200_000 + b"]" * 200_000
+        self.assertEqual(self.raw_request(port, "POST", "/api/chat", dict(ok, **{"Content-Length": str(len(deep))}),
+                                          deep)[0], 400)
+        self.assertEqual(len(backend.seen), 2)  # only the two good requests reached the model
+        self.assertEqual(self.raw_request(port, "GET", "/api/tags", {"Host": host, "Origin": "https://evil.example"})[0],
+                         403)
+
+    def test_prompt_caps(self):
+        backend = FakeBackend(error=server_module.PromptTooLong("the prompt has 9000 tokens"))
+        long = {"model": backend.tag, "stream": False,
+                "messages": [{"role": "user", "content": "x" * (server_module.MAX_PROMPT_CHARS + 1)}]}
+        self.assertEqual(server_module.chat(backend, long)[0], 413)
+        self.assertEqual(backend.seen, [])  # refused before tokenising
+        short = dict(long, messages=[{"role": "user", "content": "hi"}])
+        self.assertEqual(server_module.chat(backend, short)[0], 413)  # over the token cap
+
+    def test_a_stalled_client_is_dropped(self):
+        import socket
+        from unittest import mock
+        with mock.patch.object(server_module, "SOCKET_TIMEOUT", 0.5):
+            port, _ = self.start(FakeBackend())
+        with socket.create_connection(("127.0.0.1", port), timeout=10) as client:
+            client.sendall(f"POST /api/chat HTTP/1.1\r\nHost: 127.0.0.1:{port}\r\nContent-Type: application/json"
+                           f"\r\nContent-Length: 1000\r\n\r\n{{".encode())
+            client.settimeout(10)
+            self.assertEqual(client.recv(100), b"")  # the server closed the connection
+
+    def test_the_port_is_bound_exclusively(self):
+        first = server_module.LocalHTTPServer(("127.0.0.1", 0), server_module.make_handler(FakeBackend(), print))
+        self.addCleanup(first.server_close)
+        port = first.server_address[1]
+        self.assertEqual(server_module.serve(FakeBackend(), port), 5)
+
+    def test_the_server_can_watch_its_driver(self):
+        import subprocess
+        child = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(1)"])
+        wait = server_module.parent_waiter(child.pid)
+        self.assertIsNotNone(wait)
+        done = threading.Thread(target=wait, daemon=True)
+        done.start()
+        done.join(timeout=20)
+        self.assertFalse(done.is_alive())
+        child.wait(timeout=20)
+
     def test_the_driver_records_what_produced_each_reply(self):
         import hashlib
         spec = importlib.util.spec_from_file_location("run_model_arms", ROOT / "tools" / "run_model_arms.py")

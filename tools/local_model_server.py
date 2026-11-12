@@ -14,7 +14,15 @@ pinned by revision, decodes greedily, refuses to load a model when the GPU's
 free memory is below the estimated need plus a margin, and stops cleanly on
 a CUDA out-of-memory error. It never touches other processes.
 
-    <python with torch> tools/local_model_server.py --model qwen3-1.7b:bf16 [--port 11434]
+Requests are checked before any work: the Host header must name this
+address, a browser's Origin header must be this address too, a POST must be
+`Content-Type: application/json` with a plain decimal Content-Length of at
+most 5 MB, and the prompt may hold at most 24,000 characters and 6,144
+tokens (the evaluation's largest request is about 4,100 bytes). A client
+that stalls is dropped after 30 seconds. The port is bound exclusively, and
+with --parent-pid the server stops when that process (its driver) ends.
+
+    <python with torch> tools/local_model_server.py --model qwen3-1.7b:bf16 [--port 11434] [--parent-pid N]
 """
 
 from __future__ import annotations
@@ -22,6 +30,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import socket
 import sys
 import threading
 import time
@@ -36,6 +45,10 @@ os.environ.setdefault("HF_HUB_DISABLE_TELEMETRY", "1")
 MAX_NEW_TOKENS = 384
 SEED = 0
 MAX_BODY_BYTES = 5_000_000
+MAX_PROMPT_CHARS = 24_000
+MAX_PROMPT_TOKENS = 6_144
+SOCKET_TIMEOUT = 30  # seconds a client may stall while sending or reading
+INSTANCE = os.environ.get("SEALED_SERVER_INSTANCE", "")  # set by the driver, reported by /api/tags
 OVERHEAD_GIB = 1.5  # CUDA context, activations and the KV cache for prompts of a few thousand tokens
 MARGIN_GIB = 1.0
 GIB = 1024 ** 3
@@ -88,6 +101,10 @@ def is_out_of_memory(error: BaseException) -> bool:
     return type(error).__name__ == "OutOfMemoryError" or "out of memory" in str(error).lower()
 
 
+class PromptTooLong(ValueError):
+    """The prompt is over the token cap; nothing was generated."""
+
+
 class Backend(Protocol):
     tag: str
 
@@ -131,6 +148,8 @@ class TransformersBackend:
             messages, add_generation_prompt=True, tokenize=True, return_dict=True, return_tensors="pt",
             **self.spec["template_kwargs"]).to("cuda:0")
         prompt_tokens = int(inputs["input_ids"].shape[1])
+        if prompt_tokens > MAX_PROMPT_TOKENS:
+            raise PromptTooLong(f"the prompt has {prompt_tokens} tokens; the cap is {MAX_PROMPT_TOKENS}")
         torch.manual_seed(SEED)
         with torch.inference_mode():
             output = self.model.generate(**inputs, generation_config=self.generation)
@@ -157,8 +176,13 @@ def chat(backend: Backend, payload: object) -> tuple[int, dict]:
             or not all(isinstance(m, dict) and m.get("role") in ("system", "user", "assistant")
                        and isinstance(m.get("content"), str) and set(m) <= {"role", "content"} for m in messages)):
         return 400, {"error": "messages must be a non-empty list of {role, content} with string content"}
+    if sum(len(m["content"]) for m in messages) > MAX_PROMPT_CHARS:
+        return 413, {"error": f"the prompt is over {MAX_PROMPT_CHARS} characters"}
     started = time.perf_counter()
-    result = backend.generate([{"role": m["role"], "content": m["content"]} for m in messages])
+    try:
+        result = backend.generate([{"role": m["role"], "content": m["content"]} for m in messages])
+    except PromptTooLong as error:
+        return 413, {"error": str(error)}
     elapsed = time.perf_counter() - started
     return 200, {
         "model": backend.tag,
@@ -172,9 +196,12 @@ def chat(backend: Backend, payload: object) -> tuple[int, dict]:
 
 
 def make_handler(backend: Backend, on_fatal):
+    instance = INSTANCE
+
     class Handler(BaseHTTPRequestHandler):
         server_version = "sealed-local-model"
         sys_version = ""
+        timeout = SOCKET_TIMEOUT
 
         def _send(self, status: int, body: dict) -> None:
             data = json.dumps(body, ensure_ascii=True).encode("ascii")
@@ -185,8 +212,12 @@ def make_handler(backend: Backend, on_fatal):
             self.wfile.write(data)
 
         def _host_ok(self) -> bool:
+            """Host must name this address (blocks DNS rebinding); a browser's Origin must too (blocks other sites)."""
             port = self.server.server_address[1]
-            return self.headers.get("Host", "") in {f"127.0.0.1:{port}", f"localhost:{port}"}
+            if self.headers.get("Host", "") not in {f"127.0.0.1:{port}", f"localhost:{port}"}:
+                return False
+            origin = self.headers.get("Origin")
+            return origin is None or origin in {f"http://127.0.0.1:{port}", f"http://localhost:{port}"}
 
         def do_GET(self) -> None:  # noqa: N802
             if not self._host_ok():
@@ -194,6 +225,7 @@ def make_handler(backend: Backend, on_fatal):
             if self.path == "/api/tags":
                 spec = MODELS.get(backend.tag, {})
                 return self._send(200, {"models": [{"name": backend.tag, "model": backend.tag,
+                                                    "instance": instance, "pid": os.getpid(),
                                                     "details": {"repo": spec.get("repo"),
                                                                 "revision": spec.get("revision"),
                                                                 "precision": spec.get("precision")}}]})
@@ -201,16 +233,23 @@ def make_handler(backend: Backend, on_fatal):
 
         def do_POST(self) -> None:  # noqa: N802
             if not self._host_ok():
+                self.close_connection = True
                 return self._send(403, {"error": "local requests only"})
             if self.path != "/api/chat":
-                return self._send(404, {"error": "not found"})
-            length = self.headers.get("Content-Length", "")
-            if not length.isdigit() or int(length) > MAX_BODY_BYTES:
                 self.close_connection = True
-                return self._send(413 if length.isdigit() else 411, {"error": "bad or missing Content-Length"})
+                return self._send(404, {"error": "not found"})
+            content_type = self.headers.get("Content-Type", "").split(";")[0].strip().lower()
+            if content_type != "application/json":
+                self.close_connection = True
+                return self._send(415, {"error": "Content-Type must be application/json"})
+            length = self.headers.get("Content-Length", "")
+            plain = length.isascii() and length.isdigit()  # superscript digits pass isdigit() but not int()
+            if not plain or int(length) > MAX_BODY_BYTES:
+                self.close_connection = True
+                return self._send(413 if plain else 411, {"error": "bad or missing Content-Length"})
             try:
                 payload = json.loads(self.rfile.read(int(length)).decode("utf-8"))
-            except (UnicodeDecodeError, ValueError):
+            except (UnicodeDecodeError, ValueError, RecursionError):
                 return self._send(400, {"error": "the request body is not JSON"})
             try:
                 status, body = chat(backend, payload)
@@ -228,8 +267,44 @@ def make_handler(backend: Backend, on_fatal):
     return Handler
 
 
-def serve(backend: Backend, port: int) -> int:
-    """Serve until interrupted. Returns 0, or 4 after a CUDA out-of-memory error."""
+class LocalHTTPServer(HTTPServer):
+    """Binds the port exclusively, so a second server can never share it with a first one."""
+
+    allow_reuse_address = os.name != "nt"  # on Windows SO_REUSEADDR would let two servers bind one port
+
+    def server_bind(self) -> None:
+        if os.name == "nt" and hasattr(socket, "SO_EXCLUSIVEADDRUSE"):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+        super().server_bind()
+
+
+def parent_waiter(pid: int):
+    """A function that returns once process `pid` has ended, or None if it cannot be watched. It only waits."""
+    if os.name == "nt":
+        import ctypes
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel32.OpenProcess.restype = ctypes.c_void_p
+        kernel32.OpenProcess.argtypes = [ctypes.c_uint32, ctypes.c_int, ctypes.c_uint32]
+        kernel32.WaitForSingleObject.argtypes = [ctypes.c_void_p, ctypes.c_uint32]
+        handle = kernel32.OpenProcess(0x00100000, False, pid)  # SYNCHRONIZE: the right to wait, nothing else
+        if not handle:
+            return None
+        return lambda: kernel32.WaitForSingleObject(handle, 0xFFFFFFFF)
+
+    def wait() -> None:
+        while True:
+            try:
+                os.kill(pid, 0)  # POSIX signal 0 is an existence check; nothing is sent
+            except ProcessLookupError:
+                return
+            except PermissionError:
+                pass
+            time.sleep(5)
+    return wait
+
+
+def serve(backend: Backend, port: int, parent_pid: int | None = None) -> int:
+    """Serve until interrupted. Returns 0, 4 after a CUDA out-of-memory error, or 5 if the port is taken."""
     state = {"code": 0}
     server: HTTPServer
 
@@ -238,7 +313,19 @@ def serve(backend: Backend, port: int) -> int:
         sys.stderr.write(f"stopping: {reason}\n")
         threading.Thread(target=server.shutdown, daemon=True).start()
 
-    server = HTTPServer(("127.0.0.1", port), make_handler(backend, on_fatal))
+    try:
+        server = LocalHTTPServer(("127.0.0.1", port), make_handler(backend, on_fatal))
+    except OSError as error:
+        sys.stderr.write(f"cannot listen on 127.0.0.1:{port} ({type(error).__name__}); another server holds it\n")
+        return 5
+    if parent_pid:
+        wait = parent_waiter(parent_pid)
+        if wait is not None:
+            def watch() -> None:
+                wait()
+                sys.stderr.write("stopping: the driver that started this server has ended\n")
+                server.shutdown()
+            threading.Thread(target=watch, daemon=True).start()
     print(f"serving {backend.tag} on http://127.0.0.1:{server.server_address[1]}/", flush=True)
     try:
         server.serve_forever()
@@ -253,6 +340,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--model", required=True, choices=sorted(MODELS))
     parser.add_argument("--port", type=int, default=11434)
+    parser.add_argument("--parent-pid", type=int, default=None, help="stop when this process (the driver) ends")
     parser.add_argument("--hub", default=os.environ.get("HF_HUB_CACHE",
                                                         str(Path.home() / ".cache" / "huggingface" / "hub")))
     args = parser.parse_args(argv)
@@ -266,7 +354,7 @@ def main(argv: list[str] | None = None) -> int:
             sys.stderr.write("CUDA out of memory while loading; nothing else was touched\n")
             return 4
         raise
-    return serve(backend, args.port)
+    return serve(backend, args.port, args.parent_pid)
 
 
 if __name__ == "__main__":
