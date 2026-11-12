@@ -15,6 +15,7 @@ is not independent evidence of correctness.
 from __future__ import annotations
 
 import json
+import math
 import random
 import re
 from collections import defaultdict
@@ -49,6 +50,17 @@ def parse_decision(reply: str) -> str:
         return UNPARSEABLE
     action = parse_action(value) if isinstance(value, str) else "unrecognised"
     return action if action in ACTIONS else UNPARSEABLE
+
+
+def wilson(k: int, n: int, z: float = 1.959964) -> tuple[float, float]:
+    """Wilson score interval for k successes in n trials (95% by default)."""
+    if n <= 0 or not 0 <= k <= n:
+        raise ValueError("need 0 <= k <= n and n > 0")
+    p = k / n
+    denominator = 1 + z * z / n
+    centre = (p + z * z / (2 * n)) / denominator
+    half = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / denominator
+    return max(0.0, centre - half), min(1.0, centre + half)
 
 
 def bootstrap_ci(clusters: list[list[int]], *, resamples: int = 2000, seed: int = 0,

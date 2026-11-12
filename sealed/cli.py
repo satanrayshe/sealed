@@ -17,6 +17,7 @@ from typing import TextIO
 from .contract import MAX_INPUT_BYTES
 from .explain import explain
 from .generate import write_data
+from .template_eval import write_results
 from .narrate import OllamaNarrator, TemplateNarrator
 from .render import render, short_id
 
@@ -123,10 +124,35 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("demo", help="run on the bundled sample alerts (offline, template narrator)")
     p.set_defaults(handler=cmd_demo)
 
+    p = sub.add_parser("evaluate", help="run an evaluation arm offline and write its results")
+    p.add_argument("--arm", choices=["template", "raw-prompt", "hardened", "model-narrator"], default="template")
+    p.add_argument("--out", default="results", help="output directory (default: results)")
+    p.set_defaults(handler=cmd_evaluate)
+
     p = sub.add_parser("generate", help="rewrite the seeded synthetic data files")
     p.add_argument("--out", default="data", help="output directory (default: data)")
     p.set_defaults(handler=cmd_generate)
     return parser
+
+
+def cmd_evaluate(args: argparse.Namespace, out: TextIO) -> int:
+    if args.arm != "template":
+        sys.stderr.write(f"the {args.arm} arm needs a local model server, which is not set up yet; nothing was run\n")
+        return 2
+    paths = write_results(args.out)
+    result = json.loads(paths["template_arm.json"].read_text(encoding="utf-8"))
+    for label, metric in [("M1 seal invariance", result["seal_invariance"]),
+                          ("M2 action stability", result["action_stability"]),
+                          ("M3 uncertainty never lowered", result["uncertainty_never_lowered"]),
+                          ("M4 detector recall (test)", result["test"]["recall"]),
+                          ("M5 false flags (test)", result["test"]["false_flags"]),
+                          ("M6 escalation fired", result["escalation_rate"])]:
+        low, high = metric["wilson95"]
+        out.write(f"{label:30s} {metric['k']:>5} / {metric['n']:<5} {100 * metric['rate']:5.1f}%  "
+                  f"[{100 * low:.1f}%, {100 * high:.1f}%]\n")
+    for path in paths.values():
+        out.write(f"wrote {path.as_posix()}\n")
+    return 0
 
 
 def cmd_generate(args: argparse.Namespace, out: TextIO) -> int:
