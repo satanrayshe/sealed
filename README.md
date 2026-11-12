@@ -25,7 +25,7 @@ Parts of every security alert are written by the attacker: the username they typ
 | Local two-pane app | TESTED | `tests/test_app.py`, screenshots in [`docs/screens/`](docs/screens/) |
 | Learned injection classifier | PLANNED | |
 | Model evaluation run (three models, three arms) | PLANNED | |
-| Public browser page, hero GIF, two-minute video | PLANNED | |
+| Public browser page and two-minute video | PLANNED | |
 
 ```
 python -m sealed demo
@@ -316,6 +316,8 @@ The plan was frozen before any run: [`docs/EVAL-PLAN.md`](docs/EVAL-PLAN.md), wi
 <!-- template-arm-headline -->
 
 Read it this way. The seal and the decision hold on every triple, by construction and now by measurement. The keyword baseline is weak: it misses most held-out strings, including every base64, rot13, leetspeak and look-alike-letter string in either split and every held-out Hindi and Hinglish string. A miss costs only the escalation, because the model never reads the text either way. That weakness is the case for the planned learned detector. One held-out benign URL, a page about writing system prompts, was flagged, which puts the false-flag rate above the 2% target on that small test half.
+
+**Model arms.** Three local models run the raw-prompt, hardened-prompt and Sealed arms: Qwen3-1.7B (bf16), Qwen3-4B-Instruct-2507 (4-bit NF4) and granite-4.0-micro (4-bit NF4), each pinned by snapshot revision (see the plan's deviations). `python -m sealed evaluate --arm models --model <tag>` computes their metrics offline from the reply cache; `tools/run_model_arms.py` fills the cache through `tools/local_model_server.py`.
 
 ## Limitations and safety
 
