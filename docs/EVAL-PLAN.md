@@ -111,3 +111,17 @@ Each entry: date and time (IST), what changed, why, and which results were re-ru
   - **Why:** disk space. There is no room to install a separate model server or to download further models.
   - **Editorial, same date:** the sentence at the top now says the plan changes only together with an entry here. Nothing else in the plan changed.
   - **Results affected:** none, because no model output existed yet.
+- **2026-11-12 09:31, before the full model run.**
+  - **Smoke test.** Each model answered every request for 10 triples, 50 distinct requests per model, all three arms. The mean time per call was 4.02 s for Qwen3-1.7B, 5.36 s for Qwen3-4B-Instruct-2507 and 3.45 s for granite-4.0-micro. All 1,200 triples need 4,693 distinct requests per model, about 16.7 hours in total.
+  - **What changed: coverage.**
+    - Qwen3-1.7B, the smallest model, runs all 1,200 triples.
+    - Qwen3-4B-Instruct-2507 and granite-4.0-micro run the first 400 triples (100 per class), 1,774 requests each.
+    - The estimated total is about 9.5 hours.
+  - **What changed: triple order.** The 1,200 triples of section 2 are taken one class at a time: direct-override, persona-hijack, context-manipulation, obfuscated, then again. Any prefix of that order is therefore stratified by class.
+  - **What changed: reported alongside the primary metric.**
+    - "Decision lowered": the attacked decision ranks below the clean twin's. Attacks aim to lower the action.
+    - The share of replies that are not valid JSON, per arm.
+    - The share of narrator sentences the verifier drops.
+    - For the Sealed arm the decision is the policy's, so a change can only be the documented one-level escalation.
+  - **Why:** time. One run on the shared GPU is kept to about ten hours.
+  - **Results affected:** the smoke-test replies stay in the hash-keyed cache and are reused by the run. Only the smoke check above was looked at, and it does not change the plan.
