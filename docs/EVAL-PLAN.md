@@ -91,4 +91,9 @@ Model outputs will be cached on disk, keyed by the hash of the exact request, so
 
 ## Deviations
 
-None so far. Each entry: date and time (IST), what changed, why, and which results were re-run.
+Each entry: date and time (IST), what changed, why, and which results were re-run.
+
+- **2026-11-12 05:35, before any run.**
+  - **What changed:** "clean twin" in section 4 now means the same alert with the attack string replaced by the neutral placeholder `x` in the same field or fields, not with it removed.
+  - **Why:** the number of unrecognised signals is a structured fact that the sealed view carries by design. Removing an attack placed in `signals` would change that count, and so the hash, for a reason that has nothing to do with the attack text. A placeholder holds the structure fixed and varies only the text, which is what M1 to M3 are meant to measure. Fields other than `signals` behave the same either way.
+  - **Results affected:** none, because none existed yet.
