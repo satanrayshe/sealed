@@ -99,6 +99,7 @@ Exit codes: 0 every alert explained, 1 input rejected or unreadable, 2 usage err
 | Situation | What happens |
 |---|---|
 | Not UTF-8, empty, over 5 MB, not JSON, nested too deep, NaN/Infinity/overflowing numbers, a repeated top-level key, no `alerts` list, over 1,000 alerts | whole input rejected |
+| A negative number in a top-level field other than `alerts`, nested included | whole input rejected (path such as `$.<top-level field 1>`, never the key name) |
 | Alert not an object, or repeats a key | that alert rejected; the others still run |
 | `id` missing, null, not a string, blank or over 256 characters | that alert rejected |
 | `signals` not a list, or a signal that is not a string | that alert rejected |
@@ -113,7 +114,7 @@ Exit codes: 0 every alert explained, 1 input rejected or unreadable, 2 usage err
 | Extra fields | ignored for the decision, scanned for instructions, counted, never printed |
 | More than 20 unrecognised signals or 20 extra fields in one alert | all read and counted; the first 20 of each are quarantined and scanned |
 
-JSON `null` means the field is absent. Every rejection names the place (a JSON path built from our own field names, indices and positions such as `<extra field 2>`, never from input keys) and a code. No message repeats an input value. Top-level fields other than `alerts` are counted and ignored.
+JSON `null` means the field is absent. Every rejection names the place (a JSON path built from our own field names, indices and positions such as `<extra field 2>`, never from input keys) and a code. No message repeats an input value. Top-level fields other than `alerts` are counted and otherwise ignored, except that a negative number in one rejects the whole input.
 
 **Signal grammar.** `signal := [count] phrase`. The count is 1 to 7 ASCII digits or one number word (zero to twenty, thirty to ninety, hundred, thousand). The phrase is one of about 200 declared phrasings of the 42 types. The text must be ASCII, at most 120 characters, letters, digits and spaces; `_` or `-` between two letters or digits reads as a space; the filler word "synthetic" is ignored, so "five failed synthetic attempts" parses.
 
@@ -348,7 +349,7 @@ Code: [`sealed/arms.py`](sealed/arms.py) builds the two baseline prompts; [`seal
 - **Severity and the alert's own action never decide.** Both are upstream labels. Severity values: info, low, review, medium, high, critical ("review" is the organiser's example). The alert's own action is compared with the policy's; disagreement or an unusable value adds uncertainty.
 - **Types are strict, values are tolerant.** A wrong type (a non-string severity, action, signal or entity field, a non-list signals) or a negative number rejects the alert, because the input is malformed and its content must not be printed. An unknown string degrades into uncertainty. Free text never causes a rejection, apart from the 5 MB input cap.
 - **Null means absent,** for severity, action, signals, entity fields and the id (a null id is a missing id).
-- **Every number in an alert is a counter or timestamp,** so any negative number rejects the alert; "-5 failed attempts" in a signal is text, not a number, and is only unrecognised.
+- **Every number is a counter or timestamp,** so any negative number rejects the alert it is in, or the whole input when it sits in a top-level field outside `alerts`; "-5 failed attempts" in a signal is text, not a number, and is only unrecognised.
 - **Duplicate ids.** Identical repeats are replays (explained once). Differing versions are all explained with +1 uncertainty (U9), because rejecting them would let one changed copy delete a contain recommendation. Only valid alerts take part, so a rejected alert never masks a valid one.
 - **No limit on signals per alert** (the 5 MB cap bounds them). At most 20 unrecognised signals and 20 extra fields per alert are quarantined and scanned; the rest are counted.
 - **Undocumented extra fields are never printed,** only scanned and counted, since they may hold anything. Documented fields are printed escaped.

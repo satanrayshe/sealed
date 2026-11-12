@@ -7,7 +7,8 @@ Three outcomes, applied in this order:
 
 * Reject the whole input when it cannot be read: not UTF-8, empty, too big,
   not JSON, nested too deep, a non-finite or oversized number, a repeated
-  top-level key, no "alerts" list, or too many alerts.
+  top-level key, no "alerts" list, too many alerts, or a negative number in
+  a top-level field other than "alerts".
 * Reject one alert when it cannot be identified, its structure or a type is
   wrong, or it holds a negative number: not an object, a repeated key, id
   missing / not a string / blank / too long, signals not a list or a signal
@@ -188,22 +189,23 @@ def _as_text(value: object) -> str:
     return "\n".join(parts)
 
 
-def _negative_number_path(alert: dict) -> str | None:
-    """Path of the first negative number anywhere in the alert, or None.
+def _negative_number_path(obj: dict, known: tuple[str, ...] = CONTRACT_FIELDS,
+                          other: str = "extra field", skip: tuple[str, ...] = ()) -> str | None:
+    """Path of the first negative number anywhere in a JSON object, or None.
 
-    The path is built from our own field names, indices and positions
+    The path is built from our own field names (`known`), indices and positions
     ("<extra field 2>", "<key 1>"), never from input keys, so it cannot carry
-    a secret. Iterative and depth-first in document order.
+    a secret. Keys in `skip` are not walked. Iterative, depth-first, in document order.
     """
-    extra_numbers: dict[str, int] = {}
-    for key in alert:
-        if key not in CONTRACT_FIELDS:
-            extra_numbers[key] = len(extra_numbers) + 1
+    numbers: dict[str, int] = {}
+    for key in obj:
+        if key not in known and key not in skip:
+            numbers[key] = len(numbers) + 1
 
     def label(key: str) -> str:
-        return f".{key}" if key in CONTRACT_FIELDS else f".<extra field {extra_numbers[key]}>"
+        return f".{key}" if key in known else f".<{other} {numbers[key]}>"
 
-    stack = [(((label(k), v) for k, v in alert.items()), "")]
+    stack = [(((label(k), v) for k, v in obj.items() if k not in skip), "")]
     while stack:
         step = next(stack[-1][0], None)
         if step is None:
@@ -351,6 +353,10 @@ def parse_document(data: bytes | str) -> Document:
     alerts = obj["alerts"]
     if not isinstance(alerts, list):
         return Document((Issue("wrong-type", "$.alerts", '"alerts" must be a list'),), (), 0)
+    negative = _negative_number_path(obj, known=(), other="top-level field", skip=("alerts",))
+    if negative is not None:
+        return Document((Issue("negative-number", "$" + negative,
+                               "numbers must be finite and nonnegative, top-level fields included"),), (), 0)
     if len(alerts) > MAX_ALERTS:
         return Document((Issue("too-many-alerts", "$.alerts", f"more than {MAX_ALERTS} alerts"),), (), 0)
     items = [_parse_alert(i, raw) for i, raw in enumerate(alerts)]

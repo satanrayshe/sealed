@@ -217,6 +217,19 @@ class InvalidInput(unittest.TestCase):
             with self.subTest(data=data[:40]):
                 self.assertInputRejected(data, "bad-number")
 
+    def test_negative_number_in_a_top_level_field(self):
+        cases = {
+            '{"alerts": [], "version": -1}': "$.<top-level field 1>",
+            '{"meta": {"ok": 1, "x": [0, -2.5]}, "alerts": []}': "$.<top-level field 1>.<key 2>[1]",
+            '{"alerts": [], "a": 0, "sk-test-SECRET": [-1]}': "$.<top-level field 2>[0]",
+        }
+        for data, where in cases.items():
+            with self.subTest(data=data):
+                document = parse_document(data)
+                self.assertEqual([(i.code, i.where) for i in document.issues], [("negative-number", where)])
+                self.assertNotIn("SECRET", document.issues[0].where + document.issues[0].message)
+        self.assertTrue(parse_document('{"alerts": [], "version": 2, "flags": [true, null, -0.0]}').ok)
+
     def test_too_deep(self):
         self.assertInputRejected('{"alerts": ' + "[" * 100_000 + "]" * 100_000 + "}", "too-deep")
 
