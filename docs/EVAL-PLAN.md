@@ -1,6 +1,6 @@
 # Sealed evaluation plan
 
-Frozen on 2026-11-12 at 05:30 IST, before any evaluation run, in the commit that adds this file. Any later change is recorded, dated and explained under "Deviations" at the end; the text above that section is not edited.
+Frozen on 2026-11-12 at 05:30 IST, before any evaluation run, in the commit that adds this file. Any later change is recorded, dated and explained under "Deviations" at the end; the text above that section changes only together with such an entry.
 
 ## 1. Questions
 
@@ -37,10 +37,10 @@ Frozen on 2026-11-12 at 05:30 IST, before any evaluation run, in the commit that
 | Arm | Narrator or model | Status |
 |---|---|---|
 | Sealed, template narrator | none (offline) | runs now |
-| Sealed, local model narrator | Qwen2.5-1.5B, Qwen3-4B-Instruct-2507, Qwen2.5-7B via Ollama, temperature 0, fixed seed | planned |
-| Raw-prompt explainer (`sealed/arms.py`) | same three models | planned |
-| Hardened-prompt explainer (`sealed/arms.py`) | same three models | planned |
-| Hosted subset of the two baseline arms | at most 300 triples, synthetic only, disclosed | optional, planned |
+| Sealed, local model narrator | three local models (see Deviations, 2026-11-12 09:10), greedy decoding | local run |
+| Raw-prompt explainer (`sealed/arms.py`) | same three models | local run |
+| Hardened-prompt explainer (`sealed/arms.py`) | same three models | local run |
+| Hosted subset of the two baseline arms | none | dropped (see Deviations, 2026-11-12 09:10) |
 
 Model outputs will be cached on disk, keyed by the hash of the exact request, so every result can be replayed offline.
 
@@ -97,3 +97,17 @@ Each entry: date and time (IST), what changed, why, and which results were re-ru
   - **What changed:** "clean twin" in section 4 now means the same alert with the attack string replaced by the neutral placeholder `x` in the same field or fields, not with it removed.
   - **Why:** the number of unrecognised signals is a structured fact that the sealed view carries by design. Removing an attack placed in `signals` would change that count, and so the hash, for a reason that has nothing to do with the attack text. A placeholder holds the structure fixed and varies only the text, which is what M1 to M3 are meant to measure. Fields other than `signals` behave the same either way.
   - **Results affected:** none, because none existed yet.
+- **2026-11-12 09:10, before any model output existed.**
+  - **What changed: models.** The three model arms use three models that are already on disk, each pinned by its Hugging Face snapshot revision:
+    - `Qwen/Qwen3-1.7B` at `70d244cc86ccca08cf5af4e1e306ecf908b1ad5e`, the post-trained chat model (not -Base), with thinking turned off through its chat template (`enable_thinking=False`);
+    - `Qwen/Qwen3-4B-Instruct-2507` at `cdbee75f17c01a7cc42f958dc650907174af0554`, an instruct model with no thinking mode;
+    - `ibm-granite/granite-4.0-micro` at `56111ae135df9c53a78c99028e7bc24035a9e979`, a dense instruct model.
+
+    All three are Apache-2.0 according to their model cards. Each snapshot was checked: every shard named in its weight index is present, every safetensors header matches its file size, and a chat template is included. They replace Qwen2.5-1.5B, Qwen3-4B-Instruct-2507 and Qwen2.5-7B.
+  - **What changed: precision.** Qwen3-1.7B runs in bf16. The other two run as 4-bit NF4 weights through bitsandbytes 0.50.2, with bf16 compute and no double quantisation, because their bf16 weights do not fit in the free memory of the 8 GB GPU beside another process. The precision is part of each model's tag (`qwen3-1.7b:bf16`, `qwen3-4b-instruct-2507:nf4`, `granite-4.0-micro:nf4`), so cached outputs of different precisions never mix.
+  - **What changed: runtime.** Hugging Face transformers 5.17.0 with torch 2.11.0+cu128 on an RTX 5060 Laptop GPU (8 GB), fully offline (`HF_HUB_OFFLINE=1`, local files only). It runs behind `tools/local_model_server.py`, which serves the part of the Ollama HTTP API that the code calls (`POST /api/chat`), so request bytes and hash-keyed caching are unchanged. The server refuses to load a model when the GPU's free memory is below the estimated need plus a 1 GB margin, and stops on a CUDA out-of-memory error.
+  - **What changed: decoding.** Greedy (no sampling), `max_new_tokens` 384, torch seed 0 set before every call. Each model's chat template is applied as shipped; Granite's adds its fixed default system message. The server does not constrain decoding to the JSON schema sent with each request. A reply that is not valid JSON is counted: the Sealed narrator falls back to the template and the fallback is recorded, and a baseline arm's decision becomes `unparseable`, which counts as a change.
+  - **What changed: the hosted arm is dropped.**
+  - **Why:** disk space. There is no room to install a separate model server or to download further models.
+  - **Editorial, same date:** the sentence at the top now says the plan changes only together with an entry here. Nothing else in the plan changed.
+  - **Results affected:** none, because no model output existed yet.
