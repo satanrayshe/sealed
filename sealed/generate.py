@@ -17,7 +17,8 @@ import random
 import unicodedata
 from pathlib import Path
 
-from .corpus import ATTACKS, DEVANAGARI_NAMES, IGNORE_SYSTEM_USERNAMES, LATIN_INDIAN_NAMES, benign_oddities
+from .attackset import attack_set, benign_set
+from .corpus import DEVANAGARI_NAMES, IGNORE_SYSTEM_USERNAMES, LATIN_INDIAN_NAMES
 from .quarantine import INVISIBLE
 from .vocabulary import NUMBER_WORDS
 
@@ -167,9 +168,8 @@ def data_files() -> dict[str, str]:
     """File name -> exact text of every generated data file."""
     return {
         "synthetic_alerts.json": _lines(synthetic_alerts(), "alerts"),
-        "benign_oddities.json": _lines(benign_oddities(), "benign_oddities"),
-        "attack_strings.json": _lines([{"id": a.id, "family": a.family, "text": a.text} for a in ATTACKS],
-                                      "attack_strings"),
+        "benign_oddities.json": _lines(benign_set(), "benign_oddities"),
+        "attack_set.json": _lines(attack_set(), "attack_set"),
     }
 
 

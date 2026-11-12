@@ -1,11 +1,15 @@
+import base64
+import codecs
 import collections
 import json
 import unittest
 from pathlib import Path
 
+from sealed.attackset import PLAIN_EN
 from sealed.corpus import ATTACKS
 from sealed.explain import explain
 from sealed.generate import FAMILIES, PER_FAMILY, data_files, synthetic_alerts
+from sealed.vocabulary import parse_signal
 
 DATA = Path(__file__).resolve().parent.parent / "data"
 
@@ -55,22 +59,61 @@ class SyntheticAlerts(unittest.TestCase):
 
 
 class OtherData(unittest.TestCase):
-    def test_benign_oddities(self):
-        items = json.loads((DATA / "benign_oddities.json").read_text(encoding="utf-8"))["benign_oddities"]
-        kinds = collections.Counter(item["kind"] for item in items)
-        self.assertEqual(set(kinds), {"latin-indian-name", "devanagari-name", "ignore-or-system-username",
-                                      "long-user-agent"})
-        self.assertTrue(any("ऀ" <= ch <= "ॿ" for item in items for ch in item["value"]))
-        self.assertTrue(all(len(i["value"]) >= 400 for i in items if i["kind"] == "long-user-agent"))
-        names = [i["value"].lower() for i in items if i["kind"] == "ignore-or-system-username"]
-        self.assertTrue(any("ignore" in n for n in names) and any("system" in n for n in names))
+    @classmethod
+    def setUpClass(cls):
+        cls.benign = json.loads((DATA / "benign_oddities.json").read_text(encoding="utf-8"))["benign_oddities"]
+        cls.attacks = json.loads((DATA / "attack_set.json").read_text(encoding="utf-8"))["attack_set"]
 
-    def test_attack_strings_mirror_the_corpus(self):
-        items = json.loads((DATA / "attack_strings.json").read_text(encoding="utf-8"))["attack_strings"]
-        self.assertEqual([(i["id"], i["family"], i["text"]) for i in items],
-                         [(a.id, a.family, a.text) for a in ATTACKS])
-        self.assertEqual({a.family for a in ATTACKS},
+    def test_benign_set(self):
+        kinds = collections.Counter(item["kind"] for item in self.benign)
+        self.assertEqual(set(kinds), {"latin-indian-name", "devanagari-name", "ignore-or-system-username",
+                                      "long-user-agent", "url-with-prompt", "hostname"})
+        self.assertTrue(any(0x900 <= ord(ch) <= 0x97F for item in self.benign for ch in item["value"]))
+        self.assertTrue(all(len(i["value"]) >= 400 for i in self.benign if i["kind"] == "long-user-agent"))
+        names = [i["value"].lower() for i in self.benign if i["kind"] == "ignore-or-system-username"]
+        self.assertTrue(any("ignore" in n for n in names) and any("system" in n for n in names))
+        self.assertTrue(all("prompt" in i["value"] for i in self.benign if i["kind"] == "url-with-prompt"))
+        self.assertTrue(all(i["split"] == "dev" for i in self.benign[:97]))
+        self.assertEqual({i["split"] for i in self.benign[97:]}, {"dev", "test"})
+
+    def test_attack_set_tags(self):
+        self.assertTrue(190 <= len(self.attacks) <= 210)
+        self.assertEqual(len({a["id"] for a in self.attacks}), len(self.attacks))
+        self.assertEqual({a["class"] for a in self.attacks},
                          {"direct-override", "persona-hijack", "context-manipulation", "obfuscated"})
+        self.assertEqual({a["language"] for a in self.attacks}, {"en", "hi", "hinglish"})
+        for encoding in ["base64", "rot13", "leetspeak", "homoglyph", "zero-width", "bidi", "split", "json",
+                         "markdown", "url", "hostname"]:
+            self.assertIn(encoding, {a["encoding"] for a in self.attacks})
+        fields = {"username", "user_agent", "url", "host", "signals", "note", "action", "severity"}
+        for a in self.attacks:
+            self.assertLessEqual(set(a["fields"]), fields, a["id"])
+            self.assertIn(a["split"], ("dev", "test"))
+            if a["encoding"] == "split":
+                self.assertEqual(len(a["parts"]), len(a["fields"]), a["id"])
+            else:
+                self.assertIsInstance(a["text"], str)
+
+    def test_old_strings_are_dev_and_every_class_has_a_test_half(self):
+        old = {a.id for a in ATTACKS}
+        self.assertTrue(all(a["split"] == "dev" for a in self.attacks if a["id"] in old))
+        for cls in {a["class"] for a in self.attacks}:
+            new = [a for a in self.attacks if a["class"] == cls and a["id"] not in old]
+            tests = sum(a["split"] == "test" for a in new)
+            self.assertIn(tests, (len(new) // 2, len(new) - len(new) // 2))
+
+    def test_encoded_strings_hide_their_plaintext(self):
+        for a in self.attacks:
+            if a["encoding"] == "base64":
+                self.assertTrue(base64.b64decode(a["text"]).decode().isascii(), a["id"])
+            if a["encoding"] == "rot13" and a["id"].startswith("OB"):
+                plain = codecs.encode(a["text"], "rot13")
+                self.assertIn(plain, [text for _, text in PLAIN_EN])
+
+    def test_no_attack_string_reads_as_a_signal(self):
+        for a in self.attacks:
+            for text in a.get("parts", [a.get("text")]):
+                self.assertIsNone(parse_signal(text), a["id"])
 
 
 if __name__ == "__main__":
