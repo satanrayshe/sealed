@@ -128,9 +128,16 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--port", type=int, default=8765, help="port on 127.0.0.1 (default 8765)")
     p.set_defaults(handler=cmd_app)
 
-    p = sub.add_parser("evaluate", help="run an evaluation arm offline and write its results")
-    p.add_argument("--arm", choices=["template", "raw-prompt", "hardened", "model-narrator"], default="template")
-    p.add_argument("--out", default="results", help="output directory (default: results)")
+    p = sub.add_parser("evaluate", help="run an evaluation arm and write or print its results")
+    p.add_argument("--arm", choices=["template", "models"], default="template",
+                   help="template: offline, no model; models: the three model arms for one local model")
+    p.add_argument("--out", default="results", help="output directory for the template arm (default: results)")
+    p.add_argument("--model", default="qwen3-1.7b:bf16", help="model tag for --arm models")
+    p.add_argument("--limit", type=int, default=1200, help="use the first N of the 1,200 class-interleaved triples")
+    p.add_argument("--run", action="store_true",
+                   help="ask the local server for replies not yet cached (otherwise summarise the cache offline)")
+    p.add_argument("--base-url", default="http://127.0.0.1:11434", help="local /api/chat server (loopback only)")
+    p.add_argument("--cache-dir", default=None, help="reply cache (default: cache/model_arms in the repository)")
     p.set_defaults(handler=cmd_evaluate)
 
     p = sub.add_parser("generate", help="rewrite the seeded synthetic data files")
@@ -148,10 +155,26 @@ def cmd_app(args: argparse.Namespace, out: TextIO) -> int:
     return 0
 
 
-def cmd_evaluate(args: argparse.Namespace, out: TextIO) -> int:
-    if args.arm != "template":
-        sys.stderr.write(f"the {args.arm} arm needs a local model server, which is not set up yet; nothing was run\n")
+def cmd_models(args: argparse.Namespace, out: TextIO) -> int:
+    from . import model_eval
+    if args.model not in model_eval.MODELS or not 0 < args.limit <= 1200:
+        sys.stderr.write(f"error: --model must be one of {', '.join(model_eval.MODELS)} and --limit 1 to 1200" + chr(10))
         return 2
+    triples = model_eval.interleaved_triples()[:args.limit]
+    cache = args.cache_dir or model_eval.DEFAULT_CACHE
+    if args.run:
+        def progress(p: dict) -> None:
+            out.write(f"{p['model']} {p['done']}/{p['total']} {p['arm']} mean {p['mean_seconds']}s "
+                      f"remaining about {p['remaining_seconds'] // 60} min" + chr(10))
+            out.flush()
+        model_eval.run(args.model, triples, base_url=args.base_url, cache_dir=cache, progress=progress)
+    out.write(json.dumps(model_eval.summarise(args.model, triples, cache_dir=cache), indent=2) + chr(10))
+    return 0
+
+
+def cmd_evaluate(args: argparse.Namespace, out: TextIO) -> int:
+    if args.arm == "models":
+        return cmd_models(args, out)
     paths = write_results(args.out)
     result = json.loads(paths["template_arm.json"].read_text(encoding="utf-8"))
     for label, metric in [("M1 seal invariance", result["seal_invariance"]),

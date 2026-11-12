@@ -110,10 +110,15 @@ class Command(unittest.TestCase):
                 self.assertEqual((Path(tmp) / name).read_text(encoding="utf-8"), text)
         self.assertIn("M1 seal invariance", out.getvalue())
 
-    def test_model_arms_wait_for_a_model_server(self):
+    def test_model_arms_summarise_an_empty_cache_offline(self):
         with tempfile.TemporaryDirectory() as tmp:
-            self.assertEqual(main(["evaluate", "--arm", "raw-prompt", "--out", tmp], out=io.StringIO()), 2)
-            self.assertEqual(list(Path(tmp).iterdir()), [])
+            out = io.StringIO()
+            code = main(["evaluate", "--arm", "models", "--model", "granite-4.0-micro:nf4", "--limit", "4",
+                         "--cache-dir", tmp], out=out)
+            self.assertEqual(code, 0)
+            summary = json.loads(out.getvalue())
+            self.assertEqual(summary["arms"]["raw-prompt"]["missing"], 4)
+            self.assertEqual(main(["evaluate", "--arm", "models", "--model", "nope:bf16"], out=io.StringIO()), 2)
 
 
 if __name__ == "__main__":
