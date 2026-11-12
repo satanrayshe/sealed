@@ -9,7 +9,9 @@ from sealed.attackset import CLASSES, attack_set
 from sealed.cli import main
 from sealed.evaluate import wilson
 from sealed.generate import synthetic_alerts
-from sealed.template_eval import PLACEHOLDER, _stable, ascii_preview, build_triples, place, result_files
+from sealed.template_eval import (
+    PLACEHOLDER, _stable, ascii_preview, build_triples, place, readme_block, result_files,
+)
 
 RESULTS = Path(__file__).resolve().parent.parent / "results"
 
@@ -80,6 +82,10 @@ class CommittedResults(unittest.TestCase):
                 self.assertEqual(self.result[metric]["k"], self.result[metric]["n"])
         self.assertEqual(self.result["triple_failures"], [])
         self.assertEqual(self.result["counts"]["triples"], 1200)
+
+    def test_readme_table_is_generated_not_typed(self):
+        readme = (RESULTS.parent / "README.md").read_text(encoding="utf-8")
+        self.assertIn(readme_block(self.result), readme)
 
     def test_every_number_comes_with_an_interval(self):
         def walk(node):

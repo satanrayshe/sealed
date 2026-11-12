@@ -272,6 +272,27 @@ def render_markdown(r: dict) -> str:
     return "\n".join(lines)
 
 
+README_MARK = "<!-- template-arm-headline -->"
+
+
+def readme_block(r: dict) -> str:
+    """The README's results table, generated from the result so it is never typed by hand."""
+    rows = [
+        ("M1 seal invariance (triples)", r["seal_invariance"]),
+        ("M2 action stability (triples)", r["action_stability"]),
+        ("M3 uncertainty never lowered (triples)", r["uncertainty_never_lowered"]),
+        ("M4 keyword-detector recall, held-out test strings", r["test"]["recall"]),
+        ("M4 keyword-detector recall, dev strings", r["dev"]["recall"]),
+        ("M5 false flags, held-out test benign values", r["test"]["false_flags"]),
+        ("M5 false flags, dev benign values", r["dev"]["false_flags"]),
+        ("M6 escalation hook fired (triples)", r["escalation_rate"]),
+    ]
+    lines = [README_MARK, "| Metric (template arm, no model) | Result | Wilson 95% interval |", "|---|---|---|"]
+    lines += [f"| {label} | {_pct(p)} |" for label, p in rows]
+    lines.append(README_MARK)
+    return "\n".join(lines)
+
+
 def result_files(per_class: int = PER_CLASS) -> dict[str, str]:
     result = run(per_class)
     return {
