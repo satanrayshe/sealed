@@ -31,12 +31,12 @@ Spoken at 150 words a minute the lines take about 1:35 of the 1:53 the video run
 ### Shot 4. Run it
 
 14. **1:16.0** Everything runs offline, with one command and no API keys.
-15. **1:20.5** The demo ends with the seal check: one hash for both alerts.
+15. **1:20.5** The demo ends with the sealed check: one hash for both alerts.
 16. **1:26.0** The tests push thousands of random values through every free-text field.
 
 ### Shot 5. Try to break it
 
-17. **1:31.0** You can try it yourself. Here I'm typing a Hinglish attack.
+17. **1:31.0** You can try it yourself. Here I am typing an English attack.
 18. **1:36.5** The action doesn't go down, and the model input hash is unchanged.
 
 ### Shot 6. Close

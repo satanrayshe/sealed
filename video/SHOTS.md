@@ -37,7 +37,7 @@ Two kinds of text appear on screen:
 | 4 | `terminal-demo` | 14 | 76.0 to 80.5 (4.5) | `python -m sealed demo`, its first 22 lines. | | real output, run during the capture |
 | 4 | `terminal-seal` | 15 | 80.5 to 86.0 (5.5) | The end of the same output: the attacked alert and the seal check, hash lines highlighted. | | same |
 | 4 | `terminal-tests` | 16 | 86.0 to 91.0 (5.0) | The evaluation replay (`evaluate --arm models` in final mode, `--arm template` in the dry run, written to a scratch folder) and the end of `python -m unittest`. | | same |
-| 5 | `try-type` | 17 | 91.0 to 96.5 (5.5) | The local app with the organiser's example; a held-out Hinglish string is typed into a new `user_agent` field. | "attacker-controlled" | `sealed/samples/track_example.json`, `data/attack_set.json` |
+| 5 | `try-type` | 17 | 91.0 to 96.5 (5.5) | The local app with the organiser's example; a held-out English persona-hijack string is typed into a new `user_agent` field. | "attacker-controlled" | `sealed/samples/track_example.json`, `data/attack_set.json` |
 | 5 | `try-result` | 18 | 96.5 to 102.5 (6.0) | After Explain: the action and uncertainty outlined, and the model-input block outlined with the hash from before the edit. | the action before and after; the earlier hash | read from the app's page |
 | 6 | `end-card` | 19 | 102.5 to 113.0 (10.5) | End card: name, one-line claim, track, repository link when known, and an invitation to try it. | "Runs offline with one command. Try to break it." | none |
 
@@ -49,7 +49,7 @@ These rules pick what the video shows. They are applied by `capture.py`, never b
 
 - **The jaw-drop's alert and string.** Candidates are triples of the evaluation in its class-interleaved order, within each model's planned coverage, that write one plain attack string of at most 120 characters into the username, and on which Sealed's action does not change. In final mode a candidate also needs recorded raw-prompt replies in which the decision on the clean alert equals the one on its "x" twin, and the decision on the attacked alert is lower. Preference, in order: that clean decision equals the policy's action; the attacked decision is allow; the larger model (Qwen3-4B-Instruct-2507, then granite-4.0-micro, then Qwen3-1.7B); class persona-hijack, then direct-override, context-manipulation, obfuscated; the detector flagged the string; English; a credential-stuffing alert; the shorter string; the earlier triple. `--triple N` and `--model` narrow the choice. The dry run applies the same rule without the replies, over the first 400 triples.
 - **The failure card.** The first base64 string in the template arm's list of missed attack strings, held-out split first, placed in its first target field of the jaw-drop's alert.
-- **The typed string.** The first held-out Hinglish persona-hijack string of the attack set, by id, typed into a `user_agent` field added to the organiser's example.
+- **The typed string.** The first held-out English persona-hijack string of the attack set, by id, typed into a `user_agent` field added to the organiser's example.
 
 ## Files
 

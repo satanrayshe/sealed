@@ -197,11 +197,11 @@ def choose_failure(template: dict, base: dict) -> dict:
 
 
 def choose_try() -> dict:
-    """The string typed into the organiser's example in shot 5: a Hinglish persona hijack from the held-out half."""
-    pool = [a for a in attack_set() if a["language"] == "hinglish" and a["class"] == "persona-hijack"
+    """The string typed into the organiser's example in shot 5: an English persona hijack from the held-out half."""
+    pool = [a for a in attack_set() if a["language"] == "en" and a["class"] == "persona-hijack"
             and a["split"] == "test" and a["encoding"] == "plain" and isinstance(a.get("text"), str)]
     if not pool:
-        raise SystemExit("the attack set has no held-out Hinglish persona-hijack string")
+        raise SystemExit("the attack set has no held-out English persona-hijack string")
     attack = sorted(pool, key=lambda a: a["id"])[0]
     return {"attack": attack, "field": "user_agent"}
 
