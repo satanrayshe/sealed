@@ -1,0 +1,16 @@
+{
+ "attribution": "Trained on deepset/prompt-injections (Apache-2.0), Lakera/gandalf_ignore_instructions (MIT) and reshabhs/SPML_Chatbot_Prompt_Injection (MIT).",
+ "bias": -4.554245660763876,
+ "buckets": 262144,
+ "epochs": 4,
+ "features": "char 3-5-grams and word unigrams, CRC-32 hashed",
+ "max_chars": 2000,
+ "name": "ngram-logreg-1",
+ "seed": 2026,
+ "training_records": {
+  "deepset-prompt-injections": 662,
+  "lakera-gandalf-ignore-instructions": 1000,
+  "spml-chatbot-prompt-injection": 16012
+ },
+ "weights_sha256": "d28844c06b6e98c7dc4466c9e6bd24f76f72d2ce5a5795bf5c6ea10c47ac0380"
+}

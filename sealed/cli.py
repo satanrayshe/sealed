@@ -60,7 +60,11 @@ def cmd_explain(args: argparse.Namespace, out: TextIO) -> int:
         except ValueError as err:  # bad --model or a non-loopback --ollama-url
             sys.stderr.write(f"error: {err}\n")
             return 2
-    report = explain(data, narrator=narrator)
+    detector = None
+    if args.detector == "learned":
+        from .learned import LearnedDetector
+        detector = LearnedDetector()
+    report = explain(data, narrator=narrator, detector=detector)
     _print_report(report, args.format, out)
     return _status(report)
 
@@ -119,6 +123,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--ollama-url", default="http://127.0.0.1:11434", help="loopback addresses only")
     p.add_argument("--cache-dir", default="cache/narrations", help="narration cache, keyed by model-input hash")
     p.add_argument("--offline", action="store_true", help="replay cached narrations only; never call Ollama")
+    p.add_argument("--detector", choices=["keyword", "learned"], default="keyword",
+                   help="injection detector: the keyword baseline (default) or the learned n-gram model")
     p.set_defaults(handler=cmd_explain)
 
     p = sub.add_parser("demo", help="run on the bundled sample alerts (offline, template narrator)")
@@ -129,8 +135,10 @@ def build_parser() -> argparse.ArgumentParser:
     p.set_defaults(handler=cmd_app)
 
     p = sub.add_parser("evaluate", help="run an evaluation arm and write or print its results")
-    p.add_argument("--arm", choices=["template", "models"], default="template",
-                   help="template: offline, no model; models: the three model arms for one local model")
+    p.add_argument("--arm", choices=["template", "models", "detectors"], default="template",
+                   help="template: offline, no model; models: the three model arms for one local model; "
+                        "detectors: train and compare the learned detector (needs --corpora)")
+    p.add_argument("--corpora", default=None, help="directory made by tools/fetch_corpora.py (for --arm detectors)")
     p.add_argument("--out", default="results", help="output directory for the template arm (default: results)")
     p.add_argument("--model", default="qwen3-1.7b:bf16", help="model tag for --arm models")
     p.add_argument("--limit", type=int, default=1200, help="use the first N of the 1,200 class-interleaved triples")
@@ -172,9 +180,22 @@ def cmd_models(args: argparse.Namespace, out: TextIO) -> int:
     return 0
 
 
+def cmd_detectors(args: argparse.Namespace, out: TextIO) -> int:
+    from . import detector_eval
+    if not args.corpora or not Path(args.corpora).is_dir():
+        sys.stderr.write("error: --corpora must name the directory made by tools/fetch_corpora.py" + chr(10))
+        return 2
+    paths = detector_eval.write_results(detector_eval.run(Path(args.corpora)), Path(args.out))
+    for path in paths.values():
+        out.write(f"wrote {path.as_posix()}" + chr(10))
+    return 0
+
+
 def cmd_evaluate(args: argparse.Namespace, out: TextIO) -> int:
     if args.arm == "models":
         return cmd_models(args, out)
+    if args.arm == "detectors":
+        return cmd_detectors(args, out)
     paths = write_results(args.out)
     result = json.loads(paths["template_arm.json"].read_text(encoding="utf-8"))
     for label, metric in [("M1 seal invariance", result["seal_invariance"]),
