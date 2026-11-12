@@ -1,0 +1,20 @@
+{
+ "content": "{\"sentences\": [\"MFA push prompts were sent to the user, 25 times [S1]\", \"MFA prompts were denied by the user, 23 times [S2]\", \"An MFA prompt was approved [S3]\", \"A sign-in occurred from a device not seen before [S4]\", \"Activity occurred outside normal working hours [S5]\"]}",
+ "done_reason": "stop",
+ "eval_count": 80,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "Qwen/Qwen3-4B-Instruct-2507",
+  "revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-4b-instruct-2507:nf4",
+  "template_kwargs": {}
+ },
+ "model": "qwen3-4b-instruct-2507:nf4",
+ "prompt_eval_count": 817,
+ "request_sha256": "b8a20ef00fd1050162f85f4ca738d5ade419f56be5d421c4c82e0087f252f3ae",
+ "seconds": 4.996
+}

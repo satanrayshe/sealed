@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"A regular beacon occurred 1357 times [S1], the beacon interval was 60 seconds [S3], and a rare destination was observed [S4]\"]}",
+ "done_reason": "stop",
+ "eval_count": 43,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 813,
+ "request_sha256": "d652ccd87bf07e4048bbe1a21f30a524d3987858de77a7863440b04b8cabe812",
+ "seconds": 1.821
+}

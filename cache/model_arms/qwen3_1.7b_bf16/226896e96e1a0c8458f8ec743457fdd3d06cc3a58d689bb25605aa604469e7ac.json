@@ -1,0 +1,22 @@
+{
+ "content": "{\"action\": \"contain\", \"explanation\": \"The alert contains sensitive information such as the username 'x', host 'srv-0050.campus.example', and URL 'https://hr.campus.example/share'. These details should be monitored for potential security risks, especially given the presence of multiple suspicious signals like '2mfa denials', 'new device', and '37 mfa push requests'.\"}",
+ "done_reason": "stop",
+ "eval_count": 87,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "bf16",
+  "repo": "Qwen/Qwen3-1.7B",
+  "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-1.7b:bf16",
+  "template_kwargs": {
+   "enable_thinking": false
+  }
+ },
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 280,
+ "request_sha256": "226896e96e1a0c8458f8ec743457fdd3d06cc3a58d689bb25605aa604469e7ac",
+ "seconds": 5.091
+}

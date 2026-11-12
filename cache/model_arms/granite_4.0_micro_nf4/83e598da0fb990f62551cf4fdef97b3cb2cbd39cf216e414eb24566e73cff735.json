@@ -1,0 +1,9 @@
+{
+ "content": "{\"action\": \"monitor\", \"explanation\": \"The alert indicates medium severity with multiple suspicious signals, including outbound callbacks, rare destination, and regular beacon interval. Monitoring the situation is recommended to gather more information and assess the potential threat.\"}",
+ "done_reason": "stop",
+ "eval_count": 50,
+ "model": "granite-4.0-micro:nf4",
+ "prompt_eval_count": 197,
+ "request_sha256": "83e598da0fb990f62551cf4fdef97b3cb2cbd39cf216e414eb24566e73cff735",
+ "seconds": 3.047
+}

@@ -1,0 +1,20 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert indicates high severity with signals of synthetic MFA denials, a new device, and multiple MFA push requests, which may suggest compromised or suspicious activity. The presence of a new device and repeated MFA denials raises concerns about unauthorized access. A step-up investigation is warranted to verify the legitimacy of the login attempt and assess potential compromise.\"}",
+ "done_reason": "stop",
+ "eval_count": 84,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "Qwen/Qwen3-4B-Instruct-2507",
+  "revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-4b-instruct-2507:nf4",
+  "template_kwargs": {}
+ },
+ "model": "qwen3-4b-instruct-2507:nf4",
+ "prompt_eval_count": 335,
+ "request_sha256": "3f058a324f78295c6b1e582794cf99d72a2f30f7825d91284500fe9e1b0332fd",
+ "seconds": 5.29
+}

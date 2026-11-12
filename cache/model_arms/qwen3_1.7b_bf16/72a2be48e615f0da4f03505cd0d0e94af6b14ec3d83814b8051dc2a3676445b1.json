@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"37 mfa_push_requests [S1]\", \"2 mfa_denials [S2]\", \"new_device [S3]\", \"off_hours [S4]\"]}",
+ "done_reason": "stop",
+ "eval_count": 41,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 809,
+ "request_sha256": "72a2be48e615f0da4f03505cd0d0e94af6b14ec3d83814b8051dc2a3676445b1",
+ "seconds": 1.725
+}

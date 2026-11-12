@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"[S1] There were 11 failed sign-in attempts on this account.\", \"There were 36 distinct source IP addresses behind the failed attempts.\", \"[S3] A password used for sign-in appeared on a known breach list.\", \"The client was classified as automated.\"] }",
+ "done_reason": "stop",
+ "eval_count": 62,
+ "model": "granite-4.0-micro:nf4",
+ "prompt_eval_count": 824,
+ "request_sha256": "199249b184e07c4c59ab4483c13f8ff7bb384b04de1aec3ccc7ff187d1bb5fed",
+ "seconds": 3.736
+}

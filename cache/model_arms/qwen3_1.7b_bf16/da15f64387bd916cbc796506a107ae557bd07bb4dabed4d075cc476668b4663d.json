@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"There were 11 failed sign-in attempts on this account [S1], 36 distinct source IP addresses behind the attempts [S2], a tried password appears on a known breach list [S3], and the upstream detector classed the client as automated [S4]\"]}",
+ "done_reason": "stop",
+ "eval_count": 65,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 808,
+ "request_sha256": "da15f64387bd916cbc796506a107ae557bd07bb4dabed4d075cc476668b4663d",
+ "seconds": 3.991
+}

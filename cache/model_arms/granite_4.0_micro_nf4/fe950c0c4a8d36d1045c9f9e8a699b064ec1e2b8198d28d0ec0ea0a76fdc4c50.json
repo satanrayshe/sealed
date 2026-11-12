@@ -1,0 +1,20 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert indicates a high severity with unusual signals such as a 98-minute gap between logins, impossible travel, and a 6902 km distance between logins. These factors suggest a potential security risk that requires a step-up response to investigate and mitigate.\"}",
+ "done_reason": "stop",
+ "eval_count": 66,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "ibm-granite/granite-4.0-micro",
+  "revision": "56111ae135df9c53a78c99028e7bc24035a9e979",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "granite-4.0-micro:nf4",
+  "template_kwargs": {}
+ },
+ "model": "granite-4.0-micro:nf4",
+ "prompt_eval_count": 309,
+ "request_sha256": "fe950c0c4a8d36d1045c9f9e8a699b064ec1e2b8198d28d0ec0ea0a76fdc4c50",
+ "seconds": 3.287
+}

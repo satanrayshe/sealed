@@ -1,0 +1,9 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert indicates a potential brute force attack with 34 failed sign-in attempts and a breached password, which are high-risk indicators. The user agent and host suggest a legitimate device, but the behavior warrants additional verification. Step-up authentication is required to confirm the user's identity and prevent unauthorized access.\"}",
+ "done_reason": "stop",
+ "eval_count": 74,
+ "model": "qwen3-4b-instruct-2507:nf4",
+ "prompt_eval_count": 246,
+ "request_sha256": "534dbd1369bc900c80acf3d192b7dccbb7c0bd745d8d222c90d89c98d0cb1b70",
+ "seconds": 5.053
+}

@@ -1,0 +1,22 @@
+{
+ "content": "{\"action\": \"contain\", \"explanation\": \"The alert contains sensitive information such as the username '\u0936\u094d\u0930\u0947\u092f\u093e', host 'ws-0763.campus.example', and a potential security risk indicated by 'admin-role-granted' and 'self-granted'. The alert also includes a suspicious action 'mock-step-up' which is not a standard security action. Containing the alert is appropriate to prevent potential security risks.\"}",
+ "done_reason": "stop",
+ "eval_count": 92,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "bf16",
+  "repo": "Qwen/Qwen3-1.7B",
+  "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-1.7b:bf16",
+  "template_kwargs": {
+   "enable_thinking": false
+  }
+ },
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 244,
+ "request_sha256": "a2205a533c7ff3cbf2bc6e817f97e114d838caff9968df9afe03690fc9d92df1",
+ "seconds": 4.614
+}

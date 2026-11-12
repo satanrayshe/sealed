@@ -1,0 +1,9 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert indicates a new device and a high volume of MFA denials and push requests, which may suggest potential account compromise or unauthorized access. A step-up action is required to investigate and mitigate the risk.\"}",
+ "done_reason": "stop",
+ "eval_count": 56,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 226,
+ "request_sha256": "c52f61ef2e2fb544a6f17b5ea34f829001d694ee9391c9088a9de7c249355ee2",
+ "seconds": 2.291
+}

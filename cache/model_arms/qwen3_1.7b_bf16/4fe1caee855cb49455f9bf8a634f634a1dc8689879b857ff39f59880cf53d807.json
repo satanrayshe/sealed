@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"privilege_granted [S1]\", \"new_admin_account [S2]\"]}",
+ "done_reason": "stop",
+ "eval_count": 23,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 779,
+ "request_sha256": "4fe1caee855cb49455f9bf8a634f634a1dc8689879b857ff39f59880cf53d807",
+ "seconds": 1.082
+}

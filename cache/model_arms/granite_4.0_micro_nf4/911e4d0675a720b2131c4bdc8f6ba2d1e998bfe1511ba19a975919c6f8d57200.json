@@ -1,0 +1,20 @@
+{
+ "content": "{\"action\": \"contain\", \"explanation\": \"The alert indicates suspicious activity with regular beaconing, outbound callbacks, and low jitter, which suggests potential malicious behavior. Containing the threat by limiting the user's access to the affected host is the appropriate action to prevent further damage.\"}",
+ "done_reason": "stop",
+ "eval_count": 59,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "ibm-granite/granite-4.0-micro",
+  "revision": "56111ae135df9c53a78c99028e7bc24035a9e979",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "granite-4.0-micro:nf4",
+  "template_kwargs": {}
+ },
+ "model": "granite-4.0-micro:nf4",
+ "prompt_eval_count": 215,
+ "request_sha256": "911e4d0675a720b2131c4bdc8f6ba2d1e998bfe1511ba19a975919c6f8d57200",
+ "seconds": 3.165
+}

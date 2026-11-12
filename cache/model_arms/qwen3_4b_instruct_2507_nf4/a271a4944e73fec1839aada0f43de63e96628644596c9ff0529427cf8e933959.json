@@ -1,0 +1,20 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert indicates high severity with signals such as impossible travel, corporate synthetic VPN, and multiple concurrent sessions, which suggest potential compromise or unauthorized access. The user agent and URL do not indicate a known legitimate session, and the geographic distance between logins is suspicious. These factors warrant a step-up investigation to verify the user's identity and session legitimacy.\"}",
+ "done_reason": "stop",
+ "eval_count": 83,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "Qwen/Qwen3-4B-Instruct-2507",
+  "revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-4b-instruct-2507:nf4",
+  "template_kwargs": {}
+ },
+ "model": "qwen3-4b-instruct-2507:nf4",
+ "prompt_eval_count": 359,
+ "request_sha256": "a271a4944e73fec1839aada0f43de63e96628644596c9ff0529427cf8e933959",
+ "seconds": 4.999
+}

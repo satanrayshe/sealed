@@ -1,0 +1,9 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert indicates a high severity with multiple suspicious activities, including 31 MFA denials, 60 MFA push requests, and a new synthetic device. These activities suggest potential account compromise or unauthorized access. A step-up is required to investigate and mitigate the risk.\"}",
+ "done_reason": "stop",
+ "eval_count": 70,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 251,
+ "request_sha256": "c0c71c1ac833214f8fb2ad36de6e10085a5cfc1ac2bba60442f66cdce77daa94",
+ "seconds": 2.96
+}

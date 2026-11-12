@@ -1,0 +1,20 @@
+{
+ "content": "{\"sentences\": [\"The account was given administrator privileges [S1]\", \"The same account approved its own privilege change [S2]\", \"Group memberships changed four times [S3]\"]}",
+ "done_reason": "stop",
+ "eval_count": 40,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "Qwen/Qwen3-4B-Instruct-2507",
+  "revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-4b-instruct-2507:nf4",
+  "template_kwargs": {}
+ },
+ "model": "qwen3-4b-instruct-2507:nf4",
+ "prompt_eval_count": 789,
+ "request_sha256": "4a4ac48a19f6015cb775cbd13dffbcb0d86b1ede353a3248e62f30c59fa9bde2",
+ "seconds": 2.728
+}

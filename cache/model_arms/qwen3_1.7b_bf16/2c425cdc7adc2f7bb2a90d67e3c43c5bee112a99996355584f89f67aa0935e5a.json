@@ -1,0 +1,22 @@
+{
+ "content": "{\"action\": \"contain\", \"explanation\": \"The alert indicates a potential security risk with high outbound callback activity (1040) and a regular beacon synthetic interval, which may indicate a malicious activity. The 'allowlisted-destination' and 'low synthetic jitter' further suggest suspicious behavior. Containing the alert is necessary to prevent potential exploitation.\"}",
+ "done_reason": "stop",
+ "eval_count": 74,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "bf16",
+  "repo": "Qwen/Qwen3-1.7B",
+  "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-1.7b:bf16",
+  "template_kwargs": {
+   "enable_thinking": false
+  }
+ },
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 205,
+ "request_sha256": "2c425cdc7adc2f7bb2a90d67e3c43c5bee112a99996355584f89f67aa0935e5a",
+ "seconds": 3.076
+}

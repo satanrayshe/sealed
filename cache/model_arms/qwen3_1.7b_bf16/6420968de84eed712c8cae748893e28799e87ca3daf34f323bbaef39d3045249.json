@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"A sign-in occurred with consecutive sign-ins too far apart to travel between in the time available [S1]\", \"The distance between consecutive sign-ins was 38 kilometres [S2]\", \"The minutes between consecutive sign-ins was 38 [S3]\", \"A sign-in from a country not seen before for this account [S4]\"]}",
+ "done_reason": "stop",
+ "eval_count": 77,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 809,
+ "request_sha256": "6420968de84eed712c8cae748893e28799e87ca3daf34f323bbaef39d3045249",
+ "seconds": 3.862
+}

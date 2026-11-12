@@ -1,0 +1,22 @@
+{
+ "content": "{\"sentences\": [\"There were 25 failed sign-in attempts on this account [S1]\", \"An unrecognised signal was detected with a count of 1 [S2]\"]}",
+ "done_reason": "stop",
+ "eval_count": 41,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "bf16",
+  "repo": "Qwen/Qwen3-1.7B",
+  "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-1.7b:bf16",
+  "template_kwargs": {
+   "enable_thinking": false
+  }
+ },
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 786,
+ "request_sha256": "c66225f12d3af7fdca1dafac1abb0b1a1fd385bb23a301f6ed90997e50b274e6",
+ "seconds": 2.38
+}

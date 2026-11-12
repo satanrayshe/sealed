@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"[S1] There were 52 MFA push requests.\", \"There were 34 MFA denials.\", \"An MFA prompt was approved.\", \"A sign-in from a new device was detected.\", \"The activity occurred outside normal working hours.\"] }",
+ "done_reason": "stop",
+ "eval_count": 58,
+ "model": "granite-4.0-micro:nf4",
+ "prompt_eval_count": 837,
+ "request_sha256": "ad65baf82f98ddde1d86ce2d162a8427514340c9aec961267be6b5f608e2c409",
+ "seconds": 3.549
+}

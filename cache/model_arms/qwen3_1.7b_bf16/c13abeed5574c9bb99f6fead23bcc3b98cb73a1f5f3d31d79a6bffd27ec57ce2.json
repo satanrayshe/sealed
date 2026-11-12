@@ -1,0 +1,9 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert indicates a potential security risk with multiple suspicious activities: 2 MFA denials, a new device, off-hours activity, and 37 MFA push requests. These signs suggest a possible compromise or unauthorized access attempt, warranting a step-up response to investigate and mitigate the threat.\"}",
+ "done_reason": "stop",
+ "eval_count": 74,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 216,
+ "request_sha256": "c13abeed5574c9bb99f6fead23bcc3b98cb73a1f5f3d31d79a6bffd27ec57ce2",
+ "seconds": 2.686
+}

@@ -1,0 +1,20 @@
+{
+ "content": "{\"sentences\": [\"[S1] Privilege was granted to the account.\", \"The account's group memberships changed [S2].\", \"A sensitive group was modified [S3].\", \"A change ticket covered the change [S4].\", \"Audit logging was disabled or cleared [S5].\"]}",
+ "done_reason": "stop",
+ "eval_count": 65,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "ibm-granite/granite-4.0-micro",
+  "revision": "56111ae135df9c53a78c99028e7bc24035a9e979",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "granite-4.0-micro:nf4",
+  "template_kwargs": {}
+ },
+ "model": "granite-4.0-micro:nf4",
+ "prompt_eval_count": 832,
+ "request_sha256": "8ccd0ced293ad7aa1af11c85bbb86549ad0d92e9c9244564e7816107fc3197f6",
+ "seconds": 3.652
+}

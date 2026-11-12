@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"privilege_granted [S1]\", \"self_granted [S2]\", \"group_changes [S3]\", \"sensitive_group [S4]\"]}",
+ "done_reason": "stop",
+ "eval_count": 38,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 804,
+ "request_sha256": "7d2c280f075e3100b9b048e187ffe6edf10a2631554e9c450d661198d6795d71",
+ "seconds": 1.667
+}

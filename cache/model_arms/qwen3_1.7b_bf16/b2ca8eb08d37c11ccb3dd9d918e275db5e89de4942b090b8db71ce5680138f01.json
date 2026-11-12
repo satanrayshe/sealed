@@ -1,0 +1,22 @@
+{
+ "content": "{\"action\": \"contain\", \"explanation\": \"The alert indicates a high-severity issue with suspicious activity (e.g., 4946 km between logins, impossible synthetic travel, new country). The user is interacting with a suspicious URL and the message appears to be a bot. Containing the alert is appropriate to prevent further malicious activity and to investigate the source of the threat.\"}",
+ "done_reason": "stop",
+ "eval_count": 82,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "bf16",
+  "repo": "Qwen/Qwen3-1.7B",
+  "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-1.7b:bf16",
+  "template_kwargs": {
+   "enable_thinking": false
+  }
+ },
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 221,
+ "request_sha256": "b2ca8eb08d37c11ccb3dd9d918e275db5e89de4942b090b8db71ce5680138f01",
+ "seconds": 3.443
+}

@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"privilege_granted [S1]\", \"self_granted [S2]\", \"change_ticket [S3]\", \"audit_logging_disabled [S4]\"]}",
+ "done_reason": "stop",
+ "eval_count": 38,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 800,
+ "request_sha256": "fd87f5d9f7ad11051a54e04cfa3bbe09366065dedba94ff9cc8a97f76a8c5b1e",
+ "seconds": 1.848
+}

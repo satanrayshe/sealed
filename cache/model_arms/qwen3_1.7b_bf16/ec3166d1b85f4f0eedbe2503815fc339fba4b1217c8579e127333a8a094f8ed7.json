@@ -1,0 +1,22 @@
+{
+ "content": "{\"action\": \"monitor\", \"explanation\": \"The alert indicates a potential suspicious activity with 649 outbound callbacks and a rare synthetic destination, but the other signals (30 seconds between callbacks, regular beacon interval, low jitter) are normal. The alert is medium severity, so it should be monitored for further analysis rather than immediately allowed or contained.\"}",
+ "done_reason": "stop",
+ "eval_count": 75,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "bf16",
+  "repo": "Qwen/Qwen3-1.7B",
+  "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-1.7b:bf16",
+  "template_kwargs": {
+   "enable_thinking": false
+  }
+ },
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 206,
+ "request_sha256": "ec3166d1b85f4f0eedbe2503815fc339fba4b1217c8579e127333a8a094f8ed7",
+ "seconds": 5.598
+}

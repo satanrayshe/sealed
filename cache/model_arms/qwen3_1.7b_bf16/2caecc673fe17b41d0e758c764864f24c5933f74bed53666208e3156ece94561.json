@@ -1,0 +1,9 @@
+{
+ "content": "{\"action\": \"contain\", \"explanation\": \"The alert contains suspicious signals such as 'new country', 'off hours', 'impossible synthetic travel', and '8385 km between logins', which are indicators of potential malicious activity. The 'mock step-up' action is not actionable, and the alert should be contained to prevent further risk.\"}",
+ "done_reason": "stop",
+ "eval_count": 75,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 367,
+ "request_sha256": "2caecc673fe17b41d0e758c764864f24c5933f74bed53666208e3156ece94561",
+ "seconds": 3.1
+}

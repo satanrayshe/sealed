@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"There were 11 failed sign-in attempts on this account [S1], and 31 distinct source IP addresses behind the attempts [S2]\"]}",
+ "done_reason": "stop",
+ "eval_count": 38,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 786,
+ "request_sha256": "856c797f111e4fdc2e9c6565b33774a4311e98f22bceddcdf5a1a4133be55069",
+ "seconds": 1.51
+}

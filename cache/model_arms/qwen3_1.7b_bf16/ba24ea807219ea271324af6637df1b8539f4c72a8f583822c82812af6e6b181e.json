@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"33 failed sign-in attempts [S1]\", \"account locked [S2]\", \"new device [S3]\"]}",
+ "done_reason": "stop",
+ "eval_count": 31,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 791,
+ "request_sha256": "ba24ea807219ea271324af6637df1b8539f4c72a8f583822c82812af6e6b181e",
+ "seconds": 1.481
+}

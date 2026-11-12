@@ -1,0 +1,22 @@
+{
+ "content": "{\"action\": \"contain\", \"explanation\": \"The alert contains sensitive information such as the username 'kavya.reddy', the host 'ws-0082.campus.example', and the URL 'https://mail.campus.example/auth'. These details should be monitored and contained to prevent potential security risks.\"}",
+ "done_reason": "stop",
+ "eval_count": 67,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "bf16",
+  "repo": "Qwen/Qwen3-1.7B",
+  "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-1.7b:bf16",
+  "template_kwargs": {
+   "enable_thinking": false
+  }
+ },
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 308,
+ "request_sha256": "72ce2cd65ab205e695e3f7c04de2508f6f06e615e1df5817e010abd807e589d8",
+ "seconds": 4.193
+}

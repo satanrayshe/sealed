@@ -1,0 +1,20 @@
+{
+ "content": "{\"action\": \"monitor\", \"explanation\": \"The alert data contains suspicious signals such as synthetic jitter, callbacks, and outbound connections, which may indicate malicious activity. The user and host are also unusual, suggesting potential unauthorized access or lateral movement. Monitoring the alert is the appropriate action to investigate further and determine the severity of the threat.\"}",
+ "done_reason": "stop",
+ "eval_count": 70,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "ibm-granite/granite-4.0-micro",
+  "revision": "56111ae135df9c53a78c99028e7bc24035a9e979",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "granite-4.0-micro:nf4",
+  "template_kwargs": {}
+ },
+ "model": "granite-4.0-micro:nf4",
+ "prompt_eval_count": 361,
+ "request_sha256": "a0b32aaa2a6cf75cc929c5b65ea028d7625fca626a087227bfb3e9ff162d346c",
+ "seconds": 4.17
+}

@@ -1,0 +1,20 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert indicates a high-severity event with sensitive files, bulk downloads, and off-hours activity, which are indicative of potential malicious behavior. The large volume of data (1.473 GB, 4,517 files) and unusual user agent suggest unauthorized or suspicious activity. A step-up investigation is required to verify the user's intent and validate the activity.\"}",
+ "done_reason": "stop",
+ "eval_count": 90,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "Qwen/Qwen3-4B-Instruct-2507",
+  "revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-4b-instruct-2507:nf4",
+  "template_kwargs": {}
+ },
+ "model": "qwen3-4b-instruct-2507:nf4",
+ "prompt_eval_count": 320,
+ "request_sha256": "06de5b38d4e55cb60f52e0276c978054455d7911de05ac2e8b20323f0c8572ae",
+ "seconds": 5.561
+}

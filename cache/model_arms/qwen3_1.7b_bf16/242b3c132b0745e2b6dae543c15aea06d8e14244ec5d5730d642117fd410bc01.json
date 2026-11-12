@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"The evidence shows that there were 903 consecutive sign-ins too far apart to travel between in the time available [S1], the distance between the consecutive sign-ins was 159 kilometres [S2], the minutes between consecutive sign-ins was 1 [S3], the sign-in came from a country not seen before for this account [S4], and 1 signal did not match the vocabulary [S5]\"]}",
+ "done_reason": "stop",
+ "eval_count": 95,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 824,
+ "request_sha256": "242b3c132b0745e2b6dae543c15aea06d8e14244ec5d5730d642117fd410bc01",
+ "seconds": 4.061
+}

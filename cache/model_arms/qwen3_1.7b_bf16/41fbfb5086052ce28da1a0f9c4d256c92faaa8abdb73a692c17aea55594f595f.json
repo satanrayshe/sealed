@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"19285 files downloaded [S1]\", \"48115 megabytes downloaded [S2]\", \"bulk download [S3]\", \"sensitive files [S4]\", \"external share [S5]\", \"USB copy [S6]\", \"1 unrecognised signal [S7]\"]}",
+ "done_reason": "stop",
+ "eval_count": 70,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 849,
+ "request_sha256": "41fbfb5086052ce28da1a0f9c4d256c92faaa8abdb73a692c17aea55594f595f",
+ "seconds": 3.641
+}

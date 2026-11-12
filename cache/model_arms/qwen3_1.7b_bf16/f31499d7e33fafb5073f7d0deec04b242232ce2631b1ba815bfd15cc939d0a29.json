@@ -1,0 +1,22 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert indicates a potential security risk with multiple suspicious activities: 19023 files downloaded, off hours, bulk download, and sensitive files. The action is marked as 'mock step-up', which suggests a simulated response to a high-severity alert. The user is from an approved host, and the user agent is curl, which is commonly used for automation. The action 'step-up' is appropriate for addressing a potential threat.\"}",
+ "done_reason": "stop",
+ "eval_count": 103,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "bf16",
+  "repo": "Qwen/Qwen3-1.7B",
+  "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-1.7b:bf16",
+  "template_kwargs": {
+   "enable_thinking": false
+  }
+ },
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 206,
+ "request_sha256": "f31499d7e33fafb5073f7d0deec04b242232ce2631b1ba815bfd15cc939d0a29",
+ "seconds": 4.446
+}

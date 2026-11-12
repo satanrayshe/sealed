@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"There were 34 failed sign-in attempts on this account [S1]\", \"A tried password appears on a known breach list [S2]\", \"A sign-in from a device not seen before [S3]\"]}",
+ "done_reason": "stop",
+ "eval_count": 51,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 792,
+ "request_sha256": "7e683b1c3332946f0d0868406c3d53e617f09dc174d80433348d832f49aacfe5",
+ "seconds": 2.729
+}

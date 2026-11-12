@@ -1,0 +1,9 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert contains multiple suspicious signals: 18 MFA denials, 53 MFA push requests, 'New device', and 'off hours'. These indicate potential account compromise or unauthorized access attempts. A step-up action is required to investigate and mitigate the risk.\"}",
+ "done_reason": "stop",
+ "eval_count": 69,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 252,
+ "request_sha256": "f06e2194cbbe4005af03f0e5c6a5d7c6a41a46b0595da16b6bee7c7f731f43e6",
+ "seconds": 2.95
+}

@@ -1,0 +1,20 @@
+{
+ "content": "{\"sentences\": [\"3459 [S1] off-hours activity was detected.\", \"3162 [S2] files were downloaded.\", \"3162 [S2] megabytes were downloaded.\", \"3162 [S2] bulk download activity was detected.\"] }",
+ "done_reason": "stop",
+ "eval_count": 55,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "ibm-granite/granite-4.0-micro",
+  "revision": "56111ae135df9c53a78c99028e7bc24035a9e979",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "granite-4.0-micro:nf4",
+  "template_kwargs": {}
+ },
+ "model": "granite-4.0-micro:nf4",
+ "prompt_eval_count": 825,
+ "request_sha256": "b7f012d6123b342f72823a7f958f0d1f68a139948e080a1060a439b73c508a71",
+ "seconds": 2.965
+}

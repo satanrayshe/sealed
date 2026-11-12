@@ -1,0 +1,20 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert indicates high-severity signals including synthetic logins, new synthetic country, impossible travel, and multiple concurrent sessions, which are strong indicators of suspicious activity. The user agent and URL suggest automated or synthetic behavior, warranting further investigation. Step-up is required to verify the legitimacy of the login attempt and validate the user's identity.\"}",
+ "done_reason": "stop",
+ "eval_count": 81,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "Qwen/Qwen3-4B-Instruct-2507",
+  "revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-4b-instruct-2507:nf4",
+  "template_kwargs": {}
+ },
+ "model": "qwen3-4b-instruct-2507:nf4",
+ "prompt_eval_count": 328,
+ "request_sha256": "79d8c9043d1ccf51d5e894665d5b8c79399bbb58608b74ca76ea7859153c34ac",
+ "seconds": 5.074
+}

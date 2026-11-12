@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"A regular beacon occurred [S1], a callback occurred [S2] with a interval of 30 seconds [S3]\"]}",
+ "done_reason": "stop",
+ "eval_count": 34,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 802,
+ "request_sha256": "58be4a2b2f217b57a0f89d8ffea71aa3e1402c573517689d99c7f93fa97b7364",
+ "seconds": 2.226
+}

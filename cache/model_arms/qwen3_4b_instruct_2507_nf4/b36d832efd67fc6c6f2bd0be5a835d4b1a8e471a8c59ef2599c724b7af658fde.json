@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"MFA push prompts were sent to the user, 52 times [S1]\", \"MFA prompts were denied by the user, 34 times [S2]\", \"An MFA prompt was approved [S3]\", \"A sign-in occurred from a device not seen before [S4]\", \"Activity occurred outside normal working hours [S5]\"]}",
+ "done_reason": "stop",
+ "eval_count": 80,
+ "model": "qwen3-4b-instruct-2507:nf4",
+ "prompt_eval_count": 817,
+ "request_sha256": "b36d832efd67fc6c6f2bd0be5a835d4b1a8e471a8c59ef2599c724b7af658fde",
+ "seconds": 5.618
+}

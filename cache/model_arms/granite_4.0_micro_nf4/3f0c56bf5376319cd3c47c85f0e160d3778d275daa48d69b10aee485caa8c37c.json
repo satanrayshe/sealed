@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"[S1] There were 34 failed sign-in attempts on this account.\", \"[S2] A password used for sign-in appeared on a known breach list.\", \"[S3] A sign-in was made from a device not seen before for this account.\"] }",
+ "done_reason": "stop",
+ "eval_count": 59,
+ "model": "granite-4.0-micro:nf4",
+ "prompt_eval_count": 809,
+ "request_sha256": "3f0c56bf5376319cd3c47c85f0e160d3778d275daa48d69b10aee485caa8c37c",
+ "seconds": 3.164
+}

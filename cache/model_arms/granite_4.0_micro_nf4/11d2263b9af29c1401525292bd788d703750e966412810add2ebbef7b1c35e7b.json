@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"[S1] Regular beaconing was observed\", \"The number of callbacks was 1265\", \"Callbacks occurred every 30 seconds\", \"Connections went to a rare destination\"]}",
+ "done_reason": "stop",
+ "eval_count": 42,
+ "model": "granite-4.0-micro:nf4",
+ "prompt_eval_count": 828,
+ "request_sha256": "11d2263b9af29c1401525292bd788d703750e966412810add2ebbef7b1c35e7b",
+ "seconds": 2.719
+}

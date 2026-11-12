@@ -1,0 +1,20 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert indicates a high-severity compromise with multiple failed logins, a new device, and 23 distinct source IPs, which suggests potential brute force or unauthorized access. This behavior warrants immediate investigation to verify the legitimacy of the activity and assess potential compromise. A step-up review is appropriate to validate the user's identity and determine if further action is needed.\"}",
+ "done_reason": "stop",
+ "eval_count": 86,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "Qwen/Qwen3-4B-Instruct-2507",
+  "revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-4b-instruct-2507:nf4",
+  "template_kwargs": {}
+ },
+ "model": "qwen3-4b-instruct-2507:nf4",
+ "prompt_eval_count": 196,
+ "request_sha256": "9f6615473198a50d14af18a701a9bf7682d1c553e3ef8aa6267617aeff6a9ce6",
+ "seconds": 5.343
+}

@@ -1,0 +1,22 @@
+{
+ "content": "{\"sentences\": [\"There were 55 failed sign-in attempts on this account [S1]\", \"18 distinct source IP addresses were involved in the attempts [S2]\", \"A new device was used in one of the attempts [S3]\", \"1 unrecognised signals were detected [S4]\"]}",
+ "done_reason": "stop",
+ "eval_count": 66,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "bf16",
+  "repo": "Qwen/Qwen3-1.7B",
+  "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-1.7b:bf16",
+  "template_kwargs": {
+   "enable_thinking": false
+  }
+ },
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 811,
+ "request_sha256": "b72f5ce57046e59e3fda717f7cd2c9be929c77f5aabe2de3bbb7dc101239427c",
+ "seconds": 2.704
+}

@@ -1,0 +1,20 @@
+{
+ "content": "{\"sentences\": [\"[S1] There were 3861 impossible travel events\", \"There were 108 distinct source IP addresses\", \"There were 108 minutes between consecutive sign-ins\", \"There were sign-ins from a new country\", \"Sign-ins occurred outside normal working hours\"]}",
+ "done_reason": "stop",
+ "eval_count": 59,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "ibm-granite/granite-4.0-micro",
+  "revision": "56111ae135df9c53a78c99028e7bc24035a9e979",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "granite-4.0-micro:nf4",
+  "template_kwargs": {}
+ },
+ "model": "granite-4.0-micro:nf4",
+ "prompt_eval_count": 834,
+ "request_sha256": "58fa2d7df77125bf2d5c6d329d9aa3da51fa453c65588158889b0e7bf84f92e4",
+ "seconds": 3.56
+}

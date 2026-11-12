@@ -1,0 +1,20 @@
+{
+ "content": "{\"action\": \"monitor\", \"explanation\": \"The alert indicates multiple failed sign-in attempts from 24 source IPs, which could suggest brute force activity. However, the username '\u0926\u0940\u092a\u093f\u0915\u093e \u092e\u0947\u0928\u0928' is in a non-English script and may not be a high-risk account. The severity is medium, and without further evidence of malicious intent or account compromise, monitoring is appropriate to observe for escalation.\"}",
+ "done_reason": "stop",
+ "eval_count": 91,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "Qwen/Qwen3-4B-Instruct-2507",
+  "revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-4b-instruct-2507:nf4",
+  "template_kwargs": {}
+ },
+ "model": "qwen3-4b-instruct-2507:nf4",
+ "prompt_eval_count": 272,
+ "request_sha256": "2a73301338608b3019c62331d9695602e7fc6759ad25ec4969e67618932c4a0d",
+ "seconds": 5.62
+}

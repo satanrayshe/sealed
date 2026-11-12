@@ -1,0 +1,9 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert indicates suspicious activity including impossible travel, off-hours login, and a large geographic distance between sessions, which are strong indicators of potential compromise. While the user is known, the anomalous behavior warrants additional verification before allowing access. A step-up authentication is appropriate to confirm the user's identity and ensure the session is legitimate.\"}",
+ "done_reason": "stop",
+ "eval_count": 79,
+ "model": "qwen3-4b-instruct-2507:nf4",
+ "prompt_eval_count": 221,
+ "request_sha256": "ad232f60471ea183e016e9d012801373f0a12b8f9a0cac2957557d50aeb2e6ca",
+ "seconds": 5.269
+}

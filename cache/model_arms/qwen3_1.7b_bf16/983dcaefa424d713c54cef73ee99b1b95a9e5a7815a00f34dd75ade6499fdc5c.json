@@ -1,0 +1,9 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert has high severity and multiple suspicious patterns such as regular beacon synthetic interval, 600-second callback intervals, and 1669 outbound synthetic callbacks. These indicate potential malicious activity, so a step-up response is required to investigate and mitigate the threat.\"}",
+ "done_reason": "stop",
+ "eval_count": 68,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 181,
+ "request_sha256": "983dcaefa424d713c54cef73ee99b1b95a9e5a7815a00f34dd75ade6499fdc5c",
+ "seconds": 2.769
+}

@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"privilege_granted [S1]\", \"sensitive_group [S2]\", \"audit_logging_disabled [S3]\"]}",
+ "done_reason": "stop",
+ "eval_count": 31,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 790,
+ "request_sha256": "63689ddde42814d2347c4d24ff50d6a5cfbb1a37818b648c756d4d078990c699",
+ "seconds": 1.416
+}

@@ -1,0 +1,20 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert indicates suspicious activity, including a new country, anomalous travel distance, and a synthetic login pattern, which suggests potential compromise. The account belongs to an outsourced payroll team, which may increase risk due to reduced visibility. Step-up authentication is required to verify the user's identity before allowing access, ensuring security without immediate containment or blocking.\"}",
+ "done_reason": "stop",
+ "eval_count": 83,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "Qwen/Qwen3-4B-Instruct-2507",
+  "revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-4b-instruct-2507:nf4",
+  "template_kwargs": {}
+ },
+ "model": "qwen3-4b-instruct-2507:nf4",
+ "prompt_eval_count": 269,
+ "request_sha256": "f094f1439b51da44c856cea1bb01361eb9bab29bdce5e1a8bfaf59677a532404",
+ "seconds": 5.077
+}

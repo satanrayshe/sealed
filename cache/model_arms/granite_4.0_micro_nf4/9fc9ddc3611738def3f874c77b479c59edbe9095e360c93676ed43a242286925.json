@@ -1,0 +1,20 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert indicates multiple Multi-Factor Authentication (MFA) denials, a new device, off-hours activity, and a high number of MFA push requests. Given the medium severity and the unusual MFA behavior, it is recommended to step up the authentication process for the user to verify their identity and prevent potential unauthorized access.\"}",
+ "done_reason": "stop",
+ "eval_count": 80,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "ibm-granite/granite-4.0-micro",
+  "revision": "56111ae135df9c53a78c99028e7bc24035a9e979",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "granite-4.0-micro:nf4",
+  "template_kwargs": {}
+ },
+ "model": "granite-4.0-micro:nf4",
+ "prompt_eval_count": 213,
+ "request_sha256": "9fc9ddc3611738def3f874c77b479c59edbe9095e360c93676ed43a242286925",
+ "seconds": 4.016
+}

@@ -1,0 +1,22 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert contains a 'step-up' action, which is a common tactic in phishing or credential theft attacks. The 'step-up' instruction suggests attempting to escalate privileges, so it requires immediate attention. The alert also includes a username and host, indicating potential malicious activity. The presence of '\u02c6' markers indicates that the data has been sanitized, but the action is still actionable.\"}",
+ "done_reason": "stop",
+ "eval_count": 90,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "bf16",
+  "repo": "Qwen/Qwen3-1.7B",
+  "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-1.7b:bf16",
+  "template_kwargs": {
+   "enable_thinking": false
+  }
+ },
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 254,
+ "request_sha256": "20864a3ddc7fe0e3b643f1171f4466a7bce5e65337000c674889522892acc0f0",
+ "seconds": 3.637
+}

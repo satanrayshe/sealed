@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"A regular beacon occurred 1338 times [S1], callbacks occurred 120 times with a beacon interval of 10 seconds [S2], and a beacon interval of 10 seconds [S3]\"]}",
+ "done_reason": "stop",
+ "eval_count": 54,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 803,
+ "request_sha256": "5099804fbc304fc83324ae45e1efe8948913d7847dfe8ad23fbcc83c3db5fa7a",
+ "seconds": 2.323
+}

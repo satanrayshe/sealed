@@ -1,0 +1,22 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert indicates a high-severity event with multiple suspicious signals: off-hours, MFA denials, MFA push requests, and a new device. These are red flags for potential unauthorized access or a security threat. A step-up is required to investigate and mitigate the risk.\"}",
+ "done_reason": "stop",
+ "eval_count": 70,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "bf16",
+  "repo": "Qwen/Qwen3-1.7B",
+  "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-1.7b:bf16",
+  "template_kwargs": {
+   "enable_thinking": false
+  }
+ },
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 273,
+ "request_sha256": "71f72ff52e325e5486ace132e6f76062c76a2a4754e21791387b7af62eb6346b",
+ "seconds": 2.759
+}

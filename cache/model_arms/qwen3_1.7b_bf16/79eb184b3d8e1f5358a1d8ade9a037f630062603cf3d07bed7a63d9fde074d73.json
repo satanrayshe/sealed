@@ -1,0 +1,22 @@
+{
+ "content": "{\"action\": \"contain\", \"explanation\": \"The alert contains sensitive information such as the username 'venkataraghavan.s', the host 'srv-0632.campus.example', and the URL 'https://hr.campus.example/login'. These details may be used for unauthorized access or malicious activity. The alert also includes suspicious signals like 'bulk download' and 'external share', which indicate potential security risks. Containing the alert is necessary to prevent further exploitation.\"}",
+ "done_reason": "stop",
+ "eval_count": 100,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "bf16",
+  "repo": "Qwen/Qwen3-1.7B",
+  "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-1.7b:bf16",
+  "template_kwargs": {
+   "enable_thinking": false
+  }
+ },
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 303,
+ "request_sha256": "79eb184b3d8e1f5358a1d8ade9a037f630062603cf3d07bed7a63d9fde074d73",
+ "seconds": 4.768
+}

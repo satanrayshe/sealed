@@ -1,0 +1,9 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert contains high severity signals such as concurrent sessions, impossible travel, off-hours access, new country, long time between logins, and large distance between synthetic logins. These factors suggest a potential security threat, warranting a step-up in monitoring and further investigation.\"}",
+ "done_reason": "stop",
+ "eval_count": 68,
+ "model": "granite-4.0-micro:nf4",
+ "prompt_eval_count": 320,
+ "request_sha256": "bc6d88d61996b8dc717d1f7af738bd9f13c8d9987654491e324f5c7133931e11",
+ "seconds": 3.812
+}

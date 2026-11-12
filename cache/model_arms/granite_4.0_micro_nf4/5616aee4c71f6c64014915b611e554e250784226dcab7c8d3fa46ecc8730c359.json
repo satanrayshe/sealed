@@ -1,0 +1,20 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert contains high severity signals such as concurrent sessions, impossible travel, off-hours access, new country, long time between logins, and large distance between synthetic logins. These factors suggest a potential security threat, warranting a step-up in monitoring and further investigation.\"}",
+ "done_reason": "stop",
+ "eval_count": 68,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "ibm-granite/granite-4.0-micro",
+  "revision": "56111ae135df9c53a78c99028e7bc24035a9e979",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "granite-4.0-micro:nf4",
+  "template_kwargs": {}
+ },
+ "model": "granite-4.0-micro:nf4",
+ "prompt_eval_count": 311,
+ "request_sha256": "5616aee4c71f6c64014915b611e554e250784226dcab7c8d3fa46ecc8730c359",
+ "seconds": 3.315
+}

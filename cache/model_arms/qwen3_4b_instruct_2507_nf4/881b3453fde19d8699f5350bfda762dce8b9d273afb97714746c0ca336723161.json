@@ -1,0 +1,20 @@
+{
+ "content": "{\"sentences\": [\"Activity occurred outside normal working hours\", \"Files were downloaded\", \"Megabytes of data were downloaded\", \"Files were downloaded in bulk\", \"Files carrying a sensitive or confidential label were accessed\"]}",
+ "done_reason": "stop",
+ "eval_count": 44,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "Qwen/Qwen3-4B-Instruct-2507",
+  "revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-4b-instruct-2507:nf4",
+  "template_kwargs": {}
+ },
+ "model": "qwen3-4b-instruct-2507:nf4",
+ "prompt_eval_count": 820,
+ "request_sha256": "881b3453fde19d8699f5350bfda762dce8b9d273afb97714746c0ca336723161",
+ "seconds": 2.922
+}

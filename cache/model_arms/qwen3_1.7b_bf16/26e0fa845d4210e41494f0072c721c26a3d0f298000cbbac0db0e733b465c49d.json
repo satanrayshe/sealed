@@ -1,0 +1,22 @@
+{
+ "content": "{\"action\": \"contain\", \"explanation\": \"The alert contains sensitive information such as the username '\u0935\u093f\u0915\u093e\u0938.\u0915\u0941\u092e\u093e\u0930', host 'lap-0190.campus.example', and a 'step-up' action. It is necessary to contain the alert to prevent potential security risks and ensure proper handling of the data.\"}",
+ "done_reason": "stop",
+ "eval_count": 75,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "bf16",
+  "repo": "Qwen/Qwen3-1.7B",
+  "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-1.7b:bf16",
+  "template_kwargs": {
+   "enable_thinking": false
+  }
+ },
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 258,
+ "request_sha256": "26e0fa845d4210e41494f0072c721c26a3d0f298000cbbac0db0e733b465c49d",
+ "seconds": 3.688
+}

@@ -1,0 +1,20 @@
+{
+ "content": "{\"sentences\": [\"11808 files were downloaded [S1]\", \"30073 megabytes were downloaded [S2]\", \"A bulk download was detected [S3]\", \"1 unrecognised signal was detected [S4]\"]}",
+ "done_reason": "stop",
+ "eval_count": 49,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "ibm-granite/granite-4.0-micro",
+  "revision": "56111ae135df9c53a78c99028e7bc24035a9e979",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "granite-4.0-micro:nf4",
+  "template_kwargs": {}
+ },
+ "model": "granite-4.0-micro:nf4",
+ "prompt_eval_count": 830,
+ "request_sha256": "f710c7fe95eee64866b73f46b177fb2adb8e7b3184c7f7228cb89ad6d309ec41",
+ "seconds": 2.772
+}

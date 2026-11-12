@@ -1,0 +1,9 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert indicates a high-severity issue with multiple MFA-related signals, including '14 mfa push synthetic requests', 'mfa method synthetic added', 'new device', and 'eleven mfa denials', along with 'off hours'. These signals suggest potential unauthorized access attempts or compromised credentials. A step-up is required to investigate and mitigate the risk.\"}",
+ "done_reason": "stop",
+ "eval_count": 88,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 210,
+ "request_sha256": "f7e7a9f86afc41a1741e4a33b3010040447709655cd83424b18dc44c30e4b1bc",
+ "seconds": 3.637
+}

@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"There were 14 MFA push requests [S1], 11 MFA denials [S2], a new device [S3], a new MFA method added [S4], and off-hours activity [S5].\"]}",
+ "done_reason": "stop",
+ "eval_count": 56,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 822,
+ "request_sha256": "241f4e9bde7bb8f420313bf8f8334068c195eaf5a721b009faff28d771d180b6",
+ "seconds": 2.453
+}

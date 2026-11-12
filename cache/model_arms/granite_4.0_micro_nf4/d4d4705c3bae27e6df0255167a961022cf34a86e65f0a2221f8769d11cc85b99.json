@@ -1,0 +1,20 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert contains signals of suspicious activity such as VPN usage, anonymizing proxy, and unusual login timing. The user agent string suggests the connection is coming from an iPhone, which is not typical for a campus VPN. These factors warrant a step-up in monitoring to investigate further and potentially block the activity.\"}",
+ "done_reason": "stop",
+ "eval_count": 74,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "ibm-granite/granite-4.0-micro",
+  "revision": "56111ae135df9c53a78c99028e7bc24035a9e979",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "granite-4.0-micro:nf4",
+  "template_kwargs": {}
+ },
+ "model": "granite-4.0-micro:nf4",
+ "prompt_eval_count": 380,
+ "request_sha256": "d4d4705c3bae27e6df0255167a961022cf34a86e65f0a2221f8769d11cc85b99",
+ "seconds": 3.639
+}

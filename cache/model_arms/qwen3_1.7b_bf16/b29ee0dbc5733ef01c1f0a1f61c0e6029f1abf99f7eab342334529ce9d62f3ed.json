@@ -1,0 +1,22 @@
+{
+ "content": "{\"sentences\": [\"The connection came through an anonymising proxy [S1], [S2] consecutive sign-ins were too far apart to travel between in the time available [S2], and the traffic was left through the organisation's own VPN [S5]\"]}",
+ "done_reason": "stop",
+ "eval_count": 56,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "bf16",
+  "repo": "Qwen/Qwen3-1.7B",
+  "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-1.7b:bf16",
+  "template_kwargs": {
+   "enable_thinking": false
+  }
+ },
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 823,
+ "request_sha256": "b29ee0dbc5733ef01c1f0a1f61c0e6029f1abf99f7eab342334529ce9d62f3ed",
+ "seconds": 2.189
+}

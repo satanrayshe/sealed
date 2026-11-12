@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"mfa_push_requests occurred 60 times [S1]\", \"mfa_denials occurred 31 times [S2]\", \"a new device was used [S3]\", \"activity occurred outside normal working hours [S4]\", \"unrecognised signals occurred 1 time [S5]\"]}",
+ "done_reason": "stop",
+ "eval_count": 68,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 825,
+ "request_sha256": "9bd485c60742c9c01be9269ca5acfaac7c07861ea4655c2d0c60729254bf410d",
+ "seconds": 3.382
+}

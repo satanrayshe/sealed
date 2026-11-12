@@ -1,0 +1,20 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert indicates potential privilege escalation and multiple group membership changes, which are high-risk signals. The username '\u0930\u093e\u0939\u0941\u0932\u0936\u0930\u094d\u092e\u093e' is not a standard format, suggesting possible data corruption or encoding issues, but the presence of synthetic privilege escalation warrants immediate investigation. A step-up review is required to validate the legitimacy of the changes and assess the user's access rights.\"}",
+ "done_reason": "stop",
+ "eval_count": 92,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "Qwen/Qwen3-4B-Instruct-2507",
+  "revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-4b-instruct-2507:nf4",
+  "template_kwargs": {}
+ },
+ "model": "qwen3-4b-instruct-2507:nf4",
+ "prompt_eval_count": 250,
+ "request_sha256": "4bb1eca7f3c7b2e0e7db62b821944f2020d37be36ac5ce407a66711eaf6e213f",
+ "seconds": 5.152
+}

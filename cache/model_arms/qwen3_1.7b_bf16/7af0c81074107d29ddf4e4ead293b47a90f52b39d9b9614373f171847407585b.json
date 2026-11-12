@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"The connection came through an anonymising proxy [S1],\", \"Consecutive sign-ins were too far apart to travel between [S2],\", \"The distance between consecutive sign-ins was 19 kilometres [S3],\", \"The minutes between consecutive sign-ins was 3 [S4],\", \"A sign-in from a country not seen before for this account [S5],\", \"There were 3 concurrent sessions [S6]\"]}",
+ "done_reason": "stop",
+ "eval_count": 98,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 836,
+ "request_sha256": "7af0c81074107d29ddf4e4ead293b47a90f52b39d9b9614373f171847407585b",
+ "seconds": 4.908
+}

@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"The account was active outside normal working hours [S1]\", \"30,025 files were downloaded [S2]\", \"30,025 megabytes of files were downloaded [S3]\", \"Files were downloaded in bulk [S4]\", \"Sensitive files were downloaded [S5]\"]}",
+ "done_reason": "stop",
+ "eval_count": 69,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 824,
+ "request_sha256": "f29baa65e4e6703ec4f7a34de091e01586fec3ae2a0129e95c930a8f0f305d29",
+ "seconds": 2.914
+}

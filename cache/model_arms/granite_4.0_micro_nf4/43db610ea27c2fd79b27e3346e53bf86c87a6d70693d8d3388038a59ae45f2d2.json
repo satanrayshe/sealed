@@ -1,0 +1,20 @@
+{
+ "content": "{\"action\": \"monitor\", \"explanation\": \"The alert indicates a low-severity outbound callback activity with regular beaconing intervals, suggesting potential malicious behavior. Monitoring the activity is recommended to gather more information and assess the threat.\"}",
+ "done_reason": "stop",
+ "eval_count": 48,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "ibm-granite/granite-4.0-micro",
+  "revision": "56111ae135df9c53a78c99028e7bc24035a9e979",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "granite-4.0-micro:nf4",
+  "template_kwargs": {}
+ },
+ "model": "granite-4.0-micro:nf4",
+ "prompt_eval_count": 279,
+ "request_sha256": "43db610ea27c2fd79b27e3346e53bf86c87a6d70693d8d3388038a59ae45f2d2",
+ "seconds": 3.307
+}

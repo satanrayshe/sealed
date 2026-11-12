@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"11808 files downloaded [S1]\", \"30073 megabytes downloaded [S2]\", \"bulk download [S3]\", \"unrecognised signals (1) [S4]\"]}",
+ "done_reason": "stop",
+ "eval_count": 50,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 818,
+ "request_sha256": "f1a9ede882b068bfdc20709977c80777b831db8a3c82bcf30f3337651e97cf8e",
+ "seconds": 2.204
+}

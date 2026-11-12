@@ -1,0 +1,20 @@
+{
+ "content": "{\"sentences\": [\"[S1] Off-hours activity was detected\", \"The number of files downloaded was 7484\", \"A total of 25862 megabytes were downloaded\", \"The number of sensitive files downloaded was 25862\", \"The number of bulk downloads was 25862\"]}",
+ "done_reason": "stop",
+ "eval_count": 62,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "ibm-granite/granite-4.0-micro",
+  "revision": "56111ae135df9c53a78c99028e7bc24035a9e979",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "granite-4.0-micro:nf4",
+  "template_kwargs": {}
+ },
+ "model": "granite-4.0-micro:nf4",
+ "prompt_eval_count": 836,
+ "request_sha256": "eba3926a15cb6eb39db0973764fa0110f21b164fac09423bc389e777c3cc643c",
+ "seconds": 4.246
+}

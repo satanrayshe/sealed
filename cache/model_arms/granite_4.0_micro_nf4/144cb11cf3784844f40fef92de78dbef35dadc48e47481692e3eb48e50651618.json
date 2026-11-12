@@ -1,0 +1,20 @@
+{
+ "content": "{\"sentences\": [\"[S1] privilege_granted: An alert was triggered for privilege granted.\", \"An alert was triggered for self_granted.\", \"An alert was triggered for group_changes with a count of 1.\", \"An alert was triggered for sensitive_group.\", \"An alert was triggered for unrecognised with a count of 1.\"] }",
+ "done_reason": "stop",
+ "eval_count": 73,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "ibm-granite/granite-4.0-micro",
+  "revision": "56111ae135df9c53a78c99028e7bc24035a9e979",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "granite-4.0-micro:nf4",
+  "template_kwargs": {}
+ },
+ "model": "granite-4.0-micro:nf4",
+ "prompt_eval_count": 837,
+ "request_sha256": "144cb11cf3784844f40fef92de78dbef35dadc48e47481692e3eb48e50651618",
+ "seconds": 3.917
+}

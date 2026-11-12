@@ -1,0 +1,22 @@
+{
+ "content": "{\"action\": \"monitor\", \"explanation\": \"The alert contains suspicious patterned data with markers like \u02c6 and \u02c6, indicating potential malicious activity. The 'action' field suggests a mock monitor, and the 'username' and 'host' appear to be from an unauthorized source. Monitoring is appropriate given the suspicious nature of the alert.\"}",
+ "done_reason": "stop",
+ "eval_count": 72,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "bf16",
+  "repo": "Qwen/Qwen3-1.7B",
+  "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-1.7b:bf16",
+  "template_kwargs": {
+   "enable_thinking": false
+  }
+ },
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 290,
+ "request_sha256": "21c02bc11290db1ca3f8a1e3f51b88c7f02ee5fa8429a878dd9fc98f61b7864c",
+ "seconds": 2.964
+}

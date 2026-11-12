@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"Privilege granted [S1]\", \"Group changes [S2]\", \"Unrecognised [S3]\"]}",
+ "done_reason": "stop",
+ "eval_count": 29,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 797,
+ "request_sha256": "c135913d250cbdcfbf2cfec46c65369cd7334a40f0f86e76e47bcdea8b76c622",
+ "seconds": 1.492
+}

@@ -1,0 +1,22 @@
+{
+ "content": "{\"sentences\": [\"A regular beacon occurred 729 times [S1], callbacks occurred 600 times with a beacon interval of 30 seconds [S2], and a beacon interval of 30 seconds was observed [S3]\"]}",
+ "done_reason": "stop",
+ "eval_count": 55,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "bf16",
+  "repo": "Qwen/Qwen3-1.7B",
+  "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-1.7b:bf16",
+  "template_kwargs": {
+   "enable_thinking": false
+  }
+ },
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 802,
+ "request_sha256": "ad14e6dd1a27e88b1f97739721a4d86a2b14a0693a23136acaaad3d6d2e94ba0",
+ "seconds": 4.203
+}

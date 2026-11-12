@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"The account showed activity outside normal working hours [S1]\", \"12,256 files were downloaded [S2]\", \"12,256 megabytes of files were downloaded [S3]\", \"files were downloaded in bulk [S4]\", \"sensitive files were downloaded [S5]\", \"files were shared or uploaded outside the organisation [S6]\", \"1 unrecognised signal was detected [S7]\"]}",
+ "done_reason": "stop",
+ "eval_count": 95,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 848,
+ "request_sha256": "06939bf616fbfb63a06c4c2af7944f84e8dea6215d38e2a4577b2959e714f77a",
+ "seconds": 4.055
+}

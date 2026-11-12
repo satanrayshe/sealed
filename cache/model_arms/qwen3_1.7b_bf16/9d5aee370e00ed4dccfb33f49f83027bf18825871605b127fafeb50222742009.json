@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"Impossible travel detected [S1]\", \"Distance of 108 km between consecutive sign-ins [S2]\", \"Minutes between consecutive sign-ins is 1 [S3]\", \"New country detected [S4]\", \"Off hours activity detected [S5]\", \"Unrecognised signals: 1 [S6]\"]}",
+ "done_reason": "stop",
+ "eval_count": 72,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 835,
+ "request_sha256": "9d5aee370e00ed4dccfb33f49f83027bf18825871605b127fafeb50222742009",
+ "seconds": 3.078
+}

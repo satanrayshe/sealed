@@ -1,0 +1,20 @@
+{
+ "content": "{\"action\": \"monitor\", \"explanation\": \"The alert indicates synthetic self-granted privileges and synthetic privilege escalation, which are suspicious activities. Monitoring the user '\u0930\u093e\u0939\u0941\u0932 \u0936\u0930\u094d\u092e\u093e' on host 'srv-0869.campus.example' is recommended to detect any further suspicious behavior.\"}",
+ "done_reason": "stop",
+ "eval_count": 67,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "ibm-granite/granite-4.0-micro",
+  "revision": "56111ae135df9c53a78c99028e7bc24035a9e979",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "granite-4.0-micro:nf4",
+  "template_kwargs": {}
+ },
+ "model": "granite-4.0-micro:nf4",
+ "prompt_eval_count": 270,
+ "request_sha256": "d02404c37b6c791ab6ad80fdea75e3ee691a16ad305f77499fade61eabe5f542",
+ "seconds": 3.49
+}

@@ -1,0 +1,20 @@
+{
+ "content": "{\"action\": \"contain\", \"explanation\": \"The alert indicates DNS tunneling with regular beaconing behavior, which is a common indicator of malicious activity such as command-and-control communication. The presence of outbound callbacks and low jitter suggests a synthetic, coordinated attack pattern. Given the high severity and potential for exfiltration, immediate containment is required to prevent further data loss or compromise.\"}",
+ "done_reason": "stop",
+ "eval_count": 79,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "Qwen/Qwen3-4B-Instruct-2507",
+  "revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-4b-instruct-2507:nf4",
+  "template_kwargs": {}
+ },
+ "model": "qwen3-4b-instruct-2507:nf4",
+ "prompt_eval_count": 200,
+ "request_sha256": "8912a69489df3f7619b19360ef917e8de83b786395f7351a270743d118e4d8dd",
+ "seconds": 5.846
+}

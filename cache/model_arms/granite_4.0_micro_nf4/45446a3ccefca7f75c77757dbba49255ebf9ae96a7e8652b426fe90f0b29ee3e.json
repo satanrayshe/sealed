@@ -1,0 +1,20 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert indicates multiple suspicious activities such as account lockout, new device, and multiple failed sign-in attempts. These are signs of potential unauthorized access or brute force attack, so a step-up response is appropriate to investigate and mitigate the risk.\"}",
+ "done_reason": "stop",
+ "eval_count": 62,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "ibm-granite/granite-4.0-micro",
+  "revision": "56111ae135df9c53a78c99028e7bc24035a9e979",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "granite-4.0-micro:nf4",
+  "template_kwargs": {}
+ },
+ "model": "granite-4.0-micro:nf4",
+ "prompt_eval_count": 204,
+ "request_sha256": "45446a3ccefca7f75c77757dbba49255ebf9ae96a7e8652b426fe90f0b29ee3e",
+ "seconds": 3.021
+}

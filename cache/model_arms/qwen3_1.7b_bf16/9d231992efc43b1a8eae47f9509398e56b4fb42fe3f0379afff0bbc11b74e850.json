@@ -1,0 +1,22 @@
+{
+ "content": "{\"sentences\": [\"Privilege granted [S1], Group changes [S2], Sensitive group [S3]\"]}",
+ "done_reason": "stop",
+ "eval_count": 27,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "bf16",
+  "repo": "Qwen/Qwen3-1.7B",
+  "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-1.7b:bf16",
+  "template_kwargs": {
+   "enable_thinking": false
+  }
+ },
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 793,
+ "request_sha256": "9d231992efc43b1a8eae47f9509398e56b4fb42fe3f0379afff0bbc11b74e850",
+ "seconds": 1.265
+}

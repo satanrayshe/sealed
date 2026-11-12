@@ -1,0 +1,22 @@
+{
+ "content": "{\"sentences\": [\"The evidence shows that there were 4611 sign-ins with impossible travel between them [S1], 91 kilometres between consecutive sign-ins [S2], 1 minute between consecutive sign-ins [S3], a sign-in from a new country [S4], and 1 signal that did not match the vocabulary [S5]\"]}",
+ "done_reason": "stop",
+ "eval_count": 77,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "bf16",
+  "repo": "Qwen/Qwen3-1.7B",
+  "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-1.7b:bf16",
+  "template_kwargs": {
+   "enable_thinking": false
+  }
+ },
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 824,
+ "request_sha256": "633b51d5ac7474798643b0c23daccb1895c10d48f4f4d3853889c8fd18879253",
+ "seconds": 4.133
+}

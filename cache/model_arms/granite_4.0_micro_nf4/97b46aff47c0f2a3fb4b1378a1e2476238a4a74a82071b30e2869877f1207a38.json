@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"19285 files were downloaded [S1]\", \"48115 megabytes were downloaded [S2]\", \"[S3] bulk download was detected\", \"1 sensitive file was downloaded [S4]\", \"1 file was shared or uploaded outside the organisation [S5]\", \"1 file was copied to removable USB storage [S6]\", \"1 unrecognised signal was detected [S7]\"]}",
+ "done_reason": "stop",
+ "eval_count": 85,
+ "model": "granite-4.0-micro:nf4",
+ "prompt_eval_count": 861,
+ "request_sha256": "97b46aff47c0f2a3fb4b1378a1e2476238a4a74a82071b30e2869877f1207a38",
+ "seconds": 4.41
+}

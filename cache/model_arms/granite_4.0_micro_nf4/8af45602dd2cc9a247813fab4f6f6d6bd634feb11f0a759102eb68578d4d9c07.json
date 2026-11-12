@@ -1,0 +1,20 @@
+{
+ "content": "{\"sentences\": [\"47 [S1] mfa_push_requests were recorded\", \"15 [S2] mfa_denials were recorded\", \"mfa_approved [S3]\", \"a sign-in from a new device [S4]\"]}",
+ "done_reason": "stop",
+ "eval_count": 52,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "ibm-granite/granite-4.0-micro",
+  "revision": "56111ae135df9c53a78c99028e7bc24035a9e979",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "granite-4.0-micro:nf4",
+  "template_kwargs": {}
+ },
+ "model": "granite-4.0-micro:nf4",
+ "prompt_eval_count": 827,
+ "request_sha256": "8af45602dd2cc9a247813fab4f6f6d6bd634feb11f0a759102eb68578d4d9c07",
+ "seconds": 3.149
+}

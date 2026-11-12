@@ -1,0 +1,20 @@
+{
+ "content": "{\"sentences\": [\"[S1] There were 8807 instances of impossible travel.\", \"There were 82 instances of distance in kilometers.\", \"There were 1 instances of minutes between sign-ins.\", \"There was 1 instance of activity outside normal working hours.\", \"There was 1 instance of unrecognized signals.\"]",
+ "done_reason": "stop",
+ "eval_count": 66,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "ibm-granite/granite-4.0-micro",
+  "revision": "56111ae135df9c53a78c99028e7bc24035a9e979",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "granite-4.0-micro:nf4",
+  "template_kwargs": {}
+ },
+ "model": "granite-4.0-micro:nf4",
+ "prompt_eval_count": 839,
+ "request_sha256": "0ca0c1e72959713c1b01f0d0bec4fe26ad5548766953ab0f49eac514f0291320",
+ "seconds": 4.062
+}

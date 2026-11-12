@@ -1,0 +1,9 @@
+{
+ "content": "{\"action\": \"contain\", \"explanation\": \"The alert contains suspicious signals such as '22 failed sign in attempts', 'New device', 'automated client', '12 source IPs', and a duplicate alert claim. These signals suggest potential malicious activity, warranting containment to prevent further exploitation.\"}",
+ "done_reason": "stop",
+ "eval_count": 64,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 365,
+ "request_sha256": "41022a4e528e9d160cb900237c8f8b692f45381c7a5b0e86c149222e73f1d8e5",
+ "seconds": 2.538
+}

@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"Files were downloaded [S1]\", \"Megabytes of data were downloaded [S2]\", \"Files were downloaded in bulk [S3]\", \"Files carrying a sensitive or confidential label were accessed [S4]\", \"Files were shared or uploaded outside the organisation [S5]\", \"Files were copied to removable USB storage [S6]\", \"An unrecognised signal was detected [S7]\"]}",
+ "done_reason": "stop",
+ "eval_count": 86,
+ "model": "qwen3-4b-instruct-2507:nf4",
+ "prompt_eval_count": 845,
+ "request_sha256": "eb6e5065f8b6a85311415fc257a8350a42a701735dacd60e6ed7faabff3a9a4d",
+ "seconds": 6.012
+}

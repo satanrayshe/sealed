@@ -1,0 +1,20 @@
+{
+ "content": "{\"sentences\": [\"There were 26 failed sign-in attempts on this account [S1]\", \"There were 22 distinct source IP addresses behind the sign-in attempts [S2]\", \"A tried password appears on a known breach list [S3]\", \"A successful sign-in followed failed attempts [S4]\", \"The upstream detector classed the client as automated [S5]\", \"A sign-in came from a device not seen before [S6]\"]}",
+ "done_reason": "stop",
+ "eval_count": 97,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "Qwen/Qwen3-4B-Instruct-2507",
+  "revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-4b-instruct-2507:nf4",
+  "template_kwargs": {}
+ },
+ "model": "qwen3-4b-instruct-2507:nf4",
+ "prompt_eval_count": 826,
+ "request_sha256": "97e077c2e42f7efa827e98340519682f7eaffa00f7f7d94acabed7aa6050e880",
+ "seconds": 6.473
+}

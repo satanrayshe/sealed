@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"[S1] There were 8022 instances of impossible travel.\", \"There were 149 instances of minutes between sign-ins.\", \"There were 3 instances of new country sign-ins.\", \"There were 3 instances of concurrent sessions.\", \"There were 3 instances of activity outside normal working hours.\"]\"}",
+ "done_reason": "stop",
+ "eval_count": 68,
+ "model": "granite-4.0-micro:nf4",
+ "prompt_eval_count": 849,
+ "request_sha256": "9ac7d08c034a269f70d16a42f6289bcd9ef59780ce67a939e9154649a41c46a4",
+ "seconds": 4.264
+}

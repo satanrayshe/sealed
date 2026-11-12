@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"regular_beacon occurred 1265 times [S1]\", \"callback_count is 30 [S2]\", \"beacon_interval_s is 30 [S3]\", \"rare_destination is encountered [S4]\"]}",
+ "done_reason": "stop",
+ "eval_count": 56,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 813,
+ "request_sha256": "de92442fbdb1038605ac1f70d709ef1a659036bb649bea73739ead80a3cef37a",
+ "seconds": 2.909
+}

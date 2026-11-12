@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"The account was activity outside normal working hours [S1], the account was given administrator privileges [S2], and the same account approved its own privilege change [S3]\"]}",
+ "done_reason": "stop",
+ "eval_count": 42,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 789,
+ "request_sha256": "28257da8f97cca47229c0f4b2ab7f15712cf00d1fe589871777204172f4b88ae",
+ "seconds": 1.853
+}

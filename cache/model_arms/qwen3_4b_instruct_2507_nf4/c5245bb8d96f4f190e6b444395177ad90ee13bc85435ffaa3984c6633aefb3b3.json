@@ -1,0 +1,20 @@
+{
+ "content": "{\"sentences\": [\"Failed sign-in attempts on this account were observed, 53 times [S1]\", \"Distinct source IP addresses behind the attempts were identified, 11 in total [S2]\", \"A tried password appears on a known breach list [S3]\", \"A sign-in occurred from a device not seen before [S4]\"]}",
+ "done_reason": "stop",
+ "eval_count": 74,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "Qwen/Qwen3-4B-Instruct-2507",
+  "revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-4b-instruct-2507:nf4",
+  "template_kwargs": {}
+ },
+ "model": "qwen3-4b-instruct-2507:nf4",
+ "prompt_eval_count": 803,
+ "request_sha256": "c5245bb8d96f4f190e6b444395177ad90ee13bc85435ffaa3984c6633aefb3b3",
+ "seconds": 5.914
+}

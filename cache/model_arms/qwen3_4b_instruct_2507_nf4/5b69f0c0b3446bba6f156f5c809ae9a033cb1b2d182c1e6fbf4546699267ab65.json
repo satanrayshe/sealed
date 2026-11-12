@@ -1,0 +1,20 @@
+{
+ "content": "{\"sentences\": [\"Sign-ins occurred at locations too far apart to be travelled between\", \"The distance between consecutive sign-ins was 149 kilometres\", \"The time between consecutive sign-ins was 8022 minutes\", \"A sign-in occurred from a country not seen before for this account\", \"There were two active sessions at the same time\", \"Activity occurred outside normal working hours\", \"An unrecognised signal was detected\"]}",
+ "done_reason": "stop",
+ "eval_count": 91,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "Qwen/Qwen3-4B-Instruct-2507",
+  "revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-4b-instruct-2507:nf4",
+  "template_kwargs": {}
+ },
+ "model": "qwen3-4b-instruct-2507:nf4",
+ "prompt_eval_count": 846,
+ "request_sha256": "5b69f0c0b3446bba6f156f5c809ae9a033cb1b2d182c1e6fbf4546699267ab65",
+ "seconds": 7.428
+}

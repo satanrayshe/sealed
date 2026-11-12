@@ -1,0 +1,9 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert indicates a medium severity issue with breached password, multiple failed sign-in attempts, and automated client activity. These signals suggest a potential credential stuffing or brute-force attack, warranting a step-up response to investigate and mitigate the threat.\"}",
+ "done_reason": "stop",
+ "eval_count": 61,
+ "model": "granite-4.0-micro:nf4",
+ "prompt_eval_count": 339,
+ "request_sha256": "2941a39898de00b390c31d369ef2b1be69f1c634f8ebbfe6d92ad5c78994baad",
+ "seconds": 3.446
+}

@@ -1,0 +1,9 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert indicates a high-severity event with multiple MFA-related signals, including '22 mfa push requests', 'mfa method added', and 'eleven mfa denials'. These signals suggest a potential security threat, warranting a step-up response to investigate and mitigate the risk.\"}",
+ "done_reason": "stop",
+ "eval_count": 74,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 257,
+ "request_sha256": "407a9f10848fa55fdb59a2e9a236a8e49e785b8ad2f446fbe529c7f58805ad77",
+ "seconds": 3.683
+}

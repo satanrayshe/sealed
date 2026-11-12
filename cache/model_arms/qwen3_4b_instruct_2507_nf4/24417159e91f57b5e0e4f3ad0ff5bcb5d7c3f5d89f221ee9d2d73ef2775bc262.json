@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"Outbound connections repeat at a regular interval\", \"Outbound callbacks to the same destination were observed 30 times\", \"Outbound callbacks occurred every 1265 seconds\", \"A destination rarely or never seen on this network was accessed\"]}",
+ "done_reason": "stop",
+ "eval_count": 56,
+ "model": "qwen3-4b-instruct-2507:nf4",
+ "prompt_eval_count": 809,
+ "request_sha256": "24417159e91f57b5e0e4f3ad0ff5bcb5d7c3f5d89f221ee9d2d73ef2775bc262",
+ "seconds": 5.099
+}

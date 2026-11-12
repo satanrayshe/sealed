@@ -1,0 +1,9 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert indicates a high severity with suspicious patterns such as 30-second intervals between callbacks, 1999 outbound callbacks, and a regular beacon interval. These signs suggest potential malicious activity, requiring immediate action to investigate and mitigate the threat.\"}",
+ "done_reason": "stop",
+ "eval_count": 64,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 187,
+ "request_sha256": "d41d9a0f2a3a7d8b3012bdae0c286dda7e5293b0b78556ed8d71994f3b4f9830",
+ "seconds": 2.958
+}

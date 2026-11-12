@@ -1,0 +1,22 @@
+{
+ "content": "{\"sentences\": [\"A sign-in occurred too far apart to travel between in the time available [S1]\", \"The distance between consecutive sign-ins was 47 kilometres [S2]\", \"The minutes between consecutive sign-ins was 47 [S3]\", \"A sign-in from a country not seen before for this account [S4]\"]}",
+ "done_reason": "stop",
+ "eval_count": 73,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "bf16",
+  "repo": "Qwen/Qwen3-1.7B",
+  "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-1.7b:bf16",
+  "template_kwargs": {
+   "enable_thinking": false
+  }
+ },
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 809,
+ "request_sha256": "d8604cde95c07632a7aa64e4d2aa995c632454b6ba8865aac766cfc3869ba89d",
+ "seconds": 3.056
+}

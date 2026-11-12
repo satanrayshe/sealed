@@ -1,0 +1,20 @@
+{
+ "content": "{\"sentences\": [\"Outbound connections repeat at a regular interval\", \"Outbound callbacks to the same destination were observed 495 times\", \"Outbound callbacks occurred every 3600 seconds\", \"The connection destination is a destination rarely or never seen on this network\", \"One signal could not be classified\"]}",
+ "done_reason": "stop",
+ "eval_count": 67,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "Qwen/Qwen3-4B-Instruct-2507",
+  "revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-4b-instruct-2507:nf4",
+  "template_kwargs": {}
+ },
+ "model": "qwen3-4b-instruct-2507:nf4",
+ "prompt_eval_count": 825,
+ "request_sha256": "ae2a9444364048edb0c9dd1ce0ed07fbb9723bcf08cece6308f2dec493d03c0b",
+ "seconds": 4.314
+}

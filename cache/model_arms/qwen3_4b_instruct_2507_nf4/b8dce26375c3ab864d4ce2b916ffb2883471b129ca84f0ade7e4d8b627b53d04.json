@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"Files were downloaded [S1]\", \"Megabytes of data were downloaded [S2]\", \"Files were downloaded in bulk [S3]\"]}",
+ "done_reason": "stop",
+ "eval_count": 35,
+ "model": "qwen3-4b-instruct-2507:nf4",
+ "prompt_eval_count": 798,
+ "request_sha256": "b8dce26375c3ab864d4ce2b916ffb2883471b129ca84f0ade7e4d8b627b53d04",
+ "seconds": 2.626
+}

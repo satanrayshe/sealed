@@ -1,0 +1,20 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert indicates a high-severity untrusted data event with multiple signals of bulk file downloads and synthetic data activity. The presence of 11,786 files and 15.83 MB of data downloaded from a shared URL raises suspicion of data exfiltration or unauthorized access. Given the volume and nature of the activity, a step-up investigation is warranted to verify the user's intent and assess potential compromise.\"}",
+ "done_reason": "stop",
+ "eval_count": 100,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "Qwen/Qwen3-4B-Instruct-2507",
+  "revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-4b-instruct-2507:nf4",
+  "template_kwargs": {}
+ },
+ "model": "qwen3-4b-instruct-2507:nf4",
+ "prompt_eval_count": 271,
+ "request_sha256": "b59d6b36fa92145b58090b461857c99b669ae597e5ca2be53467a6f27ed85e08",
+ "seconds": 5.644
+}

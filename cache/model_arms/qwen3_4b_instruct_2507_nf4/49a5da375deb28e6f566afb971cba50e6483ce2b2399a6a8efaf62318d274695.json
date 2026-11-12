@@ -1,0 +1,20 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert indicates high-severity activity involving automated synthetic client behavior with multiple failed sign-in attempts, which is a known indicator of potential account compromise or brute-force attacks. The username and host details provide specific context for investigation. Given the synthetic client origin and failed login patterns, a step-up review is warranted to verify the legitimacy of the activity and assess potential threats.\"}",
+ "done_reason": "stop",
+ "eval_count": 86,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "Qwen/Qwen3-4B-Instruct-2507",
+  "revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-4b-instruct-2507:nf4",
+  "template_kwargs": {}
+ },
+ "model": "qwen3-4b-instruct-2507:nf4",
+ "prompt_eval_count": 309,
+ "request_sha256": "49a5da375deb28e6f566afb971cba50e6483ce2b2399a6a8efaf62318d274695",
+ "seconds": 5.383
+}

@@ -1,0 +1,9 @@
+{
+ "content": "{\"sentences\": [\"regular_beacon occurs 463 times [S1]\", \"callback_count is 900 [S2]\", \"beacon_interval_s is 300 [S3]\", \"low_jitter is true [S4]\", \"dns_tunnelling is true [S5]\"]}",
+ "done_reason": "stop",
+ "eval_count": 68,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 825,
+ "request_sha256": "4b777ad35578e19df1ec37f49c125bc6bd18f1877ec6240ff0e242e19e436532",
+ "seconds": 2.527
+}

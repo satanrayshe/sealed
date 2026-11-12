@@ -1,0 +1,9 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert indicates that a user was prompted by a broken phone app and confirmed by call, which suggests potential fraud or unauthorized access. The high severity and suspicious activities (like impossible travel, large distance between logins, and new synthetic country) warrant a step-up response to investigate and mitigate the risk.\"}",
+ "done_reason": "stop",
+ "eval_count": 74,
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 313,
+ "request_sha256": "263298dcf5e3480c6daa92cfeadd139fb9b43099be336c14f5cdd56d29ebb4bf",
+ "seconds": 2.696
+}

@@ -1,0 +1,22 @@
+{
+ "content": "{\"action\": \"monitor\", \"explanation\": \"The alert indicates a bulk download of large files (17086 mb and 17466 files) with sensitive synthetic files. The action is already set to 'mock monitor', so we continue to monitor the activity. The user is from 'lap-0758.campus.example' and the URL is to an SSO login page, which may be a potential attack vector.\"}",
+ "done_reason": "stop",
+ "eval_count": 95,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "bf16",
+  "repo": "Qwen/Qwen3-1.7B",
+  "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-1.7b:bf16",
+  "template_kwargs": {
+   "enable_thinking": false
+  }
+ },
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 197,
+ "request_sha256": "58351210a4ce883bd3041f979422db7041b7c624d3b481a985186da0dcce996f",
+ "seconds": 3.501
+}

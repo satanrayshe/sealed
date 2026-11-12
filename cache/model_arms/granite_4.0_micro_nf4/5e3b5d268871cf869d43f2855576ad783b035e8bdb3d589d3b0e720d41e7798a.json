@@ -1,0 +1,20 @@
+{
+ "content": "{\"action\": \"monitor\", \"explanation\": \"The alert contains unusual signals such as 'impossible travel' and '1813 km between synthetic logins', which may indicate suspicious activity. However, the username is marked as safe to ignore, and the action is set to 'mock step-up'. Therefore, it is recommended to monitor the situation closely but not to take immediate action.\"}",
+ "done_reason": "stop",
+ "eval_count": 80,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "ibm-granite/granite-4.0-micro",
+  "revision": "56111ae135df9c53a78c99028e7bc24035a9e979",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "granite-4.0-micro:nf4",
+  "template_kwargs": {}
+ },
+ "model": "granite-4.0-micro:nf4",
+ "prompt_eval_count": 249,
+ "request_sha256": "5e3b5d268871cf869d43f2855576ad783b035e8bdb3d589d3b0e720d41e7798a",
+ "seconds": 4.291
+}

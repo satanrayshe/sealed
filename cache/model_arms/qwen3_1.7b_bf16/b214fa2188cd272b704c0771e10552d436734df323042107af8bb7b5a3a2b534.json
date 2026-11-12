@@ -1,0 +1,22 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert contains a 'mock step-up' action, indicating a potential security threat. The data includes suspicious activities like 'New country', '3 concurrent sessions', 'impossible travel', and 'corporate synthetic VPN', which are red flags for unauthorized access or malicious activity. The 'step-up' action suggests a need for immediate verification and monitoring of the login attempt.\"}",
+ "done_reason": "stop",
+ "eval_count": 88,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "bf16",
+  "repo": "Qwen/Qwen3-1.7B",
+  "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-1.7b:bf16",
+  "template_kwargs": {
+   "enable_thinking": false
+  }
+ },
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 401,
+ "request_sha256": "b214fa2188cd272b704c0771e10552d436734df323042107af8bb7b5a3a2b534",
+ "seconds": 3.477
+}

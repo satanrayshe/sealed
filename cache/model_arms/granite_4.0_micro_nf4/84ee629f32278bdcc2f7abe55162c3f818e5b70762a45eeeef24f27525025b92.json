@@ -1,0 +1,20 @@
+{
+ "content": "{\"action\": \"step-up\", \"explanation\": \"The alert indicates suspicious activity with off-hours login, long intervals between synthetic logins, and a mock step-up action. These signals suggest potential unauthorized access or credential misuse, warranting a step-up response for further investigation and verification.\"}",
+ "done_reason": "stop",
+ "eval_count": 60,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "nf4",
+  "repo": "ibm-granite/granite-4.0-micro",
+  "revision": "56111ae135df9c53a78c99028e7bc24035a9e979",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "granite-4.0-micro:nf4",
+  "template_kwargs": {}
+ },
+ "model": "granite-4.0-micro:nf4",
+ "prompt_eval_count": 409,
+ "request_sha256": "84ee629f32278bdcc2f7abe55162c3f818e5b70762a45eeeef24f27525025b92",
+ "seconds": 3.206
+}

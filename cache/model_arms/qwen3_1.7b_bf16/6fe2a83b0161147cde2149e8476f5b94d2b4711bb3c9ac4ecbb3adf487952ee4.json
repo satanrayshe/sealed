@@ -1,0 +1,22 @@
+{
+ "content": "{\"action\": \"contain\", \"explanation\": \"The alert contains sensitive information such as the username 'Mohd. Irfan Qureshi', the host 'ws-0190.campus.example', and the URL 'https://hr.campus.example/share'. These details should be contained to prevent potential data exposure and to comply with security policies.\"}",
+ "done_reason": "stop",
+ "eval_count": 76,
+ "generation": {
+  "do_sample": false,
+  "max_new_tokens": 384,
+  "precision": "bf16",
+  "repo": "Qwen/Qwen3-1.7B",
+  "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "seed": 0,
+  "server_sha256": "58b7ab4ce55621d2cee58cac143655f33f7d6bb33d29d0affd3835e174e66eb5",
+  "tag": "qwen3-1.7b:bf16",
+  "template_kwargs": {
+   "enable_thinking": false
+  }
+ },
+ "model": "qwen3-1.7b:bf16",
+ "prompt_eval_count": 362,
+ "request_sha256": "6fe2a83b0161147cde2149e8476f5b94d2b4711bb3c9ac4ecbb3adf487952ee4",
+ "seconds": 3.325
+}
