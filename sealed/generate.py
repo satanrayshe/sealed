@@ -155,7 +155,8 @@ def synthetic_alerts(seed: int = SEED, per_family: int = PER_FAMILY) -> list[dic
 def _visible_json(item: dict) -> str:
     """JSON that keeps letters of every script readable but writes invisible characters as escapes."""
     text = json.dumps(item, ensure_ascii=False)
-    hidden = lambda ch: INVISIBLE.match(ch) or unicodedata.category(ch)[0] == "C" or unicodedata.category(ch) in ("Zl", "Zp")
+    hidden = lambda ch: (INVISIBLE.match(ch) or unicodedata.category(ch)[0] == "C"
+                         or (unicodedata.category(ch)[0] == "Z" and ch != " "))  # unusual spaces too
     return "".join(json.dumps(ch)[1:-1] if hidden(ch) else ch for ch in text)
 
 

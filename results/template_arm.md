@@ -249,5 +249,5 @@ Text is shown escaped: every character outside ASCII and Devanagari appears as a
 
 - `data/synthetic_alerts.json`: `00c4ccdbc041884fc524367cb1b35b9ce7ce8b2b201108517b10223b42a9e9cc`
 - `data/benign_oddities.json`: `8d29bac8426f74d07f8055553d303270aa6cc97aade13b5f295a7b8c878b337c`
-- `data/attack_set.json`: `74995f9ea0073d273608a9936386d15fc3331eff6806a44663c378ea91f459dd`
+- `data/attack_set.json`: `934b5097d35dc2b37adf7e23a2f48f6f68473c82ba848dba9177d4511a007408`
 - policy `sealed-policy-1`: `999dae92ec1c77ffa9ed723129d4c24b36cfe9e02e54d86a16f6dc96b763f956`

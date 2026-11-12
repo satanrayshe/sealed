@@ -13,7 +13,7 @@
   "inputs": {
     "synthetic_alerts.json": "00c4ccdbc041884fc524367cb1b35b9ce7ce8b2b201108517b10223b42a9e9cc",
     "benign_oddities.json": "8d29bac8426f74d07f8055553d303270aa6cc97aade13b5f295a7b8c878b337c",
-    "attack_set.json": "74995f9ea0073d273608a9936386d15fc3331eff6806a44663c378ea91f459dd"
+    "attack_set.json": "934b5097d35dc2b37adf7e23a2f48f6f68473c82ba848dba9177d4511a007408"
   },
   "seed": 2026,
   "counts": {
