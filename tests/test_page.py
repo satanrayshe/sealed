@@ -233,6 +233,13 @@ class StaticFiles(unittest.TestCase):
             self.assertIs(doc["dry_run"], False)
             self.assertEqual(doc["models"], list(MODELS))
 
+    @unittest.skipUnless((PAGE / "replies.json").is_file() and (ROOT / "cache" / "model_arms").is_dir(),
+                         "no published replies or no reply cache in this checkout")
+    def test_published_replies_are_the_cached_ones(self):
+        doc, missing = export.build(presets_document()["presets"], dry_run=False, cache_dir=ROOT / "cache" / "model_arms")
+        self.assertEqual(missing, [])
+        self.assertEqual((PAGE / "replies.json").read_text(encoding="utf-8"), export.to_text(doc))
+
 
 def _fake_server(content_for):
     def transport(url, body, timeout):

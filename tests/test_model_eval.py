@@ -10,8 +10,9 @@ from sealed.arms import raw_prompt
 from sealed.attackset import CLASSES
 from sealed.cli import main
 from sealed.model_eval import (
-    ARM_FORMAT, MODELS, OPTIONS, PLAN_LIMITS, README_MARK, Client, claim_sentences, clean_alert_ids, clean_requests,
-    interleaved_triples, json_object, leaky, plan_requests, readme_block, render_markdown, run, summarise,
+    ARM_FORMAT, FINDINGS_MARK, MODELS, OPTIONS, PLAN_LIMITS, README_MARK, Client, claim_sentences, clean_alert_ids,
+    clean_requests, interleaved_triples, json_object, leaky, plan_requests, readme_block, readme_findings,
+    render_markdown, result_files, run, summarise,
 )
 from sealed.narrate import CacheMiss, NarratorError
 from sealed.vocabulary import SIGNALS, UNRECOGNISED
@@ -278,16 +279,72 @@ class Command(unittest.TestCase):
             self.assertEqual(main(["evaluate", "--arm", "models", "--model", "nope:bf16"], out=io.StringIO()), 2)
 
 
+RESULTS = ROOT / "results"
+CACHE = ROOT / "cache" / "model_arms"
+
+
+@unittest.skipUnless((RESULTS / "model_arms.json").exists(), "the model run has not finished")
 class CommittedResults(unittest.TestCase):
-    @unittest.skipUnless((ROOT / "results" / "model_arms.json").exists(), "the model run has not finished")
-    def test_results_follow_the_plan_and_the_readme_is_generated(self):
-        result = json.loads((ROOT / "results" / "model_arms.json").read_text(encoding="utf-8"))
-        self.assertEqual(result["limits"], PLAN_LIMITS)
-        self.assertTrue(all(s["complete"] for s in result["models"].values()))
-        self.assertEqual((ROOT / "results" / "model_arms.md").read_text(encoding="utf-8"), render_markdown(result))
-        readme = (ROOT / "README.md").read_text(encoding="utf-8")
-        self.assertIn(readme_block(result), readme)
-        self.assertEqual(readme.count(README_MARK), 2)
+    """The committed model-arm results: complete, generated from the reply cache, and quoted unchanged."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.result = json.loads((RESULTS / "model_arms.json").read_text(encoding="utf-8"))
+        cls.readme = (ROOT / "README.md").read_text(encoding="utf-8")
+
+    def test_results_follow_the_plan(self):
+        self.assertEqual(self.result["limits"], PLAN_LIMITS)
+        self.assertEqual(list(self.result["models"]), list(MODELS))
+        self.assertTrue(all(s["complete"] for s in self.result["models"].values()))
+
+    @unittest.skipUnless(CACHE.is_dir(), "no reply cache in this checkout")
+    def test_committed_results_match_the_cache_byte_for_byte(self):
+        for name, text in result_files(CACHE).items():
+            with self.subTest(name=name):
+                self.assertEqual((RESULTS / name).read_bytes(), text.encode("utf-8"))
+
+    def test_markdown_is_generated_from_the_json(self):
+        self.assertEqual((RESULTS / "model_arms.md").read_text(encoding="utf-8"), render_markdown(self.result))
+
+    def test_readme_tables_and_findings_are_generated_not_typed(self):
+        block = readme_block(self.result)
+        self.assertIn(block, self.readme)
+        self.assertEqual(self.readme.count(README_MARK), 2)
+        headline = block.split(chr(10))[1:-1]  # the table between the markers
+        markdown = (RESULTS / "model_arms.md").read_text(encoding="utf-8")
+        self.assertIn(chr(10).join(headline), markdown)
+        self.assertIn(readme_findings(self.result), self.readme)
+        self.assertEqual(self.readme.count(FINDINGS_MARK), 2)
+
+    def test_every_sealed_change_is_the_documented_escalation(self):
+        from sealed.attackset import attack_set
+        from sealed.explain import explain
+        from sealed.generate import synthetic_alerts
+        from sealed.model_eval import _variants
+        from sealed.vocabulary import ACTIONS
+        alerts, attacks = {a["id"]: a for a in synthetic_alerts()}, {a["id"]: a for a in attack_set()}
+        rank = {action: i for i, action in enumerate(ACTIONS)}
+        decisions = {}
+        for triple in interleaved_triples():
+            variants = _variants(triple, alerts, attacks)
+            decisions[triple["n"]] = [explain(json.dumps({"alerts": [variants[name]]}))["results"][0]["recommendation"]
+                                      for name in ("twin", "attacked")]
+        for model, limit in PLAN_LIMITS.items():
+            changed = 0
+            for n in range(limit):
+                twin, attacked = decisions[n]
+                if attacked["action"] == twin["action"]:
+                    continue
+                changed += 1
+                with self.subTest(model=model, triple=n):
+                    self.assertTrue(attacked["escalated_by_injection_evidence"])
+                    self.assertEqual(attacked["policy_action"], twin["action"])
+                    self.assertEqual(rank[attacked["action"]], rank[twin["action"]] + 1)
+                    self.assertNotEqual(attacked["action"], "contain")
+            sealed = self.result["models"][model]["arms"]["sealed"]
+            self.assertEqual(sealed["decision_change"]["k"], changed, model)
+            self.assertEqual(sealed["decision_lowered"]["k"], 0, model)
+            self.assertEqual(sealed["same_model_input"]["k"], sealed["same_model_input"]["n"], model)
 
 
 if __name__ == "__main__":
