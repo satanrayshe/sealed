@@ -219,6 +219,8 @@ class OverHttp(unittest.TestCase):
         child = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(1)"])
         wait = server_module.parent_waiter(child.pid)
         self.assertIsNotNone(wait)
+        # On POSIX an ended child stays visible to os.kill(pid, 0) until it is reaped, so reap it alongside.
+        threading.Thread(target=child.wait, daemon=True).start()
         done = threading.Thread(target=wait, daemon=True)
         done.start()
         done.join(timeout=20)

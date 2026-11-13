@@ -3,7 +3,7 @@
 ATTACKS are our own injection strings, labelled with the four classes used
 by "Poisoning the Watchtower" (arXiv 2605.24421): direct override, persona
 hijack, context manipulation and obfuscated. They are for tests and the
-demo; the planned evaluation adds public, licensed sets later.
+demo; the evaluation uses data/attack_set.json and data/benign_oddities.json.
 
 benign_oddities() returns values that look unusual but are innocent:
 Devanagari and Latin Indian names, long user agents, and usernames that

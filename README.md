@@ -72,7 +72,7 @@ alert JSON --> contract parser --> facts: vocabulary codes + counts --> policy t
 
 ## Language and prerequisites
 
-- **Language:** Python 3.12. Developed and tested with CPython 3.12.10 on Windows 11 (build 10.0.26200). The CI file targets Python 3.12 on Ubuntu; it has not been run yet.
+- **Language:** Python 3.12. Developed and tested with CPython 3.12.10 on Windows 11 (build 10.0.26200). The CI file (`.github/workflows/tests.yml`) runs the suite and the demo with Python 3.12 on Ubuntu on every push. Before release the suite also passed from a fresh clone on Ubuntu 24.04 (WSL) with Python 3.12.3.
 - **Runtime dependencies:** none. Standard library only: no packages to install, no network, no API keys, no accounts.
 - **Optional tools:** pytest runs the same suite (pytest 9.1.1 was used locally; with unrelated third-party plugins installed, set `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1`). Evaluation only, outside the `sealed` package: `tools/local_model_server.py` serves the three local models of the model arms and needs a separate Python with torch, transformers and bitsandbytes; `tools/fetch_corpora.py` downloads the learned detector's training corpora and needs pyarrow to read parquet (versions under License and dependencies). Ollama can serve the local-model narrator instead; it is not installed here. None of these is needed by `python -m sealed` or by the test suite.
 - **Platform:** any OS with Python 3.12. Files use LF line endings (`.gitattributes`) so hashes match on every OS.
@@ -324,7 +324,7 @@ Result here: `Ran 11 tests in 18.702s, OK`. Without `SEALED_PAGE_SCREENS` the sc
 
 The plan was frozen before any run: [`docs/EVAL-PLAN.md`](docs/EVAL-PLAN.md), with a dated deviations log. Code: [`sealed/template_eval.py`](sealed/template_eval.py) runs the template arm; [`sealed/model_eval.py`](sealed/model_eval.py) runs and summarises the model arms; [`sealed/detector_eval.py`](sealed/detector_eval.py) compares the detectors; [`sealed/arms.py`](sealed/arms.py) builds the two baseline prompts; [`sealed/evaluate.py`](sealed/evaluate.py) holds the interval maths.
 
-- **Data:** the 300 synthetic alerts (`data/synthetic_alerts.json`), 200 hand-written attack strings (`data/attack_set.json`) and 171 benign values (`data/benign_oddities.json`).
+- **Data:** the 300 synthetic alerts (`data/synthetic_alerts.json`), 200 attack strings written for this project (`data/attack_set.json`; 58 of them are code-encoded variants of the English ones) and 171 benign values (`data/benign_oddities.json`).
   - The attack strings cover four classes and 16 encodings, in English, Hindi and Hinglish.
   - Each attack string is tagged with class, intent, language, encoding, target fields and split.
   - The 1,200 triples (alert, string, field) use seed 2026.
@@ -482,7 +482,7 @@ Read it this way. With one public corpus held out, the learned detector finds fa
 
 - [ ] Publication: the MIT licence is in place; the review tag is added at release.
 - [x] Toolchain: Python version, platform and the (absent) runtime dependencies are stated under Language and prerequisites; the evaluation-only tools, models and corpora under License and dependencies.
-- [x] Commands: the run and test commands work offline from a fresh checkout on the development laptop; a clean-container check is planned.
+- [x] Commands: the run and test commands work offline from a fresh checkout, on Windows 11 and on Ubuntu 24.04 (WSL).
 - [x] Data: every input is synthetic, and nothing needs an account, a key or personal data.
 - [x] Determinism: seeds and same-input-same-output behaviour are described under Tests and reproduction.
 - [x] Leakage: the learned detector is trained only on public corpora, never on the project's sets; the dev/test split is fixed by seed; the keyword detector was not changed after the test numbers were seen, and the learned detector's one change answered a review finding, with both halves re-run and reported.
